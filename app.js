@@ -1,6 +1,11 @@
 var map = document.getElementsByClassName("map")[0];
 var tiles = document.getElementsByClassName("tile");
 var hero = document.createElement("div");
+hero.classList.add("char", "char--hero");
+hero.innerText = "@";
+var star = document.createElement("div");
+star.classList.add("char", "char--star");
+star.innerText = "🌟";
 
 function getTile(char) {
   for (i=0; i<tiles.length; i++) {
@@ -34,6 +39,16 @@ function getRow(char) {
   }
 }
 
+function deployToRandomEmptyTile(char) {
+  var emptyTiles = [];
+  for(i=0; i<tiles.length; i++) {
+    if (tiles[i].childNodes.length === 0) {
+      emptyTiles.push(tiles[i]);
+    }
+  }
+  emptyTiles[Math.floor(Math.random()*emptyTiles.length)].appendChild(char);
+}
+
 function moveToTile(char, tile) {
   char.parentNode.removeChild(char);
   tiles[tile].appendChild(char);
@@ -64,9 +79,8 @@ function moveRight(char) {
 }
 
 window.addEventListener("load", function(){
-  hero.classList.add("hero");
-  hero.innerText = "@";
-  tiles[Math.floor(Math.random()*tiles.length)].appendChild(hero);
+  deployToRandomEmptyTile(hero);
+  deployToRandomEmptyTile(star);
 
   document.onkeydown = checkKey;
 
