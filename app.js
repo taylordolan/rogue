@@ -1,11 +1,57 @@
-var map = document.getElementsByClassName("map")[0];
-var tiles = document.getElementsByClassName("tile");
+var map;
+var score;
+var tiles;
+
+var kobold = document.createElement("div");
+kobold.innerText = "k";
+kobold.classList.add("char");
+
 var hero = document.createElement("div");
 hero.classList.add("char", "char--hero");
 hero.innerText = "@";
+
 var star = document.createElement("div");
 star.classList.add("char", "char--star");
 star.innerText = "🌟";
+
+function spawnKobold() {
+  deployToRandomEmptyTile(kobold);
+}
+
+function advanceKobold() {
+  var hRow = getRow(hero);
+  var hCol = getCol(hero);
+  var hTile = getTile(hero);
+  var kRow = getRow(kobold);
+  var kCol = getCol(kobold);
+  var kTile = getTile(kobold);
+
+  if (kRow === hRow) {
+    if (kTile > hTile) {
+      moveLeft(kobold);
+    } else {
+      moveRight(kobold);
+    }
+  } else if (kCol === hCol) {
+    if (kTile > hTile) {
+      moveUp(kobold);
+    } else {
+      moveDown(kobold);
+    }
+  } else if (kCol > hCol) {
+    if (kRow > hRow) {
+      moveLeftOrUp(kobold);
+    } else {
+      moveLeftOrDown(kobold);
+    }
+  } else if (kCol < hCol) {
+    if (kRow > hRow) {
+      moveRightOrUp(kobold);
+    } else {
+      moveRightOrDown(kobold);
+    }
+  }
+}
 
 function getTile(char) {
   for (i=0; i<tiles.length; i++) {
@@ -52,6 +98,10 @@ function deployToRandomEmptyTile(char) {
 function moveToTile(char, tile) {
   char.parentNode.removeChild(char);
   tiles[tile].appendChild(char);
+  checkForScore();
+  if (char === hero) {
+    advanceKobold();
+  }
 }
 
 function moveUp(char) {
@@ -78,9 +128,58 @@ function moveRight(char) {
   }
 }
 
+function moveRightOrDown(char) {
+  if (Math.floor(Math.random() * 2) == 0) {
+    moveRight(char);
+  } else {
+    moveDown(char);
+  }
+}
+
+function moveRightOrUp(char) {
+  if (Math.floor(Math.random() * 2) == 0) {
+    moveRight(char);
+  } else {
+    moveUp(char);
+  }
+}
+
+function moveLeftOrDown(char) {
+  if (Math.floor(Math.random() * 2) == 0) {
+    moveLeft(char);
+  } else {
+    moveDown(char);
+  }
+}
+
+function moveLeftOrUp(char) {
+  if (Math.floor(Math.random() * 2) == 0) {
+    moveLeft(char);
+  } else {
+    moveUp(char);
+  }
+}
+
+function checkForScore() {
+  if (hero.parentNode === star.parentNode) {
+    scoreValue++;
+    score.innerText = scoreValue;
+    star.parentNode.removeChild(star);
+    deployToRandomEmptyTile(star);
+  }
+}
+
 window.addEventListener("load", function(){
+  map = document.getElementsByClassName("map")[0];
+  score = document.getElementsByClassName("score")[0];
+  tiles = document.getElementsByClassName("tile");
+
+  scoreValue = 0;
+  score.innerText = scoreValue;
+
   deployToRandomEmptyTile(hero);
   deployToRandomEmptyTile(star);
+  spawnKobold();
 
   document.onkeydown = checkKey;
 
