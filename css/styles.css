@@ -4,16 +4,6 @@
   box-sizing: border-box;
 }
 
-.score {
-  color: #aaa;
-  font: caption;
-  font-size: 24px;
-  margin-top: 15px;
-  position: absolute;
-  text-align: center;
-  width: 100%;
-}
-
 .map-wrapper {
   align-items: center;
   display: flex;
@@ -55,8 +45,4 @@
 
 .char--hero {
   top: -4px;
-}
-
-.char--star {
-  top: 6px;
 }
