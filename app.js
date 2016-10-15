@@ -1,8 +1,9 @@
 var map;
 var board = [];
 var tiles;
+var mapSize = 6;
 
-for (var i = 0; i < 16; i++) {
+for (var i = 0; i < mapSize * mapSize; i++) {
   board[i] = [];
 }
 
@@ -29,26 +30,18 @@ function Item() {
   }
 
   this.getCol = function() {
-    if (this.getTile() === 0 || this.getTile() % 4 === 0) {
-      return 0;
-    } else if (this.getTile() === 1 || this.getTile() === 5 || this.getTile() === 9 || this.getTile() === 13) {
-      return 1;
-    } else if (this.getTile() === 2 || this.getTile() === 6 || this.getTile() === 10 || this.getTile() === 14) {
-      return 2;
-    } else if (this.getTile() === 3 || this.getTile() === 7 || this.getTile() === 11 || this.getTile() === 15) {
-      return 3;
+    for (var i=0; i<mapSize; i++) {
+      if ((this.getTile() - i) % mapSize === 0) {
+        return i;
+      }
     }
   }
 
   this.getRow = function() {
-    if (this.getTile() >= 0 && this.getTile() <= 3) {
-      return 0;
-    } else if (this.getTile() >= 4 && this.getTile() <= 7) {
-      return 1;
-    } else if (this.getTile() >= 8 && this.getTile() <= 11) {
-      return 2;
-    } else if (this.getTile() >= 12 && this.getTile() <= 15) {
-      return 3;
+    for (var i=1; i<=mapSize; i++) {
+      if (this.getTile() < mapSize * i) {
+        return i - 1;
+      }
     }
   }
 
@@ -59,7 +52,7 @@ function Item() {
   }
 
   this.moveRight = function() {
-    if (this.getCol() < 3) {
+    if (this.getCol() < mapSize - 1) {
       this.setTile(this.getTile() + 1);
     }
     renderBoard();
@@ -74,14 +67,14 @@ function Item() {
 
   this.moveUp = function() {
     if (this.getRow() > 0) {
-      this.setTile(this.getTile() - 4);
+      this.setTile(this.getTile() - mapSize);
     }
     renderBoard();
   }
 
   this.moveDown = function() {
-    if (this.getRow() < 3) {
-      this.setTile(this.getTile() + 4);
+    if (this.getRow() < mapSize - 1) {
+      this.setTile(this.getTile() + mapSize);
     }
     renderBoard();
   }
@@ -97,17 +90,19 @@ function Item() {
 }
 
 var hero = new Item();
+hero.char = '@';
 
 function renderBoard() {
-  var tiles = document.getElementsByClassName("tile");
-  for (var i=0; i<tiles.length; i++) {
-    while (tiles[i].firstChild) {
-      tiles[i].removeChild(tiles[i].firstChild);
-    }
-  }
+  map = document.getElementsByClassName("map")[0];
+  map.innerHTML = '';
   for (var i=0; i<board.length; i++) {
-    if (board[i][0] == hero) {
-      tiles[i].innerText = "@";
+    if (board[i].length === 0) {
+      map.innerHTML += '.';
+    } else {
+      map.innerHTML += board[i][0].char;
+    }
+    if ((i + 1) % mapSize === 0) {
+      map.innerHTML += '<br>';
     }
   }
 }
