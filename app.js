@@ -1,7 +1,8 @@
-var map;
 var board = [];
+var map;
+var mapSize = 12;
 var tiles;
-var mapSize = 6;
+var turn = 0;
 
 for (var i = 0; i < mapSize * mapSize; i++) {
   board[i] = [];
@@ -48,35 +49,38 @@ function Item() {
   this.setTile = function(tileNumber) {
     board[this.getTile()].pop(this);
     board[tileNumber].push(this);
-    renderBoard();
   }
 
   this.moveRight = function() {
     if (this.getCol() < mapSize - 1) {
       this.setTile(this.getTile() + 1);
+      turn++;
+      renderBoard();
     }
-    renderBoard();
   }
 
   this.moveLeft = function() {
     if (this.getCol() > 0) {
       this.setTile(this.getTile() - 1);
+      turn++;
+      renderBoard();
     }
-    renderBoard();
   }
 
   this.moveUp = function() {
     if (this.getRow() > 0) {
       this.setTile(this.getTile() - mapSize);
+      turn++;
+      renderBoard();
     }
-    renderBoard();
   }
 
   this.moveDown = function() {
     if (this.getRow() < mapSize - 1) {
       this.setTile(this.getTile() + mapSize);
+      turn++;
+      renderBoard();
     }
-    renderBoard();
   }
 
   // to be used like this, for example: hero.moveWithOption("moveRight", "moveDown")
@@ -89,17 +93,32 @@ function Item() {
   }
 }
 
-var hero = new Item();
-hero.char = '@';
+var heroA = new Item();
+heroA.char = 'a';
+var heroB = new Item();
+heroB.char = 'b';
 
 function renderBoard() {
   map = document.getElementsByClassName("map")[0];
   map.innerHTML = '';
   for (var i=0; i<board.length; i++) {
-    if (board[i].length === 0) {
-      map.innerHTML += '.';
-    } else {
+    if (board[i].length !== 0) {
       map.innerHTML += board[i][0].char;
+    }
+    else if (i === heroA.getTile() - mapSize && turn % 2 === 0 || i === heroA.getTile() + mapSize && turn % 2 === 0) {
+      map.innerHTML += '•';
+    }
+    else if (i === heroB.getTile() - mapSize && (turn + 1) % 2 === 0 || i === heroB.getTile() + mapSize && (turn + 1) % 2 === 0) {
+      map.innerHTML += '•';
+    }
+    else if (i === heroA.getTile() - 1 && (turn + 1) % 2 === 0 || i === heroA.getTile() + 1 && (turn + 1) % 2 === 0) {
+      map.innerHTML += '•';
+    }
+    else if (i === heroB.getTile() - 1 && turn % 2 === 0 || i === heroB.getTile() + 1 && turn % 2 === 0) {
+      map.innerHTML += '•';
+    }
+    else if (board[i].length === 0) {
+      map.innerHTML += '.';
     }
     if ((i + 1) % mapSize === 0) {
       map.innerHTML += '<br>';
@@ -109,7 +128,8 @@ function renderBoard() {
 
 window.addEventListener("load", function(){
 
-  hero.deployToRandomEmptyTile();
+  heroA.deployToRandomEmptyTile();
+  heroB.deployToRandomEmptyTile();
   renderBoard();
 
   document.onkeydown = checkKey;
@@ -117,16 +137,32 @@ window.addEventListener("load", function(){
     e = e || window.event;
 
     if (e.keyCode == '38') {
-      hero.moveUp();
+      if (turn%2 === 0) {
+        heroA.moveUp();
+      } else {
+        heroB.moveUp();
+      }
     }
     else if (e.keyCode == '40') {
-      hero.moveDown();
+      if (turn%2 === 0) {
+        heroA.moveDown();
+      } else {
+        heroB.moveDown();
+      }
     }
     else if (e.keyCode == '37') {
-      hero.moveLeft();
+      if (turn%2 === 0) {
+        heroB.moveLeft();
+      } else {
+        heroA.moveLeft();
+      }
     }
     else if (e.keyCode == '39') {
-      hero.moveRight();
+      if (turn%2 === 0) {
+        heroB.moveRight();
+      } else {
+        heroA.moveRight();
+      }
     }
   }
 });
