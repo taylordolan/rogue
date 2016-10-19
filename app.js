@@ -8,6 +8,22 @@ for (var i = 0; i < mapSize * mapSize; i++) {
   board[i] = [];
 }
 
+function getCol(n) {
+  for (var i=0; i<mapSize; i++) {
+    if ((n - i) % mapSize === 0) {
+      return i;
+    }
+  }
+}
+
+function getRow(n) {
+  for (var i=1; i<=mapSize; i++) {
+    if (n < mapSize * i) {
+      return i - 1;
+    }
+  }
+}
+
 function Item() {
 
   this.deployToRandomEmptyTile = function() {
@@ -46,9 +62,9 @@ function Item() {
     }
   }
 
-  this.setTile = function(tileNumber) {
+  this.setTile = function(n) {
     board[this.getTile()].pop(this);
-    board[tileNumber].push(this);
+    board[n].push(this);
   }
 
   this.moveRight = function() {
@@ -91,12 +107,112 @@ function Item() {
       this[opt2]();
     }
   }
+
+  this.distanceToHeroALeft = function() {
+    if (this.getCol() > 0) {
+      return distanceToHeroA(this.getTile() - 1);
+    }
+  }
+
+  this.distanceToHeroARight = function() {
+    if (this.getCol() < mapSize - 1) {
+      return distanceToHeroA(this.getTile() + 1);
+    }
+  }
+
+  this.distanceToHeroAUp = function() {
+    if (this.getRow() > 0) {
+      return distanceToHeroA(this.getTile() - mapSize);
+    }
+  }
+
+  this.distanceToHeroADown = function() {
+    if (this.getRow() < mapSize - 1) {
+      return distanceToHeroA(this.getTile() + mapSize);
+    }
+  }
+
+  this.distanceToHeroA = function() {
+    var steps = 0;
+    var found = false;
+    lookedTiles = [];
+    lookedTiles.push (this.getTile());
+
+    function isHeroAInTile(n) {
+      if (board[n][0] === heroA) {
+        return true;
+      }
+    }
+
+    function isInLookedTiles(n) {
+      for (var i=0; i<lookedTiles.length; i++) {
+        if (lookedTiles[i] === n) {
+          return true;
+        }
+      }
+    }
+
+    function lookAdjacentTiles(n) {
+      if (getCol(n) > 0) {
+        var l = n - 1;
+      }
+      if (getCol(n) < mapSize - 1) {
+        var r = n + 1;
+      }
+      if (getRow(n) > 0) {
+        var t = n - mapSize;
+      }
+      if (getRow(n) < mapSize - 1) {
+        var b = n + mapSize;
+      }
+      if (l && isHeroAInTile(l)) {
+        found = true;
+      }
+      if (l && !isInLookedTiles(l)) {
+        lookedTiles.push(l);
+      }
+      if (r && isHeroAInTile(r)) {
+        found = true;
+      }
+      if (r && !isInLookedTiles(r)) {
+        lookedTiles.push(r);
+      }
+      if (t && isHeroAInTile(t)) {
+        found = true;
+      }
+      if (t && !isInLookedTiles(t)) {
+        lookedTiles.push(t);
+      }
+      if (b && isHeroAInTile(b)) {
+        found = true;
+      }
+      if (b && !isInLookedTiles(b)) {
+        lookedTiles.push(b);
+      }
+    }
+
+    // put it all together
+    return (function() {
+      for (var i=0; i<mapSize*mapSize; i++) {
+        var temp = lookedTiles.length;
+        for (var j=0; j<temp; j++) {
+          lookAdjacentTiles(lookedTiles[j]);
+        }
+        steps++;
+        if (found === true) {
+          return steps;
+        }
+      }
+    })()
+  }
 }
 
 var heroA = new Item();
 heroA.char = 'a';
 var heroB = new Item();
 heroB.char = 'b';
+var kobold = new Item();
+kobold.char = 'k';
 
 function renderBoard() {
   map = document.getElementsByClassName("map")[0];
@@ -130,6 +246,7 @@ window.addEventListener("load", function(){
 
   heroA.deployToRandomEmptyTile();
   heroB.deployToRandomEmptyTile();
+  kobold.deployToRandomEmptyTile();
   renderBoard();
 
   document.onkeydown = checkKey;
