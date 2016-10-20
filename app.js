@@ -70,76 +70,71 @@ function Item() {
   this.moveRight = function() {
     if (this.getCol() < mapSize - 1) {
       this.setTile(this.getTile() + 1);
-      turn++;
-      renderBoard();
+      return true;
     }
   }
 
   this.moveLeft = function() {
     if (this.getCol() > 0) {
       this.setTile(this.getTile() - 1);
-      turn++;
-      renderBoard();
+      return true;
     }
   }
 
   this.moveUp = function() {
     if (this.getRow() > 0) {
       this.setTile(this.getTile() - mapSize);
-      turn++;
-      renderBoard();
+      return true;
     }
   }
 
   this.moveDown = function() {
     if (this.getRow() < mapSize - 1) {
       this.setTile(this.getTile() + mapSize);
-      turn++;
-      renderBoard();
+      return true;
     }
   }
 
   // to be used like this, for example: hero.moveWithOption("moveRight", "moveDown")
-  this.moveWithOption = function(opt1, opt2) {
-    if (Math.floor(Math.random() * 2) == 0) {
-      this[opt1]();
-    } else {
-      this[opt2]();
-    }
+  this.moveWithOption = function(array) {
+    option = Math.floor(Math.random() * array.length);
+    console.log(array[option]);
+    this[array[option]]();
   }
 
-  this.distanceToHeroALeft = function() {
+  this.distanceToHeroLeft = function() {
     if (this.getCol() > 0) {
-      return distanceToHeroA(this.getTile() - 1);
+      return this.distanceToHero(this.getTile() - 1);
     }
   }
 
-  this.distanceToHeroARight = function() {
+  this.distanceToHeroRight = function() {
     if (this.getCol() < mapSize - 1) {
-      return distanceToHeroA(this.getTile() + 1);
+      return this.distanceToHero(this.getTile() + 1);
     }
   }
 
-  this.distanceToHeroAUp = function() {
+  this.distanceToHeroUp = function() {
     if (this.getRow() > 0) {
-      return distanceToHeroA(this.getTile() - mapSize);
+      return this.distanceToHero(this.getTile() - mapSize);
     }
   }
 
-  this.distanceToHeroADown = function() {
+  this.distanceToHeroDown = function() {
     if (this.getRow() < mapSize - 1) {
-      return distanceToHeroA(this.getTile() + mapSize);
+      return this.distanceToHero(this.getTile() + mapSize);
     }
   }
 
-  this.distanceToHeroA = function() {
+
+  this.distanceToHero = function(startTile) {
     var steps = 0;
     var found = false;
     lookedTiles = [];
-    lookedTiles.push (this.getTile());
+    lookedTiles.push (startTile);
 
-    function isHeroAInTile(n) {
-      if (board[n][0] === heroA) {
+    function isHeroInTile(n) {
+      if (board[n][0] === heroA || board[n][0] === heroB) {
         return true;
       }
     }
@@ -165,25 +160,25 @@ function Item() {
       if (getRow(n) < mapSize - 1) {
         var b = n + mapSize;
       }
-      if (l && isHeroAInTile(l)) {
+      if (l && isHeroInTile(l)) {
         found = true;
       }
       if (l && !isInLookedTiles(l)) {
         lookedTiles.push(l);
       }
-      if (r && isHeroAInTile(r)) {
+      if (r && isHeroInTile(r)) {
         found = true;
       }
       if (r && !isInLookedTiles(r)) {
         lookedTiles.push(r);
       }
-      if (t && isHeroAInTile(t)) {
+      if (t && isHeroInTile(t)) {
         found = true;
       }
       if (t && !isInLookedTiles(t)) {
         lookedTiles.push(t);
       }
-      if (b && isHeroAInTile(b)) {
+      if (b && isHeroInTile(b)) {
         found = true;
       }
       if (b && !isInLookedTiles(b)) {
@@ -204,6 +199,31 @@ function Item() {
         }
       }
     })()
+  }
+
+  this.pathfind = function() {
+    var d = this.distanceToHero(this.getTile());
+    var dl = this.distanceToHeroLeft();
+    var dr = this.distanceToHeroRight();
+    var du = this.distanceToHeroUp();
+    var dd = this.distanceToHeroDown();
+    var distances = [];
+    var closer = [];
+
+    if (dl && dl < d) {
+      closer.push('moveLeft');
+    }
+    if (dr && dr < d) {
+      closer.push('moveRight');
+    }
+    if (du && du < d) {
+      closer.push('moveUp');
+    }
+    if (dd && dd < d) {
+      closer.push('moveDown');
+    }
+    console.log(closer);
+    this.moveWithOption(closer);
   }
 }
 
@@ -255,30 +275,66 @@ window.addEventListener("load", function(){
 
     if (e.keyCode == '38') {
       if (turn%2 === 0) {
-        heroA.moveUp();
-      } else {
-        heroB.moveUp();
+        if (heroA.moveUp()) {
+          turn++;
+          kobold.pathfind();
+          renderBoard();
+        }
+      }
+      else {
+        if (heroB.moveUp()) {
+          turn++;
+          kobold.pathfind();
+          renderBoard();
+        }
       }
     }
     else if (e.keyCode == '40') {
       if (turn%2 === 0) {
-        heroA.moveDown();
-      } else {
-        heroB.moveDown();
+        if (heroA.moveDown()) {
+          turn++;
+          kobold.pathfind();
+          renderBoard();
+        }
+      }
+      else {
+        if (heroB.moveDown()) {
+          turn++;
+          kobold.pathfind();
+          renderBoard();
+        }
       }
     }
     else if (e.keyCode == '37') {
       if (turn%2 === 0) {
-        heroB.moveLeft();
-      } else {
-        heroA.moveLeft();
+        if (heroB.moveLeft()) {
+          turn++;
+          kobold.pathfind();
+          renderBoard();
+        }
+      }
+      else {
+        if (heroA.moveLeft()) {
+          turn++;
+          kobold.pathfind();
+          renderBoard();
+        }
       }
     }
     else if (e.keyCode == '39') {
       if (turn%2 === 0) {
-        heroB.moveRight();
-      } else {
-        heroA.moveRight();
+        if (heroB.moveRight()) {
+          turn++;
+          kobold.pathfind();
+          renderBoard();
+        }
+      }
+      else {
+        if (heroA.moveRight()) {
+          turn++;
+          kobold.pathfind();
+          renderBoard();
+        }
       }
     }
   }
