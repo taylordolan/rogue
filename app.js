@@ -238,24 +238,31 @@ function renderBoard() {
   map = document.getElementsByClassName("map")[0];
   map.innerHTML = '';
   for (var i=0; i<board.length; i++) {
-    if (board[i].length !== 0) {
+    // for tiles that are populated, render their letters
+    if (board[i].length) {
       map.innerHTML += board[i][0].char;
     }
-    else if (i === heroA.getTile() - mapSize && turn % 2 === 0 || i === heroA.getTile() + mapSize && turn % 2 === 0) {
+    // on even numbered turns, put '•' above and below hero A
+    else if (turn % 2 === 0 && (i === heroA.getTile() - mapSize || i === heroA.getTile() + mapSize)) {
       map.innerHTML += '•';
     }
+    // on odd numbered turns, put '•' above and below hero B
     else if (i === heroB.getTile() - mapSize && (turn + 1) % 2 === 0 || i === heroB.getTile() + mapSize && (turn + 1) % 2 === 0) {
       map.innerHTML += '•';
     }
-    else if (i === heroA.getTile() - 1 && (turn + 1) % 2 === 0 || i === heroA.getTile() + 1 && (turn + 1) % 2 === 0) {
+    // on odd numbered turns, put '•' to the left and right of hero A
+    else if ((turn + 1) % 2 === 0 && (i === heroA.getTile() - 1 && (i + 1) % mapSize !== 0 || i === heroA.getTile() + 1 && i % mapSize !== 0)) {
       map.innerHTML += '•';
     }
-    else if (i === heroB.getTile() - 1 && turn % 2 === 0 || i === heroB.getTile() + 1 && turn % 2 === 0) {
+    // on odd numbered turns, put '•' to the left and right of hero B
+    else if (turn % 2 === 0 && (i === heroB.getTile() - 1 && (i + 1) % mapSize !== 0 || i === heroB.getTile() + 1 && i % mapSize !== 0)) {
       map.innerHTML += '•';
     }
+    // put '.' on empty tiles
     else if (board[i].length === 0) {
       map.innerHTML += '.';
     }
+    // insert line breaks
     if ((i + 1) % mapSize === 0) {
       map.innerHTML += '<br>';
     }
