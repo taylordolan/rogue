@@ -94,11 +94,23 @@ function Item() {
       return true;
     }
   }
+}
+
+function Kobold() {
+  Item.call(this);
+
+  this.setTile = function(n) {
+    if (board[n][0]) {
+      console.log("hit!");
+    } else {
+      board[this.getTile()].pop(this);
+      board[n].push(this);
+    }
+  }
 
   // to be used like this, for example: hero.moveWithOption("moveRight", "moveDown")
   this.moveWithOption = function(array) {
     option = Math.floor(Math.random() * array.length);
-    console.log(array[option]);
     this[array[option]]();
   }
 
@@ -126,12 +138,15 @@ function Item() {
     }
   }
 
-
   this.distanceToHero = function(startTile) {
     var steps = 0;
     var found = false;
     lookedTiles = [];
     lookedTiles.push (startTile);
+
+    if (startTile === heroA.getTile() || startTile === heroB.getTile()) {
+      return 0;
+    }
 
     function isHeroInTile(n) {
       if (board[n][0] === heroA || board[n][0] === heroB) {
@@ -207,19 +222,18 @@ function Item() {
     var dr = this.distanceToHeroRight();
     var du = this.distanceToHeroUp();
     var dd = this.distanceToHeroDown();
-    var distances = [];
     var closer = [];
 
-    if (dl && dl < d) {
+    if (dl < d) {
       closer.push('moveLeft');
     }
-    if (dr && dr < d) {
+    if (dr < d) {
       closer.push('moveRight');
     }
-    if (du && du < d) {
+    if (du < d) {
       closer.push('moveUp');
     }
-    if (dd && dd < d) {
+    if (dd < d) {
       closer.push('moveDown');
     }
     console.log(closer);
@@ -231,7 +245,7 @@ var heroA = new Item();
 heroA.char = 'a';
 var heroB = new Item();
 heroB.char = 'b';
-var kobold = new Item();
+var kobold = new Kobold();
 kobold.char = 'k';
 
 function renderBoard() {
