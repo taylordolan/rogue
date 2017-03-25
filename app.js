@@ -3,6 +3,8 @@ var map;
 var mapSize = 12;
 var tiles;
 var turn = 0;
+var health = 2;
+var score = 0;
 
 for (var i = 0; i < mapSize * mapSize; i++) {
   board[i] = [];
@@ -96,12 +98,28 @@ function Item() {
   }
 }
 
-function Kobold() {
+function Hero() {
   Item.call(this);
 
   this.setTile = function(n) {
     if (board[n][0]) {
+      console.log("about to kill kobold at " + n);
+      board[n][0].die();
+    } else {
+      board[this.getTile()].pop(this);
+      board[n].push(this);
+    }
+  }
+}
+
+function Kobold (name) {
+  Item.call(this);
+  this.name = name;
+
+  this.setTile = function(n) {
+    if (board[n][0]) {
       console.log("hit!");
+      health--;
     } else {
       board[this.getTile()].pop(this);
       board[n].push(this);
@@ -236,58 +254,109 @@ function Kobold() {
     if (dd < d) {
       closer.push('moveDown');
     }
-    console.log(closer);
     this.moveWithOption(closer);
+  }
+
+  this.die = function() {
+    var killMe = this.name;
+    board[this.getTile()].splice(board[this.getTile])
+    KoboldFactory.allKobolds.splice(KoboldFactory.allKobolds.indexOf(this),1);
+    score++;
   }
 }
 
-var heroA = new Item();
+KoboldFactory = {
+  createKobold: function () {
+    var newKobold = {};
+    Kobold.apply(newKobold, arguments);
+    this.allKobolds.push(newKobold);
+    return newKobold;
+  },
+
+  allKobolds: [],
+
+  forEachKobold: function (action) {
+    for (var i = 0; i < this.allKobolds.length; i++){
+      action.call(this.allKobolds[i]);
+    }
+  }
+};
+
+var heroA = new Hero();
 heroA.char = 'a';
-var heroB = new Item();
+var heroB = new Hero();
 heroB.char = 'b';
-var kobold = new Kobold();
-kobold.char = 'k';
+KoboldFactory.createKobold("hi");
 
 function renderBoard() {
   map = document.getElementsByClassName("map")[0];
   map.innerHTML = '';
-  for (var i=0; i<board.length; i++) {
-    // for tiles that are populated, render their letters
-    if (board[i].length) {
-      map.innerHTML += board[i][0].char;
+  if (health > 0) {
+    map.innerHTML += health;
+  } else {
+    map.innerHTML += "0";
+  }
+  // map.innerHTML += "&nbsp";
+  if (score > 9) {
+    for (var i=0; i<mapSize-3; i++) {
+      map.innerHTML += "&nbsp;";
     }
-    // on even numbered turns, put '•' above and below hero A
-    else if (turn % 2 === 0 && (i === heroA.getTile() - mapSize || i === heroA.getTile() + mapSize)) {
-      map.innerHTML += '•';
-    }
-    // on odd numbered turns, put '•' above and below hero B
-    else if (i === heroB.getTile() - mapSize && (turn + 1) % 2 === 0 || i === heroB.getTile() + mapSize && (turn + 1) % 2 === 0) {
-      map.innerHTML += '•';
-    }
-    // on odd numbered turns, put '•' to the left and right of hero A
-    else if ((turn + 1) % 2 === 0 && (i === heroA.getTile() - 1 && (i + 1) % mapSize !== 0 || i === heroA.getTile() + 1 && i % mapSize !== 0)) {
-      map.innerHTML += '•';
-    }
-    // on odd numbered turns, put '•' to the left and right of hero B
-    else if (turn % 2 === 0 && (i === heroB.getTile() - 1 && (i + 1) % mapSize !== 0 || i === heroB.getTile() + 1 && i % mapSize !== 0)) {
-      map.innerHTML += '•';
-    }
-    // put '.' on empty tiles
-    else if (board[i].length === 0) {
-      map.innerHTML += '.';
-    }
-    // insert line breaks
-    if ((i + 1) % mapSize === 0) {
-      map.innerHTML += '<br>';
+  } else {
+    for (var i=0; i<mapSize-2; i++) {
+      map.innerHTML += "&nbsp;";
     }
   }
+  map.innerHTML += score + "<br><br>";
+  if (health < 1) {
+    for (var i=0; i<mapSize; i++) {
+      for (var j=0; j<mapSize; j++) {
+        map.innerHTML += "x";
+      }
+      map.innerHTML += "<br>";
+    }
+  } else {
+    for (var i=0; i<board.length; i++) {
+      // for tiles that are populated, render their letters
+      if (board[i].length) {
+        map.innerHTML += board[i][0].char;
+      }
+      // on even numbered turns, put '•' above and below hero A
+      else if (turn % 2 === 0 && (i === heroA.getTile() - mapSize || i === heroA.getTile() + mapSize)) {
+        map.innerHTML += '•';
+      }
+      // on odd numbered turns, put '•' above and below hero B
+      else if (i === heroB.getTile() - mapSize && (turn + 1) % 2 === 0 || i === heroB.getTile() + mapSize && (turn + 1) % 2 === 0) {
+        map.innerHTML += '•';
+      }
+      // on odd numbered turns, put '•' to the left and right of hero A
+      else if ((turn + 1) % 2 === 0 && (i === heroA.getTile() - 1 && (i + 1) % mapSize !== 0 || i === heroA.getTile() + 1 && i % mapSize !== 0)) {
+        map.innerHTML += '•';
+      }
+      // on odd numbered turns, put '•' to the left and right of hero B
+      else if (turn % 2 === 0 && (i === heroB.getTile() - 1 && (i + 1) % mapSize !== 0 || i === heroB.getTile() + 1 && i % mapSize !== 0)) {
+        map.innerHTML += '•';
+      }
+      // put '.' on empty tiles
+      else if (board[i].length === 0) {
+        map.innerHTML += '.';
+      }
+      // insert line breaks
+      if ((i + 1) % mapSize === 0) {
+        map.innerHTML += '<br>';
+      }
+    }
+  }
+  map.innerHTML += "<br><br>";
 }
 
 window.addEventListener("load", function(){
 
   heroA.deployToRandomEmptyTile();
   heroB.deployToRandomEmptyTile();
-  kobold.deployToRandomEmptyTile();
+  KoboldFactory.forEachKobold (function () { // forEach abstraction
+    this.deployToRandomEmptyTile();
+    this.char = "k";
+  });
   renderBoard();
 
   document.onkeydown = checkKey;
@@ -298,15 +367,19 @@ window.addEventListener("load", function(){
       if (turn%2 === 0) {
         if (heroA.moveUp()) {
           turn++;
-          kobold.pathfind();
-          renderBoard();
+          KoboldFactory.forEachKobold (function () { // forEach abstraction
+            console.log("about to move kobold from " + this.getTile());
+            this.pathfind();
+          });
         }
       }
       else {
         if (heroB.moveUp()) {
           turn++;
-          kobold.pathfind();
-          renderBoard();
+          KoboldFactory.forEachKobold (function () { // forEach abstraction
+            console.log("about to move kobold from " + this.getTile());
+            this.pathfind();
+          });
         }
       }
     }
@@ -314,15 +387,19 @@ window.addEventListener("load", function(){
       if (turn%2 === 0) {
         if (heroA.moveDown()) {
           turn++;
-          kobold.pathfind();
-          renderBoard();
+          KoboldFactory.forEachKobold (function () { // forEach abstraction
+            console.log("about to move kobold from " + this.getTile());
+            this.pathfind();
+          });
         }
       }
       else {
         if (heroB.moveDown()) {
           turn++;
-          kobold.pathfind();
-          renderBoard();
+          KoboldFactory.forEachKobold (function () { // forEach abstraction
+            console.log("about to move kobold from " + this.getTile());
+            this.pathfind();
+          });
         }
       }
     }
@@ -330,15 +407,19 @@ window.addEventListener("load", function(){
       if (turn%2 === 0) {
         if (heroB.moveLeft()) {
           turn++;
-          kobold.pathfind();
-          renderBoard();
+          KoboldFactory.forEachKobold (function () { // forEach abstraction
+            console.log("about to move kobold from " + this.getTile());
+            this.pathfind();
+          });
         }
       }
       else {
         if (heroA.moveLeft()) {
           turn++;
-          kobold.pathfind();
-          renderBoard();
+          KoboldFactory.forEachKobold (function () { // forEach abstraction
+            console.log("about to move kobold from " + this.getTile());
+            this.pathfind();
+          });
         }
       }
     }
@@ -346,17 +427,33 @@ window.addEventListener("load", function(){
       if (turn%2 === 0) {
         if (heroB.moveRight()) {
           turn++;
-          kobold.pathfind();
-          renderBoard();
+          KoboldFactory.forEachKobold (function () { // forEach abstraction
+            console.log("about to move kobold from " + this.getTile());
+            this.pathfind();
+          });
         }
       }
       else {
         if (heroA.moveRight()) {
           turn++;
-          kobold.pathfind();
-          renderBoard();
+          KoboldFactory.forEachKobold (function () { // forEach abstraction
+            console.log("about to move kobold from " + this.getTile());
+            this.pathfind();
+          });
         }
       }
     }
+    if (e.keyCode == '37' || e.keyCode == '38' || e.keyCode == '39' || e.keyCode == '40') {
+      if (turn%3 === 0) {
+        KoboldFactory.createKobold(turn);
+        KoboldFactory.forEachKobold (function () { // forEach abstraction
+          if(!this.getTile()) {
+            this.deployToRandomEmptyTile();
+            this.char = "k";
+          }
+        });
+      }
+    }
+    renderBoard();
   }
 });
