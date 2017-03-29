@@ -1,9 +1,9 @@
 var board = [];
 var map;
-var mapSize = 12;
+var mapSize = 6;
 var tiles;
 var turn = 0;
-var health = 2;
+var health = 3;
 var score = 0;
 
 for (var i = 0; i < mapSize * mapSize; i++) {
@@ -29,13 +29,31 @@ function getRow(n) {
 function Item() {
 
   this.deployToRandomEmptyTile = function() {
-    emptyTiles = [];
+    var emptyTiles = [];
     for (var i=0; i<board.length; i++) {
       if (board[i].length === 0) {
         emptyTiles.push(board[i]);
       }
     }
     emptyTiles[Math.floor(Math.random()*emptyTiles.length)].push(this);
+  }
+
+  this.deployToRandomEmptyCorner = function() {
+    // list corners
+    var corners = [
+      0,
+      mapSize - 1,
+      mapSize * mapSize - 1,
+      mapSize * mapSize - mapSize,
+    ];
+    console.log("corners = " + corners);
+    var emptyCorners = [];
+    for (var i=0; i<4; i++) {
+      if (board[corners[i]].length == 0) {
+        emptyCorners.push(board[corners[i]]);
+      }
+    }
+    emptyCorners[Math.floor(Math.random()*emptyCorners.length)].push(this);
   }
 
   this.getTile = function() {
@@ -101,14 +119,72 @@ function Item() {
 function Hero() {
   Item.call(this);
 
-  this.setTile = function(n) {
-    if (board[n][0]) {
-      console.log("about to kill kobold at " + n);
-      board[n][0].die();
-    } else {
-      board[this.getTile()].pop(this);
-      board[n].push(this);
+  this.moveSequence = function(d,t) {
+    try {
+      if (board[d][0].char == "k") {
+        board[d][0].die();
+        return true;
+      }
+    } catch (e) {
+      try {
+        if (board[t][0].char == "k") {
+          board[t][0].die();
+          this.setTile(d);
+          return true;
+        }
+      } catch (e) {
+        if (d) {
+          this.setTile(d);
+          return true;
+        } else {
+          return false;
+        }
+      }
     }
+  }
+
+  this.moveLeft = function() {
+    var c = this.getCol();
+    if (c > 0) {
+      var d = this.getTile() - 1;
+    }
+    if (c > 1) {
+      var t = this.getTile() - 2;
+    }
+    return this.moveSequence(d,t);
+  }
+
+  this.moveRight = function() {
+    var c = this.getCol();
+    if (c < mapSize-1) {
+      var d = this.getTile() + 1;
+    }
+    if (c < mapSize-2) {
+      var t = this.getTile() + 2;
+    }
+    return this.moveSequence(d,t);
+  }
+
+  this.moveUp = function() {
+    var c = this.getCol();
+    if (c > 0) {
+      var d = this.getTile() - mapSize;
+    }
+    if (c > 1) {
+      var t = this.getTile() - (mapSize*2);
+    }
+    return this.moveSequence(d,t);
+  }
+
+  this.moveDown = function() {
+    var c = this.getRow();
+    if (c < mapSize-1) {
+      var d = this.getTile() + mapSize;
+    }
+    if (c < mapSize-2) {
+      var t = this.getTile() + (mapSize*2);
+    }
+    return this.moveSequence(d,t);
   }
 }
 
@@ -354,7 +430,7 @@ window.addEventListener("load", function(){
   heroA.deployToRandomEmptyTile();
   heroB.deployToRandomEmptyTile();
   KoboldFactory.forEachKobold (function () { // forEach abstraction
-    this.deployToRandomEmptyTile();
+    this.deployToRandomEmptyCorner();
     this.char = "k";
   });
   renderBoard();
@@ -444,11 +520,11 @@ window.addEventListener("load", function(){
       }
     }
     if (e.keyCode == '37' || e.keyCode == '38' || e.keyCode == '39' || e.keyCode == '40') {
-      if (turn%3 === 0) {
+      if (turn%2 === 0) {
         KoboldFactory.createKobold(turn);
         KoboldFactory.forEachKobold (function () { // forEach abstraction
           if(!this.getTile()) {
-            this.deployToRandomEmptyTile();
+            this.deployToRandomEmptyCorner();
             this.char = "k";
           }
         });
