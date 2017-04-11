@@ -67,16 +67,16 @@ function Kobold (name) {
     }
 
     function lookAdjacentTiles(n) {
-      if (getCol(n) > 0) {
+      if (getColFromTile(n) > 0) {
         var l = n - 1;
       }
-      if (getCol(n) < mapSize - 1) {
+      if (getColFromTile(n) < mapSize - 1) {
         var r = n + 1;
       }
-      if (getRow(n) > 0) {
+      if (getRowFromTile(n) > 0) {
         var t = n - mapSize;
       }
-      if (getRow(n) < mapSize - 1) {
+      if (getRowFromTile(n) < mapSize - 1) {
         var b = n + mapSize;
       }
       if (l && isHeroInTile(l)) {
@@ -150,3 +150,22 @@ function Kobold (name) {
     score++;
   }
 }
+
+KoboldFactory = {
+  createKobold: function () {
+    var newKobold = {};
+    Kobold.apply(newKobold, arguments);
+    this.allKobolds.push(newKobold);
+    return newKobold;
+  },
+
+  allKobolds: [],
+
+  forEachKobold: function (action) {
+    for (var i = 0; i < this.allKobolds.length; i++){
+      action.call(this.allKobolds[i]);
+    }
+  }
+};
+
+KoboldFactory.createKobold("hi");

@@ -1,4 +1,4 @@
-function getCol(n) {
+function getColFromTile(n) {
   for (var i=0; i<mapSize; i++) {
     if ((n - i) % mapSize === 0) {
       return i;
@@ -6,30 +6,13 @@ function getCol(n) {
   }
 }
 
-function getRow(n) {
+function getRowFromTile(n) {
   for (var i=1; i<=mapSize; i++) {
     if (n < mapSize * i) {
       return i - 1;
     }
   }
 }
-
-KoboldFactory = {
-  createKobold: function () {
-    var newKobold = {};
-    Kobold.apply(newKobold, arguments);
-    this.allKobolds.push(newKobold);
-    return newKobold;
-  },
-
-  allKobolds: [],
-
-  forEachKobold: function (action) {
-    for (var i = 0; i < this.allKobolds.length; i++){
-      action.call(this.allKobolds[i]);
-    }
-  }
-};
 
 function renderBoard() {
   map = document.getElementsByClassName("map")[0];
@@ -91,5 +74,3 @@ function renderBoard() {
   }
   map.innerHTML += "<br><br>";
 }
-
-KoboldFactory.createKobold("hi");
