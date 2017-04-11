@@ -38,10 +38,10 @@ function Hero() {
 
   this.moveRight = function() {
     var c = this.getCol();
-    if (c < mapSize-1) {
+    if (c < boardSize-1) {
       var d = this.getTile() + 1;
     }
-    if (c < mapSize-2) {
+    if (c < boardSize-2) {
       var t = this.getTile() + 2;
     }
     return this.moveSequence(d,t);
@@ -50,22 +50,27 @@ function Hero() {
   this.moveUp = function() {
     var c = this.getRow();
     if (c > 0) {
-      var d = this.getTile() - mapSize;
+      var d = this.getTile() - boardSize;
     }
     if (c > 1) {
-      var t = this.getTile() - (mapSize*2);
+      var t = this.getTile() - (boardSize*2);
     }
     return this.moveSequence(d,t);
   }
 
   this.moveDown = function() {
     var c = this.getRow();
-    if (c < mapSize-1) {
-      var d = this.getTile() + mapSize;
+    if (c < boardSize-1) {
+      var d = this.getTile() + boardSize;
     }
-    if (c < mapSize-2) {
-      var t = this.getTile() + (mapSize*2);
+    if (c < boardSize-2) {
+      var t = this.getTile() + (boardSize*2);
     }
     return this.moveSequence(d,t);
   }
 }
+
+var heroA = new Hero();
+var heroB = new Hero();
+heroA.char = 'a';
+heroB.char = 'b';

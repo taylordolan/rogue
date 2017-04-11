@@ -25,20 +25,20 @@ function Kobold (name) {
   }
 
   this.distanceToHeroRight = function() {
-    if (this.getCol() < mapSize - 1) {
+    if (this.getCol() < boardSize - 1) {
       return this.distanceToHero(this.getTile() + 1);
     }
   }
 
   this.distanceToHeroUp = function() {
     if (this.getRow() > 0) {
-      return this.distanceToHero(this.getTile() - mapSize);
+      return this.distanceToHero(this.getTile() - boardSize);
     }
   }
 
   this.distanceToHeroDown = function() {
-    if (this.getRow() < mapSize - 1) {
-      return this.distanceToHero(this.getTile() + mapSize);
+    if (this.getRow() < boardSize - 1) {
+      return this.distanceToHero(this.getTile() + boardSize);
     }
   }
 
@@ -70,14 +70,14 @@ function Kobold (name) {
       if (getColFromTile(n) > 0) {
         var l = n - 1;
       }
-      if (getColFromTile(n) < mapSize - 1) {
+      if (getColFromTile(n) < boardSize - 1) {
         var r = n + 1;
       }
       if (getRowFromTile(n) > 0) {
-        var t = n - mapSize;
+        var t = n - boardSize;
       }
-      if (getRowFromTile(n) < mapSize - 1) {
-        var b = n + mapSize;
+      if (getRowFromTile(n) < boardSize - 1) {
+        var b = n + boardSize;
       }
       if (l && isHeroInTile(l)) {
         found = true;
@@ -107,7 +107,7 @@ function Kobold (name) {
 
     // put it all together
     return (function() {
-      for (var i=0; i<mapSize*mapSize; i++) {
+      for (var i=0; i<boardSize*boardSize; i++) {
         var temp = lookedTiles.length;
         for (var j=0; j<temp; j++) {
           lookAdjacentTiles(lookedTiles[j]);

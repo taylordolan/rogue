@@ -14,9 +14,9 @@ function Item() {
     // list corners
     var corners = [
       0,
-      mapSize - 1,
-      mapSize * mapSize - 1,
-      mapSize * mapSize - mapSize,
+      boardSize - 1,
+      boardSize * boardSize - 1,
+      boardSize * boardSize - boardSize,
     ];
     console.log("corners = " + corners);
     var emptyCorners = [];
@@ -39,16 +39,16 @@ function Item() {
   }
 
   this.getCol = function() {
-    for (var i=0; i<mapSize; i++) {
-      if ((this.getTile() - i) % mapSize === 0) {
+    for (var i=0; i<boardSize; i++) {
+      if ((this.getTile() - i) % boardSize === 0) {
         return i;
       }
     }
   }
 
   this.getRow = function() {
-    for (var i=1; i<=mapSize; i++) {
-      if (this.getTile() < mapSize * i) {
+    for (var i=1; i<=boardSize; i++) {
+      if (this.getTile() < boardSize * i) {
         return i - 1;
       }
     }
@@ -60,7 +60,7 @@ function Item() {
   }
 
   this.moveRight = function() {
-    if (this.getCol() < mapSize - 1) {
+    if (this.getCol() < boardSize - 1) {
       this.setTile(this.getTile() + 1);
       return true;
     }
@@ -75,14 +75,14 @@ function Item() {
 
   this.moveUp = function() {
     if (this.getRow() > 0) {
-      this.setTile(this.getTile() - mapSize);
+      this.setTile(this.getTile() - boardSize);
       return true;
     }
   }
 
   this.moveDown = function() {
-    if (this.getRow() < mapSize - 1) {
-      this.setTile(this.getTile() + mapSize);
+    if (this.getRow() < boardSize - 1) {
+      this.setTile(this.getTile() + boardSize);
       return true;
     }
   }
