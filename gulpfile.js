@@ -6,7 +6,7 @@ var concat = require('gulp-concat');
 
 //concatenate and minify js files
 gulp.task('concat', function() {
-  return gulp.src(['js/vars.js', 'js/app.js'])
+  return gulp.src(['js/setup.js', 'js/functions.js', 'js/objects/*.js', 'js/app.js'])
     .pipe(concat('main.js'))
       .pipe(gulp.dest(''));
 });
