@@ -1,11 +1,3 @@
-var board = [];
-var map;
-var mapSize = 6;
-var tiles;
-var turn = 0;
-var health = 3;
-var score = 0;
-
 for (var i = 0; i < mapSize * mapSize; i++) {
   board[i] = [];
 }
@@ -166,7 +158,7 @@ function Hero() {
   }
 
   this.moveUp = function() {
-    var c = this.getCol();
+    var c = this.getRow();
     if (c > 0) {
       var d = this.getTile() - mapSize;
     }
