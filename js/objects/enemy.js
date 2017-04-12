@@ -1,4 +1,4 @@
-function Kobold (name) {
+function Enemy (name) {
 
   Item.call(this);
   this.name = name;
@@ -147,27 +147,27 @@ function Kobold (name) {
   this.die = function() {
     var killMe = this.name;
     board[this.getTile()].splice(board[this.getTile])
-    KoboldFactory.allKobolds.splice(KoboldFactory.allKobolds.indexOf(this),1);
+    EnemyFactory.allEnemys.splice(EnemyFactory.allEnemys.indexOf(this),1);
     score++;
   }
 }
 
-KoboldFactory = {
+EnemyFactory = {
 
-  createKobold: function () {
-    var newKobold = {};
-    Kobold.apply(newKobold, arguments);
-    this.allKobolds.push(newKobold);
-    return newKobold;
+  createEnemy: function () {
+    var newEnemy = {};
+    Enemy.apply(newEnemy, arguments);
+    this.allEnemys.push(newEnemy);
+    return newEnemy;
   },
 
-  allKobolds: [],
+  allEnemys: [],
 
-  forEachKobold: function (action) {
-    for (var i = 0; i < this.allKobolds.length; i++){
-      action.call(this.allKobolds[i]);
+  forEachEnemy: function (action) {
+    for (var i = 0; i < this.allEnemys.length; i++){
+      action.call(this.allEnemys[i]);
     }
   }
 };
 
-KoboldFactory.createKobold(turn);
+EnemyFactory.createEnemy(turn);

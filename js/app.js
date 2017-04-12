@@ -2,7 +2,7 @@ window.addEventListener("load", function() {
 
   heroA.deployToRandomEmptyTile();
   heroB.deployToRandomEmptyTile();
-  KoboldFactory.forEachKobold (function () {
+  EnemyFactory.forEachEnemy (function () {
     this.deployToRandomEmptyCorner();
     this.char = "k";
   });
@@ -17,7 +17,7 @@ window.addEventListener("load", function() {
       if (turn%2 === 0) {
         if (heroA.moveUp()) {
           turn++;
-          KoboldFactory.forEachKobold (function () {
+          EnemyFactory.forEachEnemy (function () {
             this.pathfind();
           });
         }
@@ -25,7 +25,7 @@ window.addEventListener("load", function() {
       else {
         if (heroB.moveUp()) {
           turn++;
-          KoboldFactory.forEachKobold (function () {
+          EnemyFactory.forEachEnemy (function () {
             this.pathfind();
           });
         }
@@ -36,7 +36,7 @@ window.addEventListener("load", function() {
       if (turn%2 === 0) {
         if (heroA.moveDown()) {
           turn++;
-          KoboldFactory.forEachKobold (function () {
+          EnemyFactory.forEachEnemy (function () {
             this.pathfind();
           });
         }
@@ -44,7 +44,7 @@ window.addEventListener("load", function() {
       else {
         if (heroB.moveDown()) {
           turn++;
-          KoboldFactory.forEachKobold (function () {
+          EnemyFactory.forEachEnemy (function () {
             this.pathfind();
           });
         }
@@ -55,7 +55,7 @@ window.addEventListener("load", function() {
       if (turn%2 === 0) {
         if (heroB.moveLeft()) {
           turn++;
-          KoboldFactory.forEachKobold (function () {
+          EnemyFactory.forEachEnemy (function () {
             this.pathfind();
           });
         }
@@ -63,7 +63,7 @@ window.addEventListener("load", function() {
       else {
         if (heroA.moveLeft()) {
           turn++;
-          KoboldFactory.forEachKobold (function () {
+          EnemyFactory.forEachEnemy (function () {
             this.pathfind();
           });
         }
@@ -74,7 +74,7 @@ window.addEventListener("load", function() {
       if (turn%2 === 0) {
         if (heroB.moveRight()) {
           turn++;
-          KoboldFactory.forEachKobold (function () {
+          EnemyFactory.forEachEnemy (function () {
             this.pathfind();
           });
         }
@@ -82,7 +82,7 @@ window.addEventListener("load", function() {
       else {
         if (heroA.moveRight()) {
           turn++;
-          KoboldFactory.forEachKobold (function () {
+          EnemyFactory.forEachEnemy (function () {
             this.pathfind();
           });
         }
@@ -90,8 +90,8 @@ window.addEventListener("load", function() {
     }
     if (e.keyCode == '37' || e.keyCode == '38' || e.keyCode == '39' || e.keyCode == '40') {
       if (turn%2 === 0) {
-        KoboldFactory.createKobold(turn);
-        KoboldFactory.forEachKobold (function () {
+        EnemyFactory.createEnemy(turn);
+        EnemyFactory.forEachEnemy (function () {
           if(!this.getTile()) {
             this.deployToRandomEmptyCorner();
             this.char = "k";
