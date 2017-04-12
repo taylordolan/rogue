@@ -18,7 +18,6 @@ function Item() {
       boardSize * boardSize - 1,
       boardSize * boardSize - boardSize,
     ];
-    console.log("corners = " + corners);
     var emptyCorners = [];
     for (var i=0; i<4; i++) {
       if (board[corners[i]].length == 0) {

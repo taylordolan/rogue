@@ -1,4 +1,5 @@
 function Kobold (name) {
+
   Item.call(this);
   this.name = name;
 
@@ -152,6 +153,7 @@ function Kobold (name) {
 }
 
 KoboldFactory = {
+
   createKobold: function () {
     var newKobold = {};
     Kobold.apply(newKobold, arguments);
@@ -168,4 +170,4 @@ KoboldFactory = {
   }
 };
 
-KoboldFactory.createKobold("hi");
+KoboldFactory.createKobold(turn);

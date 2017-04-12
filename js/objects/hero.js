@@ -1,4 +1,5 @@
 function Hero() {
+
   Item.call(this);
 
   this.moveSequence = function(d,t) {

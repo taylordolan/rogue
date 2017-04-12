@@ -7,32 +7,28 @@ function getColFromTile(n) {
 }
 
 function getRowFromTile(n) {
-  for (var i=1; i<=boardSize; i++) {
-    if (n < boardSize * i) {
-      return i - 1;
+  for (var i=0; i<boardSize; i++) {
+    if (n < boardSize * (i + 1)) {
+      return i;
     }
   }
 }
 
 function renderBoard() {
-  boardElement = document.getElementsByClassName("board")[0];
+  // reset score contents
+  scoreElement.innerHTML = '';
+  scoreElement.innerHTML += health;
+  for (var i=0; i<boardSize-3; i++) {
+    scoreElement.innerHTML += "&nbsp;";
+  }
+  if (score < 9) {
+    scoreElement.innerHTML += "&nbsp;";
+  }
+  scoreElement.innerHTML += score;
+  scoreElement.innerHTML += "<br><br>";
+
+  // reset board contents
   boardElement.innerHTML = '';
-  if (health > 0) {
-    boardElement.innerHTML += health;
-  } else {
-    boardElement.innerHTML += "0";
-  }
-  // boardElement.innerHTML += "&nbsp";
-  if (score > 9) {
-    for (var i=0; i<boardSize-3; i++) {
-      boardElement.innerHTML += "&nbsp;";
-    }
-  } else {
-    for (var i=0; i<boardSize-2; i++) {
-      boardElement.innerHTML += "&nbsp;";
-    }
-  }
-  boardElement.innerHTML += score + "<br><br>";
   if (health < 1) {
     for (var i=0; i<boardSize; i++) {
       for (var j=0; j<boardSize; j++) {
