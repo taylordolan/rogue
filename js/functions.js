@@ -17,11 +17,16 @@ function getRowFromTile(n) {
 function renderBoard() {
   // reset score contents
   scoreElement.innerHTML = '';
-  scoreElement.innerHTML += health;
+  if (health < 1) {
+    scoreElement.innerHTML += "0";
+  }
+  else {
+    scoreElement.innerHTML += health;
+  }
   for (var i=0; i<boardSize-3; i++) {
     scoreElement.innerHTML += "&nbsp;";
   }
-  if (score < 9) {
+  if (score < 10) {
     scoreElement.innerHTML += "&nbsp;";
   }
   scoreElement.innerHTML += score;

@@ -1,6 +1,6 @@
 var board = [];
 var boardElement = document.getElementsByClassName("board")[0];
-var boardSize = 4;
+var boardSize = 6;
 var health = 3;
 var score = 0;
 var scoreElement = document.getElementsByClassName("score")[0];
