@@ -1,5 +1,6 @@
 window.addEventListener("load", function() {
 
+  ship.deployToCenterTile();
   heroA.deployToRandomEmptyTile();
   heroB.deployToRandomEmptyTile();
   EnemyFactory.forEachEnemy (function () {

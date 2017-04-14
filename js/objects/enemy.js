@@ -5,7 +5,6 @@ function Enemy (name) {
 
   this.setTile = function(n) {
     if (board[n][0]) {
-      console.log("hit!");
       health--;
     } else {
       board[this.getTile()].pop(this);
