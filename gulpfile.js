@@ -13,7 +13,7 @@ gulp.task('concat', function() {
 
 // watch js files
 gulp.task('watch', function() {
-  gulp.watch('js/*.js', ['concat']);
+  gulp.watch('js/**/*.js', ['concat']);
 });
 
 // default task
