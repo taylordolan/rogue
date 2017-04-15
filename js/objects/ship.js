@@ -7,7 +7,7 @@ function Ship() {
     board[destination].push(this);
   }
 
-  this.char = 's';
+  this.char = 'A';
 }
 
 var ship = new Ship();

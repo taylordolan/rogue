@@ -2,6 +2,10 @@ function Enemy (name) {
 
   Item.call(this);
   this.name = name;
+  this.char = "e";
+  this.target = function() {
+    return 1;
+  }
 
   this.setTile = function(n) {
     if (board[n][0]) {
@@ -20,25 +24,25 @@ function Enemy (name) {
 
   this.distanceToTileStartingLeft = function() {
     if (this.getCol() > 0) {
-      return this.distanceToTile(this.getTile() - 1, ship.getTile());
+      return this.distanceToTile(this.getTile() - 1, this.target());
     }
   }
 
   this.distanceToTileStartingRight = function() {
     if (this.getCol() < boardSize - 1) {
-      return this.distanceToTile(this.getTile() + 1, ship.getTile());
+      return this.distanceToTile(this.getTile() + 1, this.target());
     }
   }
 
   this.distanceToTileStartingUp = function() {
     if (this.getRow() > 0) {
-      return this.distanceToTile(this.getTile() - boardSize, ship.getTile());
+      return this.distanceToTile(this.getTile() - boardSize, this.target());
     }
   }
 
   this.distanceToTileStartingDown = function() {
     if (this.getRow() < boardSize - 1) {
-      return this.distanceToTile(this.getTile() + boardSize, ship.getTile());
+      return this.distanceToTile(this.getTile() + boardSize, this.target());
     }
   }
 
@@ -48,7 +52,7 @@ function Enemy (name) {
     lookedTiles = [];
     lookedTiles.push (startTile);
 
-    if (startTile === heroA.getTile() || startTile === heroB.getTile()) {
+    if (startTile == endTile) {
       return 0;
     }
 
@@ -121,7 +125,7 @@ function Enemy (name) {
   }
 
   this.pathfind = function() {
-    var d = this.distanceToTile(this.getTile(), ship.getTile());
+    var d = this.distanceToTile(this.getTile(), this.target());
     var dl = this.distanceToTileStartingLeft();
     var dr = this.distanceToTileStartingRight();
     var du = this.distanceToTileStartingUp();
@@ -144,9 +148,8 @@ function Enemy (name) {
   }
 
   this.die = function() {
-    var killMe = this.name;
     board[this.getTile()].splice(board[this.getTile])
-    EnemyFactory.allEnemys.splice(EnemyFactory.allEnemys.indexOf(this),1);
+    EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
     score++;
   }
 }
@@ -156,18 +159,15 @@ EnemyFactory = {
   createEnemy: function () {
     var newEnemy = {};
     Enemy.apply(newEnemy, arguments);
-    this.allEnemys.push(newEnemy);
+    this.allEnemies.push(newEnemy);
     return newEnemy;
   },
 
-  allEnemys: [],
+  allEnemies: [],
 
   forEachEnemy: function (action) {
-    for (var i = 0; i < this.allEnemys.length; i++){
-      action.call(this.allEnemys[i]);
+    for (var i = 0; i < this.allEnemies.length; i++){
+      action.call(this.allEnemies[i]);
     }
   }
 };
-
-// create first enemy
-EnemyFactory.createEnemy(turn);

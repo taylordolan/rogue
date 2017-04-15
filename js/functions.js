@@ -14,6 +14,16 @@ function getRowFromTile(n) {
   }
 }
 
+function createRandomEnemy() {
+  var flip = Math.floor(Math.random() * 2);
+  if (flip) {
+    ShipHunterFactory.createShipHunter();
+  }
+  else {
+    HeroHunterFactory.createHeroHunter();
+  }
+}
+
 function renderBoard() {
   // reset score contents
   scoreElement.innerHTML = '';

@@ -4,13 +4,13 @@ function Hero() {
 
   this.moveSequence = function(d,t) {
     try {
-      if (board[d][0].char == "k") {
+      if (board[d][0].char == "s" || board[d][0].char == "h") {
         board[d][0].die();
         return true;
       }
     } catch (e) {
       try {
-        if (board[t][0].char == "k") {
+        if (board[t][0].char == "s" || board[t][0].char == "h") {
           board[t][0].die();
           this.setTile(d);
           return true;
