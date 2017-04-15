@@ -18,31 +18,31 @@ function Enemy (name) {
     this[array[option]]();
   }
 
-  this.distanceToHeroLeft = function() {
+  this.distanceToTileStartingLeft = function() {
     if (this.getCol() > 0) {
-      return this.distanceToHero(this.getTile() - 1);
+      return this.distanceToTile(this.getTile() - 1, ship.getTile());
     }
   }
 
-  this.distanceToHeroRight = function() {
+  this.distanceToTileStartingRight = function() {
     if (this.getCol() < boardSize - 1) {
-      return this.distanceToHero(this.getTile() + 1);
+      return this.distanceToTile(this.getTile() + 1, ship.getTile());
     }
   }
 
-  this.distanceToHeroUp = function() {
+  this.distanceToTileStartingUp = function() {
     if (this.getRow() > 0) {
-      return this.distanceToHero(this.getTile() - boardSize);
+      return this.distanceToTile(this.getTile() - boardSize, ship.getTile());
     }
   }
 
-  this.distanceToHeroDown = function() {
+  this.distanceToTileStartingDown = function() {
     if (this.getRow() < boardSize - 1) {
-      return this.distanceToHero(this.getTile() + boardSize);
+      return this.distanceToTile(this.getTile() + boardSize, ship.getTile());
     }
   }
 
-  this.distanceToHero = function(startTile) {
+  this.distanceToTile = function(startTile, endTile) {
     var steps = 0;
     var found = false;
     lookedTiles = [];
@@ -52,8 +52,8 @@ function Enemy (name) {
       return 0;
     }
 
-    function isHeroInTile(n) {
-      if (board[n][0] === heroA || board[n][0] === heroB) {
+    function isDestination(tile) {
+      if (tile == endTile) {
         return true;
       }
     }
@@ -79,25 +79,25 @@ function Enemy (name) {
       if (getRowFromTile(n) < boardSize - 1) {
         var b = n + boardSize;
       }
-      if (l && isHeroInTile(l)) {
+      if (l && isDestination(l)) {
         found = true;
       }
       if (l && !isInLookedTiles(l)) {
         lookedTiles.push(l);
       }
-      if (r && isHeroInTile(r)) {
+      if (r && isDestination(r)) {
         found = true;
       }
       if (r && !isInLookedTiles(r)) {
         lookedTiles.push(r);
       }
-      if (t && isHeroInTile(t)) {
+      if (t && isDestination(t)) {
         found = true;
       }
       if (t && !isInLookedTiles(t)) {
         lookedTiles.push(t);
       }
-      if (b && isHeroInTile(b)) {
+      if (b && isDestination(b)) {
         found = true;
       }
       if (b && !isInLookedTiles(b)) {
@@ -121,11 +121,11 @@ function Enemy (name) {
   }
 
   this.pathfind = function() {
-    var d = this.distanceToHero(this.getTile());
-    var dl = this.distanceToHeroLeft();
-    var dr = this.distanceToHeroRight();
-    var du = this.distanceToHeroUp();
-    var dd = this.distanceToHeroDown();
+    var d = this.distanceToTile(this.getTile(), ship.getTile());
+    var dl = this.distanceToTileStartingLeft();
+    var dr = this.distanceToTileStartingRight();
+    var du = this.distanceToTileStartingUp();
+    var dd = this.distanceToTileStartingDown();
     var closer = [];
 
     if (dl < d) {
@@ -169,4 +169,5 @@ EnemyFactory = {
   }
 };
 
+// create first enemy
 EnemyFactory.createEnemy(turn);

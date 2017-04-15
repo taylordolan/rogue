@@ -90,7 +90,7 @@ window.addEventListener("load", function() {
       }
     }
     if (e.keyCode == '37' || e.keyCode == '38' || e.keyCode == '39' || e.keyCode == '40') {
-      if (turn%2 === 0) {
+      if (turn%6 === 0) {
         EnemyFactory.createEnemy(turn);
         EnemyFactory.forEachEnemy (function () {
           if(!this.getTile()) {
