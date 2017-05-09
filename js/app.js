@@ -4,16 +4,7 @@ window.addEventListener("load", function() {
   heroA.deployToRandomEmptyTile();
   heroB.deployToRandomEmptyTile();
   createRandomEnemy();
-  ShipHunterFactory.forEachShipHunter (function () {
-    if(!this.getTile()) {
-      this.deployToRandomEmptyCorner();
-    }
-  });
-  HeroHunterFactory.forEachHeroHunter (function () {
-    if(!this.getTile()) {
-      this.deployToRandomEmptyCorner();
-    }
-  });
+  generateWalls()
   renderBoard();
 
   document.onkeydown = checkKey;
@@ -24,7 +15,6 @@ window.addEventListener("load", function() {
     if (e.keyCode == '38') {
       if (turn%2 === 0) {
         if (heroA.moveUp()) {
-          turn++;
           ShipHunterFactory.forEachShipHunter (function () {
             this.pathfind();
           });
@@ -35,7 +25,6 @@ window.addEventListener("load", function() {
       }
       else {
         if (heroB.moveUp()) {
-          turn++;
           ShipHunterFactory.forEachShipHunter (function () {
             this.pathfind();
           });
@@ -49,7 +38,6 @@ window.addEventListener("load", function() {
     else if (e.keyCode == '40') {
       if (turn%2 === 0) {
         if (heroA.moveDown()) {
-          turn++;
           ShipHunterFactory.forEachShipHunter (function () {
             this.pathfind();
           });
@@ -60,7 +48,6 @@ window.addEventListener("load", function() {
       }
       else {
         if (heroB.moveDown()) {
-          turn++;
           ShipHunterFactory.forEachShipHunter (function () {
             this.pathfind();
           });
@@ -74,7 +61,6 @@ window.addEventListener("load", function() {
     else if (e.keyCode == '37') {
       if (turn%2 === 0) {
         if (heroB.moveLeft()) {
-          turn++;
           ShipHunterFactory.forEachShipHunter (function () {
             this.pathfind();
           });
@@ -85,7 +71,6 @@ window.addEventListener("load", function() {
       }
       else {
         if (heroA.moveLeft()) {
-          turn++;
           ShipHunterFactory.forEachShipHunter (function () {
             this.pathfind();
           });
@@ -99,7 +84,6 @@ window.addEventListener("load", function() {
     else if (e.keyCode == '39') {
       if (turn%2 === 0) {
         if (heroB.moveRight()) {
-          turn++;
           ShipHunterFactory.forEachShipHunter (function () {
             this.pathfind();
           });
@@ -110,7 +94,6 @@ window.addEventListener("load", function() {
       }
       else {
         if (heroA.moveRight()) {
-          turn++;
           ShipHunterFactory.forEachShipHunter (function () {
             this.pathfind();
           });
@@ -121,18 +104,8 @@ window.addEventListener("load", function() {
       }
     }
     if (e.keyCode == '37' || e.keyCode == '38' || e.keyCode == '39' || e.keyCode == '40') {
-      if (turn%4 === 0) {
+      if (turn && turn%4 === 0) {
         createRandomEnemy();
-        ShipHunterFactory.forEachShipHunter (function () {
-          if(!this.getTile()) {
-            this.deployToRandomEmptyCorner();
-          }
-        });
-        HeroHunterFactory.forEachHeroHunter (function () {
-          if(!this.getTile()) {
-            this.deployToRandomEmptyCorner();
-          }
-        });
       }
     }
     renderBoard();

@@ -22,6 +22,16 @@ function createRandomEnemy() {
   else {
     HeroHunterFactory.createHeroHunter();
   }
+  ShipHunterFactory.forEachShipHunter (function () {
+    if(!this.getTile()) {
+      this.deployToRandomEmptyCorner();
+    }
+  });
+  HeroHunterFactory.forEachHeroHunter (function () {
+    if(!this.getTile()) {
+      this.deployToRandomEmptyCorner();
+    }
+  });
 }
 
 function renderBoard() {

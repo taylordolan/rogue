@@ -1,28 +1,29 @@
 function Hero() {
 
   Item.call(this);
+  this.hasHealth = true;
 
   this.moveSequence = function(d,t) {
-    try {
-      if (board[d][0].char == "s" || board[d][0].char == "h") {
-        board[d][0].die();
-        return true;
-      }
-    } catch (e) {
-      try {
-        if (board[t][0].char == "s" || board[t][0].char == "h") {
-          board[t][0].die();
-          this.setTile(d);
-          return true;
-        }
-      } catch (e) {
-        if (d) {
-          this.setTile(d);
-          return true;
-        } else {
-          return false;
-        }
-      }
+    if (board[d][0] && board[d][0].type === "enemy") {
+      board[d][0].die();
+      turn++;
+      return true;
+    }
+    else if (board[t][0] && board[t][0].type === "enemy") {
+      board[t][0].die();
+      turn++;
+      return true;
+    }
+    else if (board[d][0] && board[d][0].solid) {
+      return false;
+    }
+    else if (d) {
+      this.setTile(d);
+      turn++;
+      return true;
+    }
+    else {
+      return false;
     }
   }
 
@@ -39,7 +40,7 @@ function Hero() {
 
   this.moveRight = function() {
     var c = this.getCol();
-    if (c < boardSize-1) {
+    if (c < boardSize) {
       var d = this.getTile() + 1;
     }
     if (c < boardSize-2) {

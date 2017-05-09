@@ -8,9 +8,14 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (board[n][0]) {
+    if (board[n][0] && board[n][0].hasHealth) {
       health--;
-    } else {
+    }
+    else if (board[n][0] && board[n][0].solid) {
+      console.log("enemy hit a wall")
+      return true;
+    }
+    else {
       board[this.getTile()].pop(this);
       board[n].push(this);
     }

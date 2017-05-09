@@ -7,7 +7,9 @@ function Ship() {
     board[destination].push(this);
   }
 
-  this.char = 'A';
+  this.char = '∆';
+  this.solid = true;
+  this.hasHealth = true;
 }
 
 var ship = new Ship();
