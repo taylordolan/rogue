@@ -12,7 +12,6 @@ function Enemy (name) {
       health--;
     }
     else if (board[n][0] && board[n][0].solid) {
-      console.log("enemy hit a wall")
       return true;
     }
     else {
@@ -55,7 +54,7 @@ function Enemy (name) {
     var steps = 0;
     var found = false;
     lookedTiles = [];
-    lookedTiles.push (startTile);
+    lookedTiles.push(startTile);
 
     if (startTile == endTile) {
       return 0;
@@ -76,16 +75,17 @@ function Enemy (name) {
     }
 
     function lookAdjacentTiles(n) {
-      if (getColFromTile(n) > 0) {
+
+      if (getColFromTile(n) > 0 && !isWall(n-1)) {
         var l = n - 1;
       }
-      if (getColFromTile(n) < boardSize - 1) {
+      if (getColFromTile(n) < boardSize - 1 && !isWall(n+1)) {
         var r = n + 1;
       }
-      if (getRowFromTile(n) > 0) {
+      if (getRowFromTile(n) > 0 && !isWall(n-boardSize)) {
         var t = n - boardSize;
       }
-      if (getRowFromTile(n) < boardSize - 1) {
+      if (getRowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
         var b = n + boardSize;
       }
       if (l && isDestination(l)) {
@@ -131,10 +131,18 @@ function Enemy (name) {
 
   this.pathfind = function() {
     var d = this.distanceToTile(this.getTile(), this.target());
-    var dl = this.distanceToTileStartingLeft();
-    var dr = this.distanceToTileStartingRight();
-    var du = this.distanceToTileStartingUp();
-    var dd = this.distanceToTileStartingDown();
+    if (getColFromTile(this.getTile()) > 0 && !isWall(this.getTile()-1)) {
+      var dl = this.distanceToTileStartingLeft();
+    }
+    if (getColFromTile(this.getTile()) < boardSize - 1 && !isWall(this.getTile()+1)) {
+      var dr = this.distanceToTileStartingRight();
+    }
+    if (getRowFromTile(this.getTile()) > 0 && !isWall(this.getTile()-boardSize)) {
+      var du = this.distanceToTileStartingUp();
+    }
+    if (getRowFromTile(this.getTile()) < boardSize - 1 && !isWall(this.getTile()+boardSize)) {
+      var dd = this.distanceToTileStartingDown();
+    }
     var closer = [];
 
     if (dl < d) {

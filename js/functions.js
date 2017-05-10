@@ -14,6 +14,17 @@ function getRowFromTile(n) {
   }
 }
 
+function isWall(tile) {
+  if (board[tile]) {
+    if (board[tile][0] && board[tile][0].char === "×") {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+}
+
 function createRandomEnemy() {
   var flip = Math.floor(Math.random() * 2);
   if (flip) {

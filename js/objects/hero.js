@@ -43,7 +43,7 @@ function Hero() {
     if (c < boardSize) {
       var d = this.getTile() + 1;
     }
-    if (c < boardSize-2) {
+    if (c < boardSize-1) {
       var t = this.getTile() + 2;
     }
     return this.moveSequence(d,t);
