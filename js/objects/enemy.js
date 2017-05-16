@@ -57,7 +57,7 @@ function Enemy (name) {
     lookedTiles.push(startTile);
 
     if (startTile == endTile) {
-      return 0;
+      return steps;
     }
 
     function isDestination(tile) {

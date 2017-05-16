@@ -4,7 +4,7 @@ window.addEventListener("load", function() {
   heroA.deployToRandomEmptyTile();
   heroB.deployToRandomEmptyTile();
   createRandomEnemy();
-  generateWalls()
+  generateWalls();
   renderBoard();
 
   document.onkeydown = checkKey;

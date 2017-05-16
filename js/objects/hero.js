@@ -11,6 +11,7 @@ function Hero() {
     }
     else if (board[t][0] && board[t][0].type === "enemy") {
       board[t][0].die();
+      this.setTile(d);
       turn++;
       return true;
     }
