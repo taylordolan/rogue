@@ -2,7 +2,7 @@ body {
   align-items: center;
   display: flex;
   flex-direction: column;
-  font-family: 'Nitti Basic', monospace;
+  font-family: monospace;
   font-size: 40px;
   height: 95vh;
   justify-content: center;
