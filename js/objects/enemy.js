@@ -130,34 +130,54 @@ function Enemy (name) {
   }
 
   this.pathfind = function() {
-    var d = this.distanceToTile(this.getTile(), this.target());
-    if (getColFromTile(this.getTile()) > 0 && !isWall(this.getTile()-1)) {
-      var dl = this.distanceToTileStartingLeft();
-    }
-    if (getColFromTile(this.getTile()) < boardSize - 1 && !isWall(this.getTile()+1)) {
-      var dr = this.distanceToTileStartingRight();
-    }
-    if (getRowFromTile(this.getTile()) > 0 && !isWall(this.getTile()-boardSize)) {
-      var du = this.distanceToTileStartingUp();
-    }
-    if (getRowFromTile(this.getTile()) < boardSize - 1 && !isWall(this.getTile()+boardSize)) {
-      var dd = this.distanceToTileStartingDown();
-    }
-    var closer = [];
 
-    if (dl < d) {
-      closer.push('moveLeft');
+    var here = this.getTile();
+
+    var inFirstCol = getColFromTile(here) === 0;
+    var inLastCol = getColFromTile(here) === boardSize - 1;
+    var inFirstRow = getRowFromTile(here) === 0;
+    var inLastRow = getRowFromTile(here) === boardSize - 1;
+
+    var adjacentUp = here - boardSize;
+    var adjacentDown = here + boardSize;
+    var adjacentLeft = here - 1;
+    var adjacentRight = here + 1;
+
+    var wallUp = isWall(adjacentUp);
+    var wallDown = isWall(adjacentDown);
+    var wallLeft = isWall(adjacentLeft);
+    var wallRight = isWall(adjacentRight);
+
+    if (!inFirstCol && !wallLeft) {
+      var distanceLeft = this.distanceToTileStartingLeft();
     }
-    if (dr < d) {
-      closer.push('moveRight');
+    if (!inLastRow && !wallDown) {
+      var distanceDown = this.distanceToTileStartingDown();
     }
-    if (du < d) {
-      closer.push('moveUp');
+    if (!inFirstRow && !wallUp) {
+      var distanceUp = this.distanceToTileStartingUp();
     }
-    if (dd < d) {
-      closer.push('moveDown');
+    if (!inLastCol && !wallRight) {
+      var distanceRight = this.distanceToTileStartingRight();
     }
-    this.moveWithOption(closer);
+
+    var validMoves = [];
+    var distanceHere = this.distanceToTile(here, this.target());
+
+    if (distanceUp < distanceHere) {
+      validMoves.push('moveUp');
+    }
+    if (distanceDown < distanceHere) {
+      validMoves.push('moveDown');
+    }
+    if (distanceLeft < distanceHere) {
+      validMoves.push('moveLeft');
+    }
+    if (distanceRight < distanceHere) {
+      validMoves.push('moveRight');
+    }
+
+    this.moveWithOption(validMoves);
   }
 
   this.die = function() {
