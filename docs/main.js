@@ -57,6 +57,130 @@ function createRandomEnemy() {
   });
 }
 
+// measures distance to between two tiles
+function distanceFromTo(start, end) {
+  var steps = 0;
+  var found = false;
+  lookedTiles = [];
+  lookedTiles.push(start);
+
+  if (start === end) {
+    return steps;
+  }
+
+  function isDestination(n) {
+    if (n === end) {
+      return true;
+    }
+  }
+
+  function isInLookedTiles(n) {
+    for (var i = 0; i < lookedTiles.length; i++) {
+      if (lookedTiles[i] === n) {
+        return true;
+      }
+    }
+  }
+
+  function lookAdjacentTiles(n) {
+
+    if (canMove("up", n)) {
+      var up = n - boardSize;
+    }
+    if (canMove("down", n)) {
+      var down = n + boardSize;
+    }
+    if (canMove("left", n)) {
+      var left = n - 1;
+    }
+    if (canMove("right", n)) {
+      var right = n + 1;
+    }
+
+    // TODO: I feel like this can be cleaned up by looping through an array?
+    if (left && isDestination(left)) {
+      found = true;
+    }
+    if (left && !isInLookedTiles(left)) {
+      lookedTiles.push(left);
+    }
+    if (right && isDestination(right)) {
+      found = true;
+    }
+    if (right && !isInLookedTiles(right)) {
+      lookedTiles.push(right);
+    }
+    if (up && isDestination(up)) {
+      found = true;
+    }
+    if (up && !isInLookedTiles(up)) {
+      lookedTiles.push(up);
+    }
+    if (down && isDestination(down)) {
+      found = true;
+    }
+    if (down && !isInLookedTiles(down)) {
+      lookedTiles.push(down);
+    }
+  }
+
+  // put it all together
+  return (function() {
+    for (var i=0; i<boardSize*boardSize; i++) {
+      var temp = lookedTiles.length;
+      for (var j=0; j<temp; j++) {
+        lookAdjacentTiles(lookedTiles[j]);
+      }
+      steps++;
+      if (found === true) {
+        return steps;
+      }
+    }
+  })()
+}
+
+function canMove(direction, start) {
+
+  var up = start - boardSize;
+  var down = start + boardSize;
+  var left = start - 1;
+  var right = start + 1;
+
+  // is this tile in the first/last row/column?
+  var inFirstCol = getColFromTile(start) === 0;
+  var inLastCol = getColFromTile(start) === boardSize - 1;
+  var inFirstRow = getRowFromTile(start) === 0;
+  var inLastRow = getRowFromTile(start) === boardSize - 1;
+
+  if (direction === "up") {
+    if (!inFirstRow && !isWall(up)) {
+      return true;
+    }
+    else return false;
+  }
+  else if (direction === "down") {
+    if (!inLastRow && !isWall(down)) {
+      return true;
+    }
+    else return false;
+  }
+  else if (direction === "left") {
+    if (!inFirstCol && !isWall(left)) {
+      return true;
+    }
+    else return false;
+  }
+  else if (direction === "right") {
+    if (!inLastCol && !isWall(right)) {
+      return true;
+    }
+    else return false;
+  }
+  else {
+    console.log("bad direction passed to canMove()");
+  }
+}
+
 function renderBoard() {
   // reset score contents
   scoreElement.innerHTML = '';
@@ -125,8 +249,8 @@ function HeroHunter (name) {
   this.type = "enemy";
   this.char = "h";
   this.target = function() {
-    var distA = (this.distanceToTile(this.getTile(), heroA.getTile()));
-    var distB = (this.distanceToTile(this.getTile(), heroB.getTile()));
+    var distA = (distanceFromTo(this.getTile(), heroA.getTile()));
+    var distB = (distanceFromTo(this.getTile(), heroB.getTile()));
     if (distA < distB) {
       return heroA.getTile();
     }
@@ -312,7 +436,7 @@ function Enemy (name) {
   this.name = name;
   this.char = "e";
   this.target = function() {
-    return 1;
+    return;
   }
 
   this.setTile = function(n) {
@@ -334,155 +458,30 @@ function Enemy (name) {
     this[array[option]]();
   }
 
-  this.distanceToTileStartingLeft = function() {
-    if (this.getCol() > 0) {
-      return this.distanceToTile(this.getTile() - 1, this.target());
-    }
-  }
-
-  this.distanceToTileStartingRight = function() {
-    if (this.getCol() < boardSize - 1) {
-      return this.distanceToTile(this.getTile() + 1, this.target());
-    }
-  }
-
-  this.distanceToTileStartingUp = function() {
-    if (this.getRow() > 0) {
-      return this.distanceToTile(this.getTile() - boardSize, this.target());
-    }
-  }
-
-  this.distanceToTileStartingDown = function() {
-    if (this.getRow() < boardSize - 1) {
-      return this.distanceToTile(this.getTile() + boardSize, this.target());
-    }
-  }
-
-  this.distanceToTile = function(startTile, endTile) {
-    var steps = 0;
-    var found = false;
-    lookedTiles = [];
-    lookedTiles.push(startTile);
-
-    if (startTile == endTile) {
-      return steps;
-    }
-
-    function isDestination(tile) {
-      if (tile == endTile) {
-        return true;
-      }
-    }
-
-    function isInLookedTiles(n) {
-      for (var i=0; i<lookedTiles.length; i++) {
-        if (lookedTiles[i] === n) {
-          return true;
-        }
-      }
-    }
-
-    function lookAdjacentTiles(n) {
-
-      if (getColFromTile(n) > 0 && !isWall(n-1)) {
-        var l = n - 1;
-      }
-      if (getColFromTile(n) < boardSize - 1 && !isWall(n+1)) {
-        var r = n + 1;
-      }
-      if (getRowFromTile(n) > 0 && !isWall(n-boardSize)) {
-        var t = n - boardSize;
-      }
-      if (getRowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
-        var b = n + boardSize;
-      }
-      if (l && isDestination(l)) {
-        found = true;
-      }
-      if (l && !isInLookedTiles(l)) {
-        lookedTiles.push(l);
-      }
-      if (r && isDestination(r)) {
-        found = true;
-      }
-      if (r && !isInLookedTiles(r)) {
-        lookedTiles.push(r);
-      }
-      if (t && isDestination(t)) {
-        found = true;
-      }
-      if (t && !isInLookedTiles(t)) {
-        lookedTiles.push(t);
-      }
-      if (b && isDestination(b)) {
-        found = true;
-      }
-      if (b && !isInLookedTiles(b)) {
-        lookedTiles.push(b);
-      }
-    }
-
-    // put it all together
-    return (function() {
-      for (var i=0; i<boardSize*boardSize; i++) {
-        var temp = lookedTiles.length;
-        for (var j=0; j<temp; j++) {
-          lookAdjacentTiles(lookedTiles[j]);
-        }
-        steps++;
-        if (found === true) {
-          return steps;
-        }
-      }
-    })()
-  }
-
   this.pathfind = function() {
 
+    // the 5 relevant tiles
     var here = this.getTile();
+    var up = here - boardSize;
+    var down = here + boardSize;
+    var left = here - 1;
+    var right = here + 1;
 
-    var inFirstCol = getColFromTile(here) === 0;
-    var inLastCol = getColFromTile(here) === boardSize - 1;
-    var inFirstRow = getRowFromTile(here) === 0;
-    var inLastRow = getRowFromTile(here) === boardSize - 1;
-
-    var adjacentUp = here - boardSize;
-    var adjacentDown = here + boardSize;
-    var adjacentLeft = here - 1;
-    var adjacentRight = here + 1;
-
-    var wallUp = isWall(adjacentUp);
-    var wallDown = isWall(adjacentDown);
-    var wallLeft = isWall(adjacentLeft);
-    var wallRight = isWall(adjacentRight);
-
-    if (!inFirstCol && !wallLeft) {
-      var distanceLeft = this.distanceToTileStartingLeft();
-    }
-    if (!inLastRow && !wallDown) {
-      var distanceDown = this.distanceToTileStartingDown();
-    }
-    if (!inFirstRow && !wallUp) {
-      var distanceUp = this.distanceToTileStartingUp();
-    }
-    if (!inLastCol && !wallRight) {
-      var distanceRight = this.distanceToTileStartingRight();
-    }
-
+    // this array will be populated with moves that will advance toward the target
     var validMoves = [];
-    var distanceHere = this.distanceToTile(here, this.target());
 
-    if (distanceUp < distanceHere) {
-      validMoves.push('moveUp');
+    // TODO: put this in a function isLeftCloser(), etc.
+    if (canMove("up", here) && distanceFromTo(up, this.target()) < distanceFromTo(here, this.target())) {
+      validMoves.push("moveUp");
     }
-    if (distanceDown < distanceHere) {
-      validMoves.push('moveDown');
+    if (canMove("down", here) && distanceFromTo(down, this.target()) < distanceFromTo(here, this.target())) {
+      validMoves.push("moveDown");
     }
-    if (distanceLeft < distanceHere) {
-      validMoves.push('moveLeft');
+    if (canMove("left", here) && distanceFromTo(left, this.target()) < distanceFromTo(here, this.target())) {
+      validMoves.push("moveLeft");
     }
-    if (distanceRight < distanceHere) {
-      validMoves.push('moveRight');
+    if (canMove("right", here) && distanceFromTo(right, this.target()) < distanceFromTo(here, this.target())) {
+      validMoves.push("moveRight");
     }
 
     this.moveWithOption(validMoves);

@@ -4,8 +4,8 @@ function HeroHunter (name) {
   this.type = "enemy";
   this.char = "h";
   this.target = function() {
-    var distA = (this.distanceToTile(this.getTile(), heroA.getTile()));
-    var distB = (this.distanceToTile(this.getTile(), heroB.getTile()));
+    var distA = (distanceFromTo(this.getTile(), heroA.getTile()));
+    var distB = (distanceFromTo(this.getTile(), heroB.getTile()));
     if (distA < distB) {
       return heroA.getTile();
     }
