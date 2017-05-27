@@ -127,6 +127,7 @@ function distanceFromTo(start, end) {
   })()
 }
 
+// TODO: replace this with separate functions for canMoveUp(), etc.
 function canMove(direction, start) {
 
   var up = start - boardSize;
@@ -167,6 +168,20 @@ function canMove(direction, start) {
   else {
     console.log("bad direction passed to canMove()");
   }
+}
+
+function advanceTurn() {
+  turn++;
+  ShipHunterFactory.forEachShipHunter (function () {
+    this.pathfind();
+  });
+  HeroHunterFactory.forEachHeroHunter (function () {
+    this.pathfind();
+  });
+  if (turn && turn % 4 === 0) {
+    createRandomEnemy();
+  }
+  renderBoard();
 }
 
 function renderBoard() {

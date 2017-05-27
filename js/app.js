@@ -9,105 +9,72 @@ window.addEventListener("load", function() {
 
   document.onkeydown = checkKey;
   function checkKey(e) {
-    e = e || window.event;
 
-    // up
-    if (e.keyCode == '38') {
-      if (turn%2 === 0) {
-        if (heroA.moveUp()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+    e = e || window.event;
+    var key = e.keyCode;
+    var left = "37";
+    var up = "38";
+    var right = "39";
+    var down = "40";
+
+    // even turns
+    if (turn % 2 === 0) {
+      // heroA
+      if (key == up) {
+        if (canMove("up", heroA.getTile())) {
+          heroA.moveUp();
+          advanceTurn();
         }
       }
-      else {
-        if (heroB.moveUp()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      else if (key == down) {
+        if (canMove("down", heroA.getTile())) {
+          heroA.moveDown();
+          advanceTurn();
         }
       }
-    }
-    // down
-    else if (e.keyCode == '40') {
-      if (turn%2 === 0) {
-        if (heroA.moveDown()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      // heroB
+      else if (key == left) {
+        if (canMove("left", heroB.getTile())) {
+          heroB.moveLeft();
+          advanceTurn();
         }
       }
-      else {
-        if (heroB.moveDown()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      else if (key == right) {
+        if (canMove("right", heroB.getTile())) {
+          heroB.moveRight();
+          advanceTurn();
         }
       }
     }
-    // left
-    else if (e.keyCode == '37') {
-      if (turn%2 === 0) {
-        if (heroB.moveLeft()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+
+    // odd turns
+    else if (turn % 2 === 1) {
+      // heroB
+      if (key == up) {
+        if (canMove("up", heroB.getTile())) {
+          heroB.moveUp();
+          advanceTurn();
         }
       }
-      else {
-        if (heroA.moveLeft()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      else if (key == down) {
+        if (canMove("down", heroB.getTile())) {
+          heroB.moveDown();
+          advanceTurn();
         }
       }
-    }
-    // right
-    else if (e.keyCode == '39') {
-      if (turn%2 === 0) {
-        if (heroB.moveRight()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      // heroA
+      else if (key == left) {
+        if (canMove("left", heroA.getTile())) {
+          heroA.moveLeft();
+          advanceTurn();
         }
       }
-      else {
-        if (heroA.moveRight()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      else if (key == right) {
+        if (canMove("right", heroA.getTile())) {
+          heroA.moveRight();
+          advanceTurn();
         }
       }
     }
-    if (e.keyCode == '37' || e.keyCode == '38' || e.keyCode == '39' || e.keyCode == '40') {
-      if (turn && turn%4 === 0) {
-        createRandomEnemy();
-      }
-    }
-    renderBoard();
   }
 });

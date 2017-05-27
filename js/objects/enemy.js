@@ -3,6 +3,7 @@ function Enemy (name) {
   Item.call(this);
   this.name = name;
   this.char = "e";
+  this.type = "enemy";
   this.target = function() {
     return;
   }

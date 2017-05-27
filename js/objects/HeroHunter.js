@@ -1,7 +1,6 @@
 function HeroHunter (name) {
 
   Enemy.call(this);
-  this.type = "enemy";
   this.char = "h";
   this.target = function() {
     var distA = (distanceFromTo(this.getTile(), heroA.getTile()));

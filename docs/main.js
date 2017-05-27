@@ -139,6 +139,7 @@ function distanceFromTo(start, end) {
   })()
 }
 
+// TODO: replace this with separate functions for canMoveUp(), etc.
 function canMove(direction, start) {
 
   var up = start - boardSize;
@@ -179,6 +180,20 @@ function canMove(direction, start) {
   else {
     console.log("bad direction passed to canMove()");
   }
+}
+
+function advanceTurn() {
+  turn++;
+  ShipHunterFactory.forEachShipHunter (function () {
+    this.pathfind();
+  });
+  HeroHunterFactory.forEachHeroHunter (function () {
+    this.pathfind();
+  });
+  if (turn && turn % 4 === 0) {
+    createRandomEnemy();
+  }
+  renderBoard();
 }
 
 function renderBoard() {
@@ -246,7 +261,6 @@ function renderBoard() {
 function HeroHunter (name) {
 
   Enemy.call(this);
-  this.type = "enemy";
   this.char = "h";
   this.target = function() {
     var distA = (distanceFromTo(this.getTile(), heroA.getTile()));
@@ -287,7 +301,6 @@ HeroHunterFactory = {
 function ShipHunter (name) {
 
   Enemy.call(this);
-  this.type = "enemy";
   this.char = "s";
   this.target = function() {
     return ship.getTile();
@@ -321,6 +334,7 @@ ShipHunterFactory = {
 function Wall() {
   this.char = "#";
   this.solid = true;
+this.type = "wall";
 }
 
 function generateWalls() {
@@ -435,6 +449,7 @@ function Enemy (name) {
   Item.call(this);
   this.name = name;
   this.char = "e";
+  this.type = "enemy";
   this.target = function() {
     return;
   }
@@ -517,73 +532,15 @@ function Hero() {
   Item.call(this);
   this.hasHealth = true;
 
-  this.moveSequence = function(d,t) {
-    if (board[d][0] && board[d][0].type === "enemy") {
-      board[d][0].die();
-      turn++;
-      return true;
+  this.setTile = function(n) {
+    if (board[n][0] && board[n][0].type === "enemy") {
+      board[n][0].die();
     }
-    else if (board[t][0] && board[t][0].type === "enemy") {
-      board[t][0].die();
-      this.setTile(d);
-      turn++;
-      return true;
+    // TODO: need a isValidMovementTile() function;
+    else if (!board[n][0] || board[n][0].type !== "wall") {
+      board[this.getTile()].pop(this);
+      board[n].push(this);
     }
-    else if (board[d][0] && board[d][0].solid) {
-      return false;
-    }
-    else if (d) {
-      this.setTile(d);
-      turn++;
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-
-  this.moveLeft = function() {
-    var c = this.getCol();
-    if (c > 0) {
-      var d = this.getTile() - 1;
-    }
-    if (c > 1) {
-      var t = this.getTile() - 2;
-    }
-    return this.moveSequence(d,t);
-  }
-
-  this.moveRight = function() {
-    var c = this.getCol();
-    if (c < boardSize) {
-      var d = this.getTile() + 1;
-    }
-    if (c < boardSize-1) {
-      var t = this.getTile() + 2;
-    }
-    return this.moveSequence(d,t);
-  }
-
-  this.moveUp = function() {
-    var c = this.getRow();
-    if (c > 0) {
-      var d = this.getTile() - boardSize;
-    }
-    if (c > 1) {
-      var t = this.getTile() - (boardSize*2);
-    }
-    return this.moveSequence(d,t);
-  }
-
-  this.moveDown = function() {
-    var c = this.getRow();
-    if (c < boardSize-1) {
-      var d = this.getTile() + boardSize;
-    }
-    if (c < boardSize-2) {
-      var t = this.getTile() + (boardSize*2);
-    }
-    return this.moveSequence(d,t);
   }
 }
 
@@ -708,105 +665,72 @@ window.addEventListener("load", function() {
 
   document.onkeydown = checkKey;
   function checkKey(e) {
-    e = e || window.event;
 
-    // up
-    if (e.keyCode == '38') {
-      if (turn%2 === 0) {
-        if (heroA.moveUp()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+    e = e || window.event;
+    var key = e.keyCode;
+    var left = "37";
+    var up = "38";
+    var right = "39";
+    var down = "40";
+
+    // even turns
+    if (turn % 2 === 0) {
+      // heroA
+      if (key == up) {
+        if (canMove("up", heroA.getTile())) {
+          heroA.moveUp();
+          advanceTurn();
         }
       }
-      else {
-        if (heroB.moveUp()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      else if (key == down) {
+        if (canMove("down", heroA.getTile())) {
+          heroA.moveDown();
+          advanceTurn();
         }
       }
-    }
-    // down
-    else if (e.keyCode == '40') {
-      if (turn%2 === 0) {
-        if (heroA.moveDown()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      // heroB
+      else if (key == left) {
+        if (canMove("left", heroB.getTile())) {
+          heroB.moveLeft();
+          advanceTurn();
         }
       }
-      else {
-        if (heroB.moveDown()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      else if (key == right) {
+        if (canMove("right", heroB.getTile())) {
+          heroB.moveRight();
+          advanceTurn();
         }
       }
     }
-    // left
-    else if (e.keyCode == '37') {
-      if (turn%2 === 0) {
-        if (heroB.moveLeft()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+
+    // odd turns
+    else if (turn % 2 === 1) {
+      // heroB
+      if (key == up) {
+        if (canMove("up", heroB.getTile())) {
+          heroB.moveUp();
+          advanceTurn();
         }
       }
-      else {
-        if (heroA.moveLeft()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      else if (key == down) {
+        if (canMove("down", heroB.getTile())) {
+          heroB.moveDown();
+          advanceTurn();
         }
       }
-    }
-    // right
-    else if (e.keyCode == '39') {
-      if (turn%2 === 0) {
-        if (heroB.moveRight()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      // heroA
+      else if (key == left) {
+        if (canMove("left", heroA.getTile())) {
+          heroA.moveLeft();
+          advanceTurn();
         }
       }
-      else {
-        if (heroA.moveRight()) {
-          ShipHunterFactory.forEachShipHunter (function () {
-            this.pathfind();
-          });
-          HeroHunterFactory.forEachHeroHunter (function () {
-            this.pathfind();
-          });
+      else if (key == right) {
+        if (canMove("right", heroA.getTile())) {
+          heroA.moveRight();
+          advanceTurn();
         }
       }
     }
-    if (e.keyCode == '37' || e.keyCode == '38' || e.keyCode == '39' || e.keyCode == '40') {
-      if (turn && turn%4 === 0) {
-        createRandomEnemy();
-      }
-    }
-    renderBoard();
   }
 });

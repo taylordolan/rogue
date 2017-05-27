@@ -1,7 +1,6 @@
 function ShipHunter (name) {
 
   Enemy.call(this);
-  this.type = "enemy";
   this.char = "s";
   this.target = function() {
     return ship.getTile();
