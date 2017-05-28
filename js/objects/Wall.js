@@ -1,7 +1,13 @@
 function Wall() {
+
+  Item.call(this);
   this.char = "#";
   this.solid = true;
   this.type = "wall";
+
+  this.destroy = function() {
+    board[this.tile()].splice(board[this.tile])
+  }
 }
 
 function generateWalls() {
@@ -26,16 +32,38 @@ function generateWalls() {
     }
   }
 
+  function clearNearShip() {
+
+    var here = ship.tile();
+    var up = here - boardSize;
+    var down = here + boardSize;
+    var left = here - 1;
+    var right = here + 1;
+    var upLeft = up - 1;
+    var upRight = up + 1;
+    var downLeft = down - 1;
+    var downRight = down + 1;
+    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
+
+    for (var i = 0; i < nearShip.length; i++) {
+      if (isWall(nearShip[i])) {
+        board[nearShip[i]][0].destroy();
+      }
+    }
+  }
+
   for (var i=0; i<board.length; i++) {
     var flip = Math.floor(Math.random() * 8);
     if (flip < 1 && board[i].length === 0 && !isCorner(i)) {
       board[i][0] = new Wall();
     }
   }
+
   if (!isMapOpen()) {
     generateWalls();
-    return;
   }
+
+  clearNearShip();
   renderBoard();
 }
 
