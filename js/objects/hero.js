@@ -9,7 +9,7 @@ function Hero() {
     }
     // TODO: need a isValidMovementTile() function;
     else if (!board[n][0] || board[n][0].type !== "wall") {
-      board[this.getTile()].pop(this);
+      board[this.tile()].pop(this);
       board[n].push(this);
     }
   }

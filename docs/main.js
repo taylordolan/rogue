@@ -10,7 +10,7 @@ for (var i = 0; i < boardSize * boardSize; i++) {
   board[i] = [];
 }
 
-function getColFromTile(n) {
+function colFromTile(n) {
   for (var i=0; i<boardSize; i++) {
     if ((n - i) % boardSize === 0) {
       return i;
@@ -18,7 +18,7 @@ function getColFromTile(n) {
   }
 }
 
-function getRowFromTile(n) {
+function rowFromTile(n) {
   for (var i=0; i<boardSize; i++) {
     if (n < boardSize * (i + 1)) {
       return i;
@@ -46,12 +46,12 @@ function createRandomEnemy() {
     HeroHunterFactory.createHeroHunter();
   }
   ShipHunterFactory.forEachShipHunter (function () {
-    if(!this.getTile()) {
+    if(!this.tile()) {
       this.deployToRandomEmptyCorner();
     }
   });
   HeroHunterFactory.forEachHeroHunter (function () {
-    if(!this.getTile()) {
+    if(!this.tile()) {
       this.deployToRandomEmptyCorner();
     }
   });
@@ -148,10 +148,10 @@ function canMove(direction, start) {
   var right = start + 1;
 
   // is this tile in the first/last row/column?
-  var inFirstCol = getColFromTile(start) === 0;
-  var inLastCol = getColFromTile(start) === boardSize - 1;
-  var inFirstRow = getRowFromTile(start) === 0;
-  var inLastRow = getRowFromTile(start) === boardSize - 1;
+  var inFirstCol = colFromTile(start) === 0;
+  var inLastCol = colFromTile(start) === boardSize - 1;
+  var inFirstRow = rowFromTile(start) === 0;
+  var inLastRow = rowFromTile(start) === boardSize - 1;
 
   if (direction === "up") {
     if (!inFirstRow && !isWall(up)) {
@@ -230,19 +230,19 @@ function renderBoard() {
         boardElement.innerHTML += board[i][0].char;
       }
       // on even numbered turns, put '•' above and below hero A
-      else if (turn % 2 === 0 && (i === heroA.getTile() - boardSize || i === heroA.getTile() + boardSize)) {
+      else if (turn % 2 === 0 && (i === heroA.tile() - boardSize || i === heroA.tile() + boardSize)) {
         boardElement.innerHTML += '•';
       }
       // on odd numbered turns, put '•' above and below hero B
-      else if (i === heroB.getTile() - boardSize && (turn + 1) % 2 === 0 || i === heroB.getTile() + boardSize && (turn + 1) % 2 === 0) {
+      else if (i === heroB.tile() - boardSize && (turn + 1) % 2 === 0 || i === heroB.tile() + boardSize && (turn + 1) % 2 === 0) {
         boardElement.innerHTML += '•';
       }
       // on odd numbered turns, put '•' to the left and right of hero A
-      else if ((turn + 1) % 2 === 0 && (i === heroA.getTile() - 1 && (i + 1) % boardSize !== 0 || i === heroA.getTile() + 1 && i % boardSize !== 0)) {
+      else if ((turn + 1) % 2 === 0 && (i === heroA.tile() - 1 && (i + 1) % boardSize !== 0 || i === heroA.tile() + 1 && i % boardSize !== 0)) {
         boardElement.innerHTML += '•';
       }
       // on odd numbered turns, put '•' to the left and right of hero B
-      else if (turn % 2 === 0 && (i === heroB.getTile() - 1 && (i + 1) % boardSize !== 0 || i === heroB.getTile() + 1 && i % boardSize !== 0)) {
+      else if (turn % 2 === 0 && (i === heroB.tile() - 1 && (i + 1) % boardSize !== 0 || i === heroB.tile() + 1 && i % boardSize !== 0)) {
         boardElement.innerHTML += '•';
       }
       // put '.' on empty tiles
@@ -263,18 +263,18 @@ function HeroHunter (name) {
   Enemy.call(this);
   this.char = "h";
   this.target = function() {
-    var distA = (distanceFromTo(this.getTile(), heroA.getTile()));
-    var distB = (distanceFromTo(this.getTile(), heroB.getTile()));
+    var distA = (distanceFromTo(this.tile(), heroA.tile()));
+    var distB = (distanceFromTo(this.tile(), heroB.tile()));
     if (distA < distB) {
-      return heroA.getTile();
+      return heroA.tile();
     }
     else {
-      return heroB.getTile();
+      return heroB.tile();
     }
   }
 
   this.die = function() {
-    board[this.getTile()].splice(board[this.getTile])
+    board[this.tile()].splice(board[this.tile])
     HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
     score++;
   }
@@ -303,11 +303,11 @@ function ShipHunter (name) {
   Enemy.call(this);
   this.char = "s";
   this.target = function() {
-    return ship.getTile();
+    return ship.tile();
   }
 
   this.die = function() {
-    board[this.getTile()].splice(board[this.getTile])
+    board[this.tile()].splice(board[this.tile])
     ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
     score++;
   }
@@ -397,16 +397,16 @@ function isMapOpen() {
 
     function lookAdjacentTiles(n) {
 
-      if (getColFromTile(n) > 0 && !isWall(n-1)) {
+      if (colFromTile(n) > 0 && !isWall(n-1)) {
         var l = n - 1;
       }
-      if (getColFromTile(n) < boardSize - 1 && !isWall(n+1)) {
+      if (colFromTile(n) < boardSize - 1 && !isWall(n+1)) {
         var r = n + 1;
       }
-      if (getRowFromTile(n) > 0 && !isWall(n-boardSize)) {
+      if (rowFromTile(n) > 0 && !isWall(n-boardSize)) {
         var t = n - boardSize;
       }
-      if (getRowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
+      if (rowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
         var b = n + boardSize;
       }
       if (!isInLookedTiles(l)) {
@@ -462,7 +462,7 @@ function Enemy (name) {
       return true;
     }
     else {
-      board[this.getTile()].pop(this);
+      board[this.tile()].pop(this);
       board[n].push(this);
     }
   }
@@ -476,7 +476,7 @@ function Enemy (name) {
   this.pathfind = function() {
 
     // the 5 relevant tiles
-    var here = this.getTile();
+    var here = this.tile();
     var up = here - boardSize;
     var down = here + boardSize;
     var left = here - 1;
@@ -503,7 +503,7 @@ function Enemy (name) {
   }
 
   this.die = function() {
-    board[this.getTile()].splice(board[this.getTile])
+    board[this.tile()].splice(board[this.tile])
     EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
     score++;
   }
@@ -538,7 +538,7 @@ function Hero() {
     }
     // TODO: need a isValidMovementTile() function;
     else if (!board[n][0] || board[n][0].type !== "wall") {
-      board[this.getTile()].pop(this);
+      board[this.tile()].pop(this);
       board[n].push(this);
     }
   }
@@ -578,7 +578,7 @@ function Item() {
     emptyCorners[Math.floor(Math.random()*emptyCorners.length)].push(this);
   }
 
-  this.getTile = function() {
+  this.tile = function() {
     for (var i = 0; i<board.length; i++) {
       for (var j = 0; j<board[i].length; j++) {
         if (board[i][j] == this) {
@@ -588,51 +588,51 @@ function Item() {
     }
   }
 
-  this.getCol = function() {
+  this.col = function() {
     for (var i=0; i<boardSize; i++) {
-      if ((this.getTile() - i) % boardSize === 0) {
+      if ((this.tile() - i) % boardSize === 0) {
         return i;
       }
     }
   }
 
-  this.getRow = function() {
+  this.row = function() {
     for (var i=1; i<=boardSize; i++) {
-      if (this.getTile() < boardSize * i) {
+      if (this.tile() < boardSize * i) {
         return i - 1;
       }
     }
   }
 
   this.setTile = function(n) {
-    board[this.getTile()].pop(this);
+    board[this.tile()].pop(this);
     board[n].push(this);
   }
 
   this.moveRight = function() {
-    if (this.getCol() < boardSize - 1) {
-      this.setTile(this.getTile() + 1);
+    if (this.col() < boardSize - 1) {
+      this.setTile(this.tile() + 1);
       return true;
     }
   }
 
   this.moveLeft = function() {
-    if (this.getCol() > 0) {
-      this.setTile(this.getTile() - 1);
+    if (this.col() > 0) {
+      this.setTile(this.tile() - 1);
       return true;
     }
   }
 
   this.moveUp = function() {
-    if (this.getRow() > 0) {
-      this.setTile(this.getTile() - boardSize);
+    if (this.row() > 0) {
+      this.setTile(this.tile() - boardSize);
       return true;
     }
   }
 
   this.moveDown = function() {
-    if (this.getRow() < boardSize - 1) {
-      this.setTile(this.getTile() + boardSize);
+    if (this.row() < boardSize - 1) {
+      this.setTile(this.tile() + boardSize);
       return true;
     }
   }
@@ -677,26 +677,26 @@ window.addEventListener("load", function() {
     if (turn % 2 === 0) {
       // heroA
       if (key == up) {
-        if (canMove("up", heroA.getTile())) {
+        if (canMove("up", heroA.tile())) {
           heroA.moveUp();
           advanceTurn();
         }
       }
       else if (key == down) {
-        if (canMove("down", heroA.getTile())) {
+        if (canMove("down", heroA.tile())) {
           heroA.moveDown();
           advanceTurn();
         }
       }
       // heroB
       else if (key == left) {
-        if (canMove("left", heroB.getTile())) {
+        if (canMove("left", heroB.tile())) {
           heroB.moveLeft();
           advanceTurn();
         }
       }
       else if (key == right) {
-        if (canMove("right", heroB.getTile())) {
+        if (canMove("right", heroB.tile())) {
           heroB.moveRight();
           advanceTurn();
         }
@@ -707,26 +707,26 @@ window.addEventListener("load", function() {
     else if (turn % 2 === 1) {
       // heroB
       if (key == up) {
-        if (canMove("up", heroB.getTile())) {
+        if (canMove("up", heroB.tile())) {
           heroB.moveUp();
           advanceTurn();
         }
       }
       else if (key == down) {
-        if (canMove("down", heroB.getTile())) {
+        if (canMove("down", heroB.tile())) {
           heroB.moveDown();
           advanceTurn();
         }
       }
       // heroA
       else if (key == left) {
-        if (canMove("left", heroA.getTile())) {
+        if (canMove("left", heroA.tile())) {
           heroA.moveLeft();
           advanceTurn();
         }
       }
       else if (key == right) {
-        if (canMove("right", heroA.getTile())) {
+        if (canMove("right", heroA.tile())) {
           heroA.moveRight();
           advanceTurn();
         }

@@ -16,7 +16,7 @@ function Enemy (name) {
       return true;
     }
     else {
-      board[this.getTile()].pop(this);
+      board[this.tile()].pop(this);
       board[n].push(this);
     }
   }
@@ -30,7 +30,7 @@ function Enemy (name) {
   this.pathfind = function() {
 
     // the 5 relevant tiles
-    var here = this.getTile();
+    var here = this.tile();
     var up = here - boardSize;
     var down = here + boardSize;
     var left = here - 1;
@@ -57,7 +57,7 @@ function Enemy (name) {
   }
 
   this.die = function() {
-    board[this.getTile()].splice(board[this.getTile])
+    board[this.tile()].splice(board[this.tile])
     EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
     score++;
   }

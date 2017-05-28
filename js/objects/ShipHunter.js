@@ -3,11 +3,11 @@ function ShipHunter (name) {
   Enemy.call(this);
   this.char = "s";
   this.target = function() {
-    return ship.getTile();
+    return ship.tile();
   }
 
   this.die = function() {
-    board[this.getTile()].splice(board[this.getTile])
+    board[this.tile()].splice(board[this.tile])
     ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
     score++;
   }

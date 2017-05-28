@@ -27,7 +27,7 @@ function Item() {
     emptyCorners[Math.floor(Math.random()*emptyCorners.length)].push(this);
   }
 
-  this.getTile = function() {
+  this.tile = function() {
     for (var i = 0; i<board.length; i++) {
       for (var j = 0; j<board[i].length; j++) {
         if (board[i][j] == this) {
@@ -37,51 +37,51 @@ function Item() {
     }
   }
 
-  this.getCol = function() {
+  this.col = function() {
     for (var i=0; i<boardSize; i++) {
-      if ((this.getTile() - i) % boardSize === 0) {
+      if ((this.tile() - i) % boardSize === 0) {
         return i;
       }
     }
   }
 
-  this.getRow = function() {
+  this.row = function() {
     for (var i=1; i<=boardSize; i++) {
-      if (this.getTile() < boardSize * i) {
+      if (this.tile() < boardSize * i) {
         return i - 1;
       }
     }
   }
 
   this.setTile = function(n) {
-    board[this.getTile()].pop(this);
+    board[this.tile()].pop(this);
     board[n].push(this);
   }
 
   this.moveRight = function() {
-    if (this.getCol() < boardSize - 1) {
-      this.setTile(this.getTile() + 1);
+    if (this.col() < boardSize - 1) {
+      this.setTile(this.tile() + 1);
       return true;
     }
   }
 
   this.moveLeft = function() {
-    if (this.getCol() > 0) {
-      this.setTile(this.getTile() - 1);
+    if (this.col() > 0) {
+      this.setTile(this.tile() - 1);
       return true;
     }
   }
 
   this.moveUp = function() {
-    if (this.getRow() > 0) {
-      this.setTile(this.getTile() - boardSize);
+    if (this.row() > 0) {
+      this.setTile(this.tile() - boardSize);
       return true;
     }
   }
 
   this.moveDown = function() {
-    if (this.getRow() < boardSize - 1) {
-      this.setTile(this.getTile() + boardSize);
+    if (this.row() < boardSize - 1) {
+      this.setTile(this.tile() + boardSize);
       return true;
     }
   }

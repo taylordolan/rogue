@@ -64,16 +64,16 @@ function isMapOpen() {
 
     function lookAdjacentTiles(n) {
 
-      if (getColFromTile(n) > 0 && !isWall(n-1)) {
+      if (colFromTile(n) > 0 && !isWall(n-1)) {
         var l = n - 1;
       }
-      if (getColFromTile(n) < boardSize - 1 && !isWall(n+1)) {
+      if (colFromTile(n) < boardSize - 1 && !isWall(n+1)) {
         var r = n + 1;
       }
-      if (getRowFromTile(n) > 0 && !isWall(n-boardSize)) {
+      if (rowFromTile(n) > 0 && !isWall(n-boardSize)) {
         var t = n - boardSize;
       }
-      if (getRowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
+      if (rowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
         var b = n + boardSize;
       }
       if (!isInLookedTiles(l)) {
