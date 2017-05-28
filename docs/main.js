@@ -26,15 +26,11 @@ function rowFromTile(n) {
   }
 }
 
-function isWall(tile) {
-  if (board[tile]) {
-    if (board[tile][0] && board[tile][0].char === "#") {
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
+// assumes walls are the only solid object
+// right now this function is used in testing valid move destinations,
+// so targets like enemies, heroes, and ships can't be solid.
+function isWall(n) {
+  return board[n].length > 0 && typeof board[n][0]["solid"] !== "undefined"
 }
 
 function createRandomEnemy() {
@@ -147,32 +143,26 @@ function canMove(direction, start) {
   var left = start - 1;
   var right = start + 1;
 
-  // is this tile in the first/last row/column?
-  var inFirstCol = colFromTile(start) === 0;
-  var inLastCol = colFromTile(start) === boardSize - 1;
-  var inFirstRow = rowFromTile(start) === 0;
-  var inLastRow = rowFromTile(start) === boardSize - 1;
-
   if (direction === "up") {
-    if (!inFirstRow && !isWall(up)) {
+    if (isAdjacent(start, up) && !isWall(up)) {
       return true;
     }
     else return false;
   }
   else if (direction === "down") {
-    if (!inLastRow && !isWall(down)) {
+    if (isAdjacent(start, down) && !isWall(down)) {
       return true;
     }
     else return false;
   }
   else if (direction === "left") {
-    if (!inFirstCol && !isWall(left)) {
+    if (isAdjacent(start, left) && !isWall(left)) {
       return true;
     }
     else return false;
   }
   else if (direction === "right") {
-    if (!inLastCol && !isWall(right)) {
+    if (isAdjacent(start, right) && !isWall(right)) {
       return true;
     }
     else return false;
@@ -180,6 +170,38 @@ function canMove(direction, start) {
   else {
     console.log("bad direction passed to canMove()");
   }
+}
+
+function isAdjacent(a, b) {
+
+  // is a tile in the first/last row/column?
+  var inFirstCol = colFromTile(a) === 0;
+  var inLastCol = colFromTile(a) === boardSize - 1;
+  var inFirstRow = rowFromTile(a) === 0;
+  var inLastRow = rowFromTile(a) === boardSize - 1;
+  var adjacentTiles = [];
+  var adjacent = false;
+
+  if (!inFirstCol) {
+    adjacentTiles.push(a - 1);
+  }
+  if (!inLastCol) {
+    adjacentTiles.push(a + 1);
+  }
+  if (!inFirstRow) {
+    adjacentTiles.push(a - boardSize);
+  }
+  if (!inLastRow) {
+    adjacentTiles.push(a + boardSize);
+  }
+
+  for (var i = 0; i < adjacentTiles.length; i++) {
+    if (b === adjacentTiles[i]) {
+      adjacent = true;
+    }
+  }
+
+  return adjacent;
 }
 
 function advanceTurn() {
@@ -334,7 +356,7 @@ ShipHunterFactory = {
 function Wall() {
   this.char = "#";
   this.solid = true;
-this.type = "wall";
+  this.type = "wall";
 }
 
 function generateWalls() {
@@ -641,15 +663,13 @@ function Item() {
 function Ship() {
 
   Item.call(this);
+  this.char = "∆";
+  this.hasHealth = true;
 
   this.deployToCenterTile = function() {
     destination = Math.floor(boardSize * boardSize / 2);
     board[destination].push(this);
   }
-
-  this.char = '∆';
-  this.solid = true;
-  this.hasHealth = true;
 }
 
 var ship = new Ship();

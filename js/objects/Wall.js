@@ -1,7 +1,7 @@
 function Wall() {
   this.char = "#";
   this.solid = true;
-this.type = "wall";
+  this.type = "wall";
 }
 
 function generateWalls() {
