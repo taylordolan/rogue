@@ -43,12 +43,12 @@ function createRandomEnemy() {
   }
   ShipHunterFactory.forEachShipHunter (function () {
     if(!this.tile()) {
-      this.deployToRandomEmptyCorner();
+      this.deployToRandomEmptyEdge();
     }
   });
   HeroHunterFactory.forEachHeroHunter (function () {
     if(!this.tile()) {
-      this.deployToRandomEmptyCorner();
+      this.deployToRandomEmptyEdge();
     }
   });
 }
@@ -212,7 +212,7 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 4 === 0) {
+  if (turn && turn % 5 === 0) {
     createRandomEnemy();
   }
   renderBoard();
@@ -605,6 +605,8 @@ function Hero() {
     var downRight = down + 1;
     var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
 
+    // can potentially deploy a hero to a space occupied by another hero.
+    // I'm going to leave this as-is for now.
     board[nearShip[Math.floor(Math.random()*nearShip.length)]].push(this);
   }
 }
@@ -626,21 +628,28 @@ function Item() {
     emptyTiles[Math.floor(Math.random()*emptyTiles.length)].push(this);
   }
 
-  this.deployToRandomEmptyCorner = function() {
-    // list corners
-    var corners = [
-      0,
-      boardSize - 1,
-      boardSize * boardSize - 1,
-      boardSize * boardSize - boardSize,
-    ];
-    var emptyCorners = [];
-    for (var i=0; i<4; i++) {
-      if (board[corners[i]].length == 0) {
-        emptyCorners.push(board[corners[i]]);
+  this.deployToRandomEmptyEdge = function() {
+
+    var edges = [];
+    for (var i = 0; i < board.length; i++) {
+      if (
+        colFromTile(i) === 0 ||
+        colFromTile(i) === boardSize - 1 ||
+        rowFromTile(i) === 0 ||
+        rowFromTile(i) === boardSize - 1
+      ) {
+        edges.push(i);
       }
     }
-    emptyCorners[Math.floor(Math.random()*emptyCorners.length)].push(this);
+
+    var emptyEdges = [];
+    for (var i = 0; i < edges.length; i++) {
+      if (board[edges[i]].length === 0) {
+        emptyEdges.push(board[edges[i]]);
+      }
+    }
+
+    emptyEdges[Math.floor(Math.random()*emptyEdges.length)].push(this);
   }
 
   this.tile = function() {

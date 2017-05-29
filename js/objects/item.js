@@ -10,21 +10,28 @@ function Item() {
     emptyTiles[Math.floor(Math.random()*emptyTiles.length)].push(this);
   }
 
-  this.deployToRandomEmptyCorner = function() {
-    // list corners
-    var corners = [
-      0,
-      boardSize - 1,
-      boardSize * boardSize - 1,
-      boardSize * boardSize - boardSize,
-    ];
-    var emptyCorners = [];
-    for (var i=0; i<4; i++) {
-      if (board[corners[i]].length == 0) {
-        emptyCorners.push(board[corners[i]]);
+  this.deployToRandomEmptyEdge = function() {
+
+    var edges = [];
+    for (var i = 0; i < board.length; i++) {
+      if (
+        colFromTile(i) === 0 ||
+        colFromTile(i) === boardSize - 1 ||
+        rowFromTile(i) === 0 ||
+        rowFromTile(i) === boardSize - 1
+      ) {
+        edges.push(i);
       }
     }
-    emptyCorners[Math.floor(Math.random()*emptyCorners.length)].push(this);
+
+    var emptyEdges = [];
+    for (var i = 0; i < edges.length; i++) {
+      if (board[edges[i]].length === 0) {
+        emptyEdges.push(board[edges[i]]);
+      }
+    }
+
+    emptyEdges[Math.floor(Math.random()*emptyEdges.length)].push(this);
   }
 
   this.tile = function() {

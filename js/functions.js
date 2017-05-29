@@ -31,12 +31,12 @@ function createRandomEnemy() {
   }
   ShipHunterFactory.forEachShipHunter (function () {
     if(!this.tile()) {
-      this.deployToRandomEmptyCorner();
+      this.deployToRandomEmptyEdge();
     }
   });
   HeroHunterFactory.forEachHeroHunter (function () {
     if(!this.tile()) {
-      this.deployToRandomEmptyCorner();
+      this.deployToRandomEmptyEdge();
     }
   });
 }
@@ -200,7 +200,7 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 4 === 0) {
+  if (turn && turn % 5 === 0) {
     createRandomEnemy();
   }
   renderBoard();
