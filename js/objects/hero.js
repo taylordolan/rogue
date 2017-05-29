@@ -13,6 +13,21 @@ function Hero() {
       board[n].push(this);
     }
   }
+
+  this.deployNearShip = function() {
+    var here = ship.tile();
+    var up = here - boardSize;
+    var down = here + boardSize;
+    var left = here - 1;
+    var right = here + 1;
+    var upLeft = up - 1;
+    var upRight = up + 1;
+    var downLeft = down - 1;
+    var downRight = down + 1;
+    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
+
+    board[nearShip[Math.floor(Math.random()*nearShip.length)]].push(this);
+  }
 }
 
 var heroA = new Hero();

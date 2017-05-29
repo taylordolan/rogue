@@ -1,8 +1,8 @@
 window.addEventListener("load", function() {
 
   ship.deployToCenterTile();
-  heroA.deployToRandomEmptyTile();
-  heroB.deployToRandomEmptyTile();
+  heroA.deployNearShip();
+  heroB.deployNearShip();
   createRandomEnemy();
   generateWalls();
   renderBoard();
