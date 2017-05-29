@@ -200,7 +200,7 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 5 === 0) {
+  if (turn && turn % 8 === 0) {
     createRandomEnemy();
   }
   renderBoard();

@@ -62,21 +62,3 @@ function Enemy (name) {
     score++;
   }
 }
-
-EnemyFactory = {
-
-  createEnemy: function () {
-    var newEnemy = {};
-    Enemy.apply(newEnemy, arguments);
-    this.allEnemies.push(newEnemy);
-    return newEnemy;
-  },
-
-  allEnemies: [],
-
-  forEachEnemy: function (action) {
-    for (var i = 0; i < this.allEnemies.length; i++){
-      action.call(this.allEnemies[i]);
-    }
-  }
-};

@@ -212,7 +212,7 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 5 === 0) {
+  if (turn && turn % 8 === 0) {
     createRandomEnemy();
   }
   renderBoard();
@@ -280,6 +280,155 @@ function renderBoard() {
   boardElement.innerHTML += "<br><br>";
 }
 
+function Enemy (name) {
+
+  Item.call(this);
+  this.name = name;
+  this.char = "e";
+  this.type = "enemy";
+  this.target = function() {
+    return;
+  }
+
+  this.setTile = function(n) {
+    if (board[n][0] && board[n][0].hasHealth) {
+      health--;
+    }
+    else if (board[n][0] && board[n][0].solid) {
+      return true;
+    }
+    else {
+      board[this.tile()].pop(this);
+      board[n].push(this);
+    }
+  }
+
+  // to be used like this, for example: hero.moveWithOption("moveRight", "moveDown")
+  this.moveWithOption = function(array) {
+    option = Math.floor(Math.random() * array.length);
+    this[array[option]]();
+  }
+
+  this.pathfind = function() {
+
+    // the 5 relevant tiles
+    var here = this.tile();
+    var up = here - boardSize;
+    var down = here + boardSize;
+    var left = here - 1;
+    var right = here + 1;
+
+    // this array will be populated with moves that will advance toward the target
+    var validMoves = [];
+
+    // TODO: put this in a function isLeftCloser(), etc.
+    if (canMove("up", here) && distanceFromTo(up, this.target()) < distanceFromTo(here, this.target())) {
+      validMoves.push("moveUp");
+    }
+    if (canMove("down", here) && distanceFromTo(down, this.target()) < distanceFromTo(here, this.target())) {
+      validMoves.push("moveDown");
+    }
+    if (canMove("left", here) && distanceFromTo(left, this.target()) < distanceFromTo(here, this.target())) {
+      validMoves.push("moveLeft");
+    }
+    if (canMove("right", here) && distanceFromTo(right, this.target()) < distanceFromTo(here, this.target())) {
+      validMoves.push("moveRight");
+    }
+
+    this.moveWithOption(validMoves);
+  }
+
+  this.die = function() {
+    board[this.tile()].splice(board[this.tile])
+    EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
+    score++;
+  }
+}
+
+function Fuel() {
+
+  Item.call(this);
+  this.char = "f";
+  this.type = "fuel";
+
+  this.deploy = function() {
+
+    var emptyTiles = [];
+    var farTiles = [];
+    var otherFuelTile;
+    var realFarTiles = [];
+    var shipTile = ship.tile();
+
+    for (var i = 0; i < board.length; i++) {
+      if (!board[i].length) {
+        emptyTiles.push(i);
+      }
+      else if (board[i][0].type === "fuel") {
+        otherFuelTile = i;
+      }
+    }
+
+    for (var j = 0; j < emptyTiles.length; j++) {
+      if (distanceFromTo(shipTile, emptyTiles[j]) === 6) {
+        farTiles.push(emptyTiles[j]);
+      }
+    }
+
+    if (otherFuelTile) {
+      for (var k = 0; k < farTiles.length; k++) {
+        if (distanceFromTo(otherFuelTile, farTiles[k]) > 9) {
+          realFarTiles.push(farTiles[k]);
+        }
+      }
+      board[realFarTiles[Math.floor(Math.random()*realFarTiles.length)]].push(this);
+    } else {
+      board[farTiles[Math.floor(Math.random()*farTiles.length)]].push(this);
+    }
+  }
+}
+
+var fuelA = new Fuel();
+var fuelB = new Fuel();
+
+function Hero() {
+
+  Item.call(this);
+  this.hasHealth = true;
+
+  this.setTile = function(n) {
+    if (board[n][0] && board[n][0].type === "enemy") {
+      board[n][0].die();
+    }
+    // TODO: need a isValidMovementTile() function;
+    else if (!board[n][0] || board[n][0].type !== "wall") {
+      board[this.tile()].pop(this);
+      board[n].push(this);
+    }
+  }
+
+  this.deployNearShip = function() {
+    var here = ship.tile();
+    var up = here - boardSize;
+    var down = here + boardSize;
+    var left = here - 1;
+    var right = here + 1;
+    var upLeft = up - 1;
+    var upRight = up + 1;
+    var downLeft = down - 1;
+    var downRight = down + 1;
+    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
+
+    // can potentially deploy a hero to a space occupied by another hero.
+    // I'm going to leave this as-is for now.
+    board[nearShip[Math.floor(Math.random()*nearShip.length)]].push(this);
+  }
+}
+
+var heroA = new Hero();
+var heroB = new Hero();
+heroA.char = 'a';
+heroB.char = 'b';
+
 function HeroHunter (name) {
 
   Enemy.call(this);
@@ -319,6 +468,116 @@ HeroHunterFactory = {
     }
   }
 };
+
+function Item() {
+
+  this.deployToRandomEmptyTile = function() {
+    var emptyTiles = [];
+    for (var i=0; i<board.length; i++) {
+      if (board[i].length === 0) {
+        emptyTiles.push(board[i]);
+      }
+    }
+    emptyTiles[Math.floor(Math.random()*emptyTiles.length)].push(this);
+  }
+
+  this.deployToRandomEmptyEdge = function() {
+
+    var edges = [];
+    for (var i = 0; i < board.length; i++) {
+      if (
+        colFromTile(i) === 0 ||
+        colFromTile(i) === boardSize - 1 ||
+        rowFromTile(i) === 0 ||
+        rowFromTile(i) === boardSize - 1
+      ) {
+        edges.push(i);
+      }
+    }
+
+    var emptyEdges = [];
+    for (var i = 0; i < edges.length; i++) {
+      if (board[edges[i]].length === 0) {
+        emptyEdges.push(board[edges[i]]);
+      }
+    }
+
+    emptyEdges[Math.floor(Math.random()*emptyEdges.length)].push(this);
+  }
+
+  this.tile = function() {
+    for (var i = 0; i<board.length; i++) {
+      for (var j = 0; j<board[i].length; j++) {
+        if (board[i][j] == this) {
+          return i;
+        }
+      }
+    }
+  }
+
+  this.col = function() {
+    for (var i=0; i<boardSize; i++) {
+      if ((this.tile() - i) % boardSize === 0) {
+        return i;
+      }
+    }
+  }
+
+  this.row = function() {
+    for (var i=1; i<=boardSize; i++) {
+      if (this.tile() < boardSize * i) {
+        return i - 1;
+      }
+    }
+  }
+
+  this.setTile = function(n) {
+    board[this.tile()].pop(this);
+    board[n].push(this);
+  }
+
+  this.moveRight = function() {
+    if (this.col() < boardSize - 1) {
+      this.setTile(this.tile() + 1);
+      return true;
+    }
+  }
+
+  this.moveLeft = function() {
+    if (this.col() > 0) {
+      this.setTile(this.tile() - 1);
+      return true;
+    }
+  }
+
+  this.moveUp = function() {
+    if (this.row() > 0) {
+      this.setTile(this.tile() - boardSize);
+      return true;
+    }
+  }
+
+  this.moveDown = function() {
+    if (this.row() < boardSize - 1) {
+      this.setTile(this.tile() + boardSize);
+      return true;
+    }
+  }
+}
+
+function Ship() {
+
+  Item.call(this);
+  this.char = "∆";
+  this.hasHealth = true;
+
+  this.deployToCenterTile = function() {
+    destination = Math.floor(boardSize * boardSize / 2);
+    board[destination].push(this);
+  }
+}
+
+var ship = new Ship();
 
 function ShipHunter (name) {
 
@@ -494,243 +753,13 @@ function isMapOpen() {
   return good;
 }
 
-function Enemy (name) {
-
-  Item.call(this);
-  this.name = name;
-  this.char = "e";
-  this.type = "enemy";
-  this.target = function() {
-    return;
-  }
-
-  this.setTile = function(n) {
-    if (board[n][0] && board[n][0].hasHealth) {
-      health--;
-    }
-    else if (board[n][0] && board[n][0].solid) {
-      return true;
-    }
-    else {
-      board[this.tile()].pop(this);
-      board[n].push(this);
-    }
-  }
-
-  // to be used like this, for example: hero.moveWithOption("moveRight", "moveDown")
-  this.moveWithOption = function(array) {
-    option = Math.floor(Math.random() * array.length);
-    this[array[option]]();
-  }
-
-  this.pathfind = function() {
-
-    // the 5 relevant tiles
-    var here = this.tile();
-    var up = here - boardSize;
-    var down = here + boardSize;
-    var left = here - 1;
-    var right = here + 1;
-
-    // this array will be populated with moves that will advance toward the target
-    var validMoves = [];
-
-    // TODO: put this in a function isLeftCloser(), etc.
-    if (canMove("up", here) && distanceFromTo(up, this.target()) < distanceFromTo(here, this.target())) {
-      validMoves.push("moveUp");
-    }
-    if (canMove("down", here) && distanceFromTo(down, this.target()) < distanceFromTo(here, this.target())) {
-      validMoves.push("moveDown");
-    }
-    if (canMove("left", here) && distanceFromTo(left, this.target()) < distanceFromTo(here, this.target())) {
-      validMoves.push("moveLeft");
-    }
-    if (canMove("right", here) && distanceFromTo(right, this.target()) < distanceFromTo(here, this.target())) {
-      validMoves.push("moveRight");
-    }
-
-    this.moveWithOption(validMoves);
-  }
-
-  this.die = function() {
-    board[this.tile()].splice(board[this.tile])
-    EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
-    score++;
-  }
-}
-
-EnemyFactory = {
-
-  createEnemy: function () {
-    var newEnemy = {};
-    Enemy.apply(newEnemy, arguments);
-    this.allEnemies.push(newEnemy);
-    return newEnemy;
-  },
-
-  allEnemies: [],
-
-  forEachEnemy: function (action) {
-    for (var i = 0; i < this.allEnemies.length; i++){
-      action.call(this.allEnemies[i]);
-    }
-  }
-};
-
-function Hero() {
-
-  Item.call(this);
-  this.hasHealth = true;
-
-  this.setTile = function(n) {
-    if (board[n][0] && board[n][0].type === "enemy") {
-      board[n][0].die();
-    }
-    // TODO: need a isValidMovementTile() function;
-    else if (!board[n][0] || board[n][0].type !== "wall") {
-      board[this.tile()].pop(this);
-      board[n].push(this);
-    }
-  }
-
-  this.deployNearShip = function() {
-    var here = ship.tile();
-    var up = here - boardSize;
-    var down = here + boardSize;
-    var left = here - 1;
-    var right = here + 1;
-    var upLeft = up - 1;
-    var upRight = up + 1;
-    var downLeft = down - 1;
-    var downRight = down + 1;
-    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
-
-    // can potentially deploy a hero to a space occupied by another hero.
-    // I'm going to leave this as-is for now.
-    board[nearShip[Math.floor(Math.random()*nearShip.length)]].push(this);
-  }
-}
-
-var heroA = new Hero();
-var heroB = new Hero();
-heroA.char = 'a';
-heroB.char = 'b';
-
-function Item() {
-
-  this.deployToRandomEmptyTile = function() {
-    var emptyTiles = [];
-    for (var i=0; i<board.length; i++) {
-      if (board[i].length === 0) {
-        emptyTiles.push(board[i]);
-      }
-    }
-    emptyTiles[Math.floor(Math.random()*emptyTiles.length)].push(this);
-  }
-
-  this.deployToRandomEmptyEdge = function() {
-
-    var edges = [];
-    for (var i = 0; i < board.length; i++) {
-      if (
-        colFromTile(i) === 0 ||
-        colFromTile(i) === boardSize - 1 ||
-        rowFromTile(i) === 0 ||
-        rowFromTile(i) === boardSize - 1
-      ) {
-        edges.push(i);
-      }
-    }
-
-    var emptyEdges = [];
-    for (var i = 0; i < edges.length; i++) {
-      if (board[edges[i]].length === 0) {
-        emptyEdges.push(board[edges[i]]);
-      }
-    }
-
-    emptyEdges[Math.floor(Math.random()*emptyEdges.length)].push(this);
-  }
-
-  this.tile = function() {
-    for (var i = 0; i<board.length; i++) {
-      for (var j = 0; j<board[i].length; j++) {
-        if (board[i][j] == this) {
-          return i;
-        }
-      }
-    }
-  }
-
-  this.col = function() {
-    for (var i=0; i<boardSize; i++) {
-      if ((this.tile() - i) % boardSize === 0) {
-        return i;
-      }
-    }
-  }
-
-  this.row = function() {
-    for (var i=1; i<=boardSize; i++) {
-      if (this.tile() < boardSize * i) {
-        return i - 1;
-      }
-    }
-  }
-
-  this.setTile = function(n) {
-    board[this.tile()].pop(this);
-    board[n].push(this);
-  }
-
-  this.moveRight = function() {
-    if (this.col() < boardSize - 1) {
-      this.setTile(this.tile() + 1);
-      return true;
-    }
-  }
-
-  this.moveLeft = function() {
-    if (this.col() > 0) {
-      this.setTile(this.tile() - 1);
-      return true;
-    }
-  }
-
-  this.moveUp = function() {
-    if (this.row() > 0) {
-      this.setTile(this.tile() - boardSize);
-      return true;
-    }
-  }
-
-  this.moveDown = function() {
-    if (this.row() < boardSize - 1) {
-      this.setTile(this.tile() + boardSize);
-      return true;
-    }
-  }
-}
-
-function Ship() {
-
-  Item.call(this);
-  this.char = "∆";
-  this.hasHealth = true;
-
-  this.deployToCenterTile = function() {
-    destination = Math.floor(boardSize * boardSize / 2);
-    board[destination].push(this);
-  }
-}
-
-var ship = new Ship();
-
 window.addEventListener("load", function() {
 
   ship.deployToCenterTile();
   heroA.deployNearShip();
   heroB.deployNearShip();
+  fuelA.deploy();
+  fuelB.deploy();
   createRandomEnemy();
   generateWalls();
   renderBoard();

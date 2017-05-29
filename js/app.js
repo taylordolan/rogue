@@ -3,6 +3,8 @@ window.addEventListener("load", function() {
   ship.deployToCenterTile();
   heroA.deployNearShip();
   heroB.deployNearShip();
+  fuelA.deploy();
+  fuelB.deploy();
   createRandomEnemy();
   generateWalls();
   renderBoard();
