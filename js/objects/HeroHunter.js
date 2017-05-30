@@ -2,6 +2,7 @@ function HeroHunter (name) {
 
   Enemy.call(this);
   this.char = "h";
+  this.avoids = ["wall", "ship", "enemy", "fuel"];
   this.target = function() {
     var distA = (distanceFromTo(this.tile(), heroA.tile()));
     var distB = (distanceFromTo(this.tile(), heroB.tile()));

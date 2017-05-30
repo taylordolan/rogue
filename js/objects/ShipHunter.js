@@ -2,6 +2,7 @@ function ShipHunter (name) {
 
   Enemy.call(this);
   this.char = "s";
+  this.avoids = ["wall", "hero", "enemy", "fuel"];
   this.target = function() {
     return ship.tile();
   }

@@ -2,6 +2,8 @@ function Hero() {
 
   Item.call(this);
   this.hasHealth = true;
+  this.avoids = ["wall", "ship"];
+  this.type = "hero";
 
   this.setTile = function(n) {
     if (board[n][0] && board[n][0].type === "enemy") {

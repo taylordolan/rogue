@@ -280,6 +280,81 @@ function renderBoard() {
   boardElement.innerHTML += "<br><br>";
 }
 
+function HeroHunter (name) {
+
+  Enemy.call(this);
+  this.char = "h";
+  this.avoids = ["wall", "ship", "enemy", "fuel"];
+  this.target = function() {
+    var distA = (distanceFromTo(this.tile(), heroA.tile()));
+    var distB = (distanceFromTo(this.tile(), heroB.tile()));
+    if (distA < distB) {
+      return heroA.tile();
+    }
+    else {
+      return heroB.tile();
+    }
+  }
+
+  this.die = function() {
+    board[this.tile()].splice(board[this.tile])
+    HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
+    score++;
+  }
+}
+
+HeroHunterFactory = {
+
+  createHeroHunter: function () {
+    var newHeroHunter = {};
+    HeroHunter.apply(newHeroHunter, arguments);
+    this.allHeroHunters.push(newHeroHunter);
+    return newHeroHunter;
+  },
+
+  allHeroHunters: [],
+
+  forEachHeroHunter: function (action) {
+    for (var i = 0; i < this.allHeroHunters.length; i++){
+      action.call(this.allHeroHunters[i]);
+    }
+  }
+};
+
+function ShipHunter (name) {
+
+  Enemy.call(this);
+  this.char = "s";
+  this.avoids = ["wall", "hero", "enemy", "fuel"];
+  this.target = function() {
+    return ship.tile();
+  }
+
+  this.die = function() {
+    board[this.tile()].splice(board[this.tile])
+    ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
+    score++;
+  }
+}
+
+ShipHunterFactory = {
+
+  createShipHunter: function () {
+    var newShipHunter = {};
+    ShipHunter.apply(newShipHunter, arguments);
+    this.allShipHunters.push(newShipHunter);
+    return newShipHunter;
+  },
+
+  allShipHunters: [],
+
+  forEachShipHunter: function (action) {
+    for (var i = 0; i < this.allShipHunters.length; i++){
+      action.call(this.allShipHunters[i]);
+    }
+  }
+};
+
 function Enemy (name) {
 
   Item.call(this);
@@ -394,6 +469,8 @@ function Hero() {
 
   Item.call(this);
   this.hasHealth = true;
+  this.avoids = ["wall", "ship"];
+  this.type = "hero";
 
   this.setTile = function(n) {
     if (board[n][0] && board[n][0].type === "enemy") {
@@ -428,46 +505,6 @@ var heroA = new Hero();
 var heroB = new Hero();
 heroA.char = 'a';
 heroB.char = 'b';
-
-function HeroHunter (name) {
-
-  Enemy.call(this);
-  this.char = "h";
-  this.target = function() {
-    var distA = (distanceFromTo(this.tile(), heroA.tile()));
-    var distB = (distanceFromTo(this.tile(), heroB.tile()));
-    if (distA < distB) {
-      return heroA.tile();
-    }
-    else {
-      return heroB.tile();
-    }
-  }
-
-  this.die = function() {
-    board[this.tile()].splice(board[this.tile])
-    HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
-    score++;
-  }
-}
-
-HeroHunterFactory = {
-
-  createHeroHunter: function () {
-    var newHeroHunter = {};
-    HeroHunter.apply(newHeroHunter, arguments);
-    this.allHeroHunters.push(newHeroHunter);
-    return newHeroHunter;
-  },
-
-  allHeroHunters: [],
-
-  forEachHeroHunter: function (action) {
-    for (var i = 0; i < this.allHeroHunters.length; i++){
-      action.call(this.allHeroHunters[i]);
-    }
-  }
-};
 
 function Item() {
 
@@ -578,39 +615,6 @@ function Ship() {
 }
 
 var ship = new Ship();
-
-function ShipHunter (name) {
-
-  Enemy.call(this);
-  this.char = "s";
-  this.target = function() {
-    return ship.tile();
-  }
-
-  this.die = function() {
-    board[this.tile()].splice(board[this.tile])
-    ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
-    score++;
-  }
-}
-
-ShipHunterFactory = {
-
-  createShipHunter: function () {
-    var newShipHunter = {};
-    ShipHunter.apply(newShipHunter, arguments);
-    this.allShipHunters.push(newShipHunter);
-    return newShipHunter;
-  },
-
-  allShipHunters: [],
-
-  forEachShipHunter: function (action) {
-    for (var i = 0; i < this.allShipHunters.length; i++){
-      action.call(this.allShipHunters[i]);
-    }
-  }
-};
 
 function Wall() {
 
