@@ -23,26 +23,26 @@ window.addEventListener("load", function() {
     if (turn % 2 === 0) {
       // heroA
       if (key == up) {
-        if (canMove("up", heroA.tile())) {
+        if (heroA.canMove("up", heroA.tile())) {
           heroA.moveUp();
           advanceTurn();
         }
       }
       else if (key == down) {
-        if (canMove("down", heroA.tile())) {
+        if (heroA.canMove("down", heroA.tile())) {
           heroA.moveDown();
           advanceTurn();
         }
       }
       // heroB
       else if (key == left) {
-        if (canMove("left", heroB.tile())) {
+        if (heroB.canMove("left", heroB.tile())) {
           heroB.moveLeft();
           advanceTurn();
         }
       }
       else if (key == right) {
-        if (canMove("right", heroB.tile())) {
+        if (heroB.canMove("right", heroB.tile())) {
           heroB.moveRight();
           advanceTurn();
         }
@@ -53,26 +53,26 @@ window.addEventListener("load", function() {
     else if (turn % 2 === 1) {
       // heroB
       if (key == up) {
-        if (canMove("up", heroB.tile())) {
+        if (heroB.canMove("up", heroB.tile())) {
           heroB.moveUp();
           advanceTurn();
         }
       }
       else if (key == down) {
-        if (canMove("down", heroB.tile())) {
+        if (heroB.canMove("down", heroB.tile())) {
           heroB.moveDown();
           advanceTurn();
         }
       }
       // heroA
       else if (key == left) {
-        if (canMove("left", heroA.tile())) {
+        if (heroA.canMove("left", heroA.tile())) {
           heroA.moveLeft();
           advanceTurn();
         }
       }
       else if (key == right) {
-        if (canMove("right", heroA.tile())) {
+        if (heroA.canMove("right", heroA.tile())) {
           heroA.moveRight();
           advanceTurn();
         }

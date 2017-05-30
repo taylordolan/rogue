@@ -4,8 +4,8 @@ function HeroHunter (name) {
   this.char = "h";
   this.avoids = ["wall", "ship", "enemy", "fuel"];
   this.target = function() {
-    var distA = (distanceFromTo(this.tile(), heroA.tile()));
-    var distB = (distanceFromTo(this.tile(), heroB.tile()));
+    var distA = (this.distanceFromTo(this.tile(), heroA.tile()));
+    var distB = (this.distanceFromTo(this.tile(), heroB.tile()));
     if (distA < distB) {
       return heroA.tile();
     }
@@ -17,7 +17,6 @@ function HeroHunter (name) {
   this.die = function() {
     board[this.tile()].splice(board[this.tile])
     HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
-    score++;
   }
 }
 

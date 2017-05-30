@@ -40,16 +40,16 @@ function Enemy (name) {
     var validMoves = [];
 
     // TODO: put this in a function isLeftCloser(), etc.
-    if (canMove("up", here) && distanceFromTo(up, this.target()) < distanceFromTo(here, this.target())) {
+    if (this.canMove("up", here) && this.distanceFromTo(up, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveUp");
     }
-    if (canMove("down", here) && distanceFromTo(down, this.target()) < distanceFromTo(here, this.target())) {
+    if (this.canMove("down", here) && this.distanceFromTo(down, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveDown");
     }
-    if (canMove("left", here) && distanceFromTo(left, this.target()) < distanceFromTo(here, this.target())) {
+    if (this.canMove("left", here) && this.distanceFromTo(left, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveLeft");
     }
-    if (canMove("right", here) && distanceFromTo(right, this.target()) < distanceFromTo(here, this.target())) {
+    if (this.canMove("right", here) && this.distanceFromTo(right, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveRight");
     }
 
@@ -59,6 +59,5 @@ function Enemy (name) {
   this.die = function() {
     board[this.tile()].splice(board[this.tile])
     EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
-    score++;
   }
 }

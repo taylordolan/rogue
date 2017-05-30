@@ -22,14 +22,14 @@ function Fuel() {
     }
 
     for (var j = 0; j < emptyTiles.length; j++) {
-      if (distanceFromTo(shipTile, emptyTiles[j]) === 6) {
+      if (this.distanceFromTo(shipTile, emptyTiles[j]) === 6) {
         farTiles.push(emptyTiles[j]);
       }
     }
 
     if (otherFuelTile) {
       for (var k = 0; k < farTiles.length; k++) {
-        if (distanceFromTo(otherFuelTile, farTiles[k]) > 9) {
+        if (this.distanceFromTo(otherFuelTile, farTiles[k]) > 9) {
           realFarTiles.push(farTiles[k]);
         }
       }
@@ -37,6 +37,11 @@ function Fuel() {
     } else {
       board[farTiles[Math.floor(Math.random()*farTiles.length)]].push(this);
     }
+  }
+
+  this.destroy = function() {
+    board[this.tile()].splice(board[this.tile]);
+    score++;
   }
 }
 

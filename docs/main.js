@@ -53,125 +53,6 @@ function createRandomEnemy() {
   });
 }
 
-// measures distance to between two tiles
-function distanceFromTo(start, end) {
-  var steps = 0;
-  var found = false;
-  lookedTiles = [];
-  lookedTiles.push(start);
-
-  if (start === end) {
-    return steps;
-  }
-
-  function isDestination(n) {
-    if (n === end) {
-      return true;
-    }
-  }
-
-  function isInLookedTiles(n) {
-    for (var i = 0; i < lookedTiles.length; i++) {
-      if (lookedTiles[i] === n) {
-        return true;
-      }
-    }
-  }
-
-  function lookAdjacentTiles(n) {
-
-    if (canMove("up", n)) {
-      var up = n - boardSize;
-    }
-    if (canMove("down", n)) {
-      var down = n + boardSize;
-    }
-    if (canMove("left", n)) {
-      var left = n - 1;
-    }
-    if (canMove("right", n)) {
-      var right = n + 1;
-    }
-
-    // TODO: I feel like this can be cleaned up by looping through an array?
-    if (left && isDestination(left)) {
-      found = true;
-    }
-    if (left && !isInLookedTiles(left)) {
-      lookedTiles.push(left);
-    }
-    if (right && isDestination(right)) {
-      found = true;
-    }
-    if (right && !isInLookedTiles(right)) {
-      lookedTiles.push(right);
-    }
-    if (up && isDestination(up)) {
-      found = true;
-    }
-    if (up && !isInLookedTiles(up)) {
-      lookedTiles.push(up);
-    }
-    if (down && isDestination(down)) {
-      found = true;
-    }
-    if (down && !isInLookedTiles(down)) {
-      lookedTiles.push(down);
-    }
-  }
-
-  // put it all together
-  return (function() {
-    for (var i=0; i<boardSize*boardSize; i++) {
-      var temp = lookedTiles.length;
-      for (var j=0; j<temp; j++) {
-        lookAdjacentTiles(lookedTiles[j]);
-      }
-      steps++;
-      if (found === true) {
-        return steps;
-      }
-    }
-  })()
-}
-
-// TODO: replace this with separate functions for canMoveUp(), etc.
-function canMove(direction, start) {
-
-  var up = start - boardSize;
-  var down = start + boardSize;
-  var left = start - 1;
-  var right = start + 1;
-
-  if (direction === "up") {
-    if (isAdjacent(start, up) && !isWall(up)) {
-      return true;
-    }
-    else return false;
-  }
-  else if (direction === "down") {
-    if (isAdjacent(start, down) && !isWall(down)) {
-      return true;
-    }
-    else return false;
-  }
-  else if (direction === "left") {
-    if (isAdjacent(start, left) && !isWall(left)) {
-      return true;
-    }
-    else return false;
-  }
-  else if (direction === "right") {
-    if (isAdjacent(start, right) && !isWall(right)) {
-      return true;
-    }
-    else return false;
-  }
-  else {
-    console.log("bad direction passed to canMove()");
-  }
-}
-
 function isAdjacent(a, b) {
 
   // is a tile in the first/last row/column?
@@ -286,8 +167,8 @@ function HeroHunter (name) {
   this.char = "h";
   this.avoids = ["wall", "ship", "enemy", "fuel"];
   this.target = function() {
-    var distA = (distanceFromTo(this.tile(), heroA.tile()));
-    var distB = (distanceFromTo(this.tile(), heroB.tile()));
+    var distA = (this.distanceFromTo(this.tile(), heroA.tile()));
+    var distB = (this.distanceFromTo(this.tile(), heroB.tile()));
     if (distA < distB) {
       return heroA.tile();
     }
@@ -299,7 +180,6 @@ function HeroHunter (name) {
   this.die = function() {
     board[this.tile()].splice(board[this.tile])
     HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
-    score++;
   }
 }
 
@@ -333,7 +213,6 @@ function ShipHunter (name) {
   this.die = function() {
     board[this.tile()].splice(board[this.tile])
     ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
-    score++;
   }
 }
 
@@ -397,16 +276,16 @@ function Enemy (name) {
     var validMoves = [];
 
     // TODO: put this in a function isLeftCloser(), etc.
-    if (canMove("up", here) && distanceFromTo(up, this.target()) < distanceFromTo(here, this.target())) {
+    if (this.canMove("up", here) && this.distanceFromTo(up, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveUp");
     }
-    if (canMove("down", here) && distanceFromTo(down, this.target()) < distanceFromTo(here, this.target())) {
+    if (this.canMove("down", here) && this.distanceFromTo(down, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveDown");
     }
-    if (canMove("left", here) && distanceFromTo(left, this.target()) < distanceFromTo(here, this.target())) {
+    if (this.canMove("left", here) && this.distanceFromTo(left, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveLeft");
     }
-    if (canMove("right", here) && distanceFromTo(right, this.target()) < distanceFromTo(here, this.target())) {
+    if (this.canMove("right", here) && this.distanceFromTo(right, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveRight");
     }
 
@@ -416,7 +295,6 @@ function Enemy (name) {
   this.die = function() {
     board[this.tile()].splice(board[this.tile])
     EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
-    score++;
   }
 }
 
@@ -444,14 +322,14 @@ function Fuel() {
     }
 
     for (var j = 0; j < emptyTiles.length; j++) {
-      if (distanceFromTo(shipTile, emptyTiles[j]) === 6) {
+      if (this.distanceFromTo(shipTile, emptyTiles[j]) === 6) {
         farTiles.push(emptyTiles[j]);
       }
     }
 
     if (otherFuelTile) {
       for (var k = 0; k < farTiles.length; k++) {
-        if (distanceFromTo(otherFuelTile, farTiles[k]) > 9) {
+        if (this.distanceFromTo(otherFuelTile, farTiles[k]) > 9) {
           realFarTiles.push(farTiles[k]);
         }
       }
@@ -459,6 +337,11 @@ function Fuel() {
     } else {
       board[farTiles[Math.floor(Math.random()*farTiles.length)]].push(this);
     }
+  }
+
+  this.destroy = function() {
+    board[this.tile()].splice(board[this.tile]);
+    score++;
   }
 }
 
@@ -476,10 +359,20 @@ function Hero() {
     if (board[n][0] && board[n][0].type === "enemy") {
       board[n][0].die();
     }
-    // TODO: need a isValidMovementTile() function;
-    else if (!board[n][0] || board[n][0].type !== "wall") {
+
+    else if (board[n][0] && board[n][0].type === "fuel") {
+      board[n][0].destroy();
       board[this.tile()].pop(this);
       board[n].push(this);
+    }
+
+    else if (!this.shouldAvoid(n)) {
+      board[this.tile()].pop(this);
+      board[n].push(this);
+    }
+
+    if (score === 2) {
+      this.avoids = ["wall"];
     }
   }
 
@@ -600,6 +493,134 @@ function Item() {
       return true;
     }
   }
+
+  this.shouldAvoid = function(n) {
+
+    var avoid = false;
+
+    if (this.avoids) {
+      for (var i = 0; i < this.avoids.length; i++) {
+        if (board[n][0] && board[n][0].type === this.avoids[i]) {
+          avoid = true;
+        }
+      }
+    }
+
+    return avoid;
+  }
+
+  // TODO: replace this with separate functions for canMoveUp(), etc.
+  this.canMove = function(direction, start) {
+
+    var up = start - boardSize;
+    var down = start + boardSize;
+    var left = start - 1;
+    var right = start + 1;
+
+    if (direction === "up") {
+      if (isAdjacent(start, up) && !this.shouldAvoid(up)) {
+        return true;
+      }
+      else return false;
+    }
+    else if (direction === "down") {
+      if (isAdjacent(start, down) && !this.shouldAvoid(down)) {
+        return true;
+      }
+      else return false;
+    }
+    else if (direction === "left") {
+      if (isAdjacent(start, left) && !this.shouldAvoid(left)) {
+        return true;
+      }
+      else return false;
+    }
+    else if (direction === "right") {
+      if (isAdjacent(start, right) && !this.shouldAvoid(right)) {
+        return true;
+      }
+      else return false;
+    }
+    else {
+      console.log("bad direction passed to canMove()");
+    }
+  }
+
+  // measures distance to between two tiles
+  this.distanceFromTo = function(start, end) {
+    var steps = 0;
+    var found = false;
+    lookedTiles = [];
+    lookedTiles.push(start);
+
+    if (start === end) {
+      return steps;
+    }
+
+    function isDestination(n) {
+      if (n === end) {
+        return true;
+      }
+    }
+
+    function isInLookedTiles(n) {
+      for (var i = 0; i < lookedTiles.length; i++) {
+        if (lookedTiles[i] === n) {
+          return true;
+        }
+      }
+    }
+
+    // put it all together
+    for (var i=0; i<boardSize*boardSize; i++) {
+      var temp = lookedTiles.length;
+      for (var j=0; j<temp; j++) {
+
+        if (this.canMove("up", lookedTiles[j])) {
+          var up = lookedTiles[j] - boardSize;
+        }
+        if (this.canMove("down", lookedTiles[j])) {
+          var down = lookedTiles[j] + boardSize;
+        }
+        if (this.canMove("left", lookedTiles[j])) {
+          var left = lookedTiles[j] - 1;
+        }
+        if (this.canMove("right", lookedTiles[j])) {
+          var right = lookedTiles[j] + 1;
+        }
+
+        // TODO: I feel like this can be cleaned up by looping through an array?
+        if (left && isDestination(left)) {
+          found = true;
+        }
+        if (left && !isInLookedTiles(left)) {
+          lookedTiles.push(left);
+        }
+        if (right && isDestination(right)) {
+          found = true;
+        }
+        if (right && !isInLookedTiles(right)) {
+          lookedTiles.push(right);
+        }
+        if (up && isDestination(up)) {
+          found = true;
+        }
+        if (up && !isInLookedTiles(up)) {
+          lookedTiles.push(up);
+        }
+        if (down && isDestination(down)) {
+          found = true;
+        }
+        if (down && !isInLookedTiles(down)) {
+          lookedTiles.push(down);
+        }
+      }
+      steps++;
+      if (found === true) {
+        return steps;
+      }
+    }
+  }
 }
 
 function Ship() {
@@ -607,6 +628,7 @@ function Ship() {
   Item.call(this);
   this.char = "∆";
   this.hasHealth = true;
+  this.type = "ship";
 
   this.deployToCenterTile = function() {
     destination = Math.floor(boardSize * boardSize / 2);
@@ -782,26 +804,26 @@ window.addEventListener("load", function() {
     if (turn % 2 === 0) {
       // heroA
       if (key == up) {
-        if (canMove("up", heroA.tile())) {
+        if (heroA.canMove("up", heroA.tile())) {
           heroA.moveUp();
           advanceTurn();
         }
       }
       else if (key == down) {
-        if (canMove("down", heroA.tile())) {
+        if (heroA.canMove("down", heroA.tile())) {
           heroA.moveDown();
           advanceTurn();
         }
       }
       // heroB
       else if (key == left) {
-        if (canMove("left", heroB.tile())) {
+        if (heroB.canMove("left", heroB.tile())) {
           heroB.moveLeft();
           advanceTurn();
         }
       }
       else if (key == right) {
-        if (canMove("right", heroB.tile())) {
+        if (heroB.canMove("right", heroB.tile())) {
           heroB.moveRight();
           advanceTurn();
         }
@@ -812,26 +834,26 @@ window.addEventListener("load", function() {
     else if (turn % 2 === 1) {
       // heroB
       if (key == up) {
-        if (canMove("up", heroB.tile())) {
+        if (heroB.canMove("up", heroB.tile())) {
           heroB.moveUp();
           advanceTurn();
         }
       }
       else if (key == down) {
-        if (canMove("down", heroB.tile())) {
+        if (heroB.canMove("down", heroB.tile())) {
           heroB.moveDown();
           advanceTurn();
         }
       }
       // heroA
       else if (key == left) {
-        if (canMove("left", heroA.tile())) {
+        if (heroA.canMove("left", heroA.tile())) {
           heroA.moveLeft();
           advanceTurn();
         }
       }
       else if (key == right) {
-        if (canMove("right", heroA.tile())) {
+        if (heroA.canMove("right", heroA.tile())) {
           heroA.moveRight();
           advanceTurn();
         }

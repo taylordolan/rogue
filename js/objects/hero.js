@@ -9,10 +9,20 @@ function Hero() {
     if (board[n][0] && board[n][0].type === "enemy") {
       board[n][0].die();
     }
-    // TODO: need a isValidMovementTile() function;
-    else if (!board[n][0] || board[n][0].type !== "wall") {
+
+    else if (board[n][0] && board[n][0].type === "fuel") {
+      board[n][0].destroy();
       board[this.tile()].pop(this);
       board[n].push(this);
+    }
+
+    else if (!this.shouldAvoid(n)) {
+      board[this.tile()].pop(this);
+      board[n].push(this);
+    }
+
+    if (score === 2) {
+      this.avoids = ["wall"];
     }
   }
 
