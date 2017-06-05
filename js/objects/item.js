@@ -96,7 +96,6 @@ function Item() {
   this.shouldAvoid = function(n) {
 
     var avoid = false;
-
     if (this.avoids) {
       for (var i = 0; i < this.avoids.length; i++) {
         if (board[n][0] && board[n][0].type === this.avoids[i]) {
@@ -104,7 +103,6 @@ function Item() {
         }
       }
     }
-
     return avoid;
   }
 

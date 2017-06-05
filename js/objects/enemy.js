@@ -12,9 +12,6 @@ function Enemy (name) {
     if (board[n][0] && board[n][0].hasHealth) {
       health--;
     }
-    else if (board[n][0] && board[n][0].solid) {
-      return true;
-    }
     else {
       board[this.tile()].pop(this);
       board[n].push(this);
@@ -25,6 +22,24 @@ function Enemy (name) {
   this.moveWithOption = function(array) {
     option = Math.floor(Math.random() * array.length);
     this[array[option]]();
+  }
+
+  this.moveRandomly = function() {
+    var here = this.tile();
+    var randomMoves = [];
+    if (this.canMove("up", here)) {
+      randomMoves.push("moveUp");
+    }
+    if (this.canMove("down", here)) {
+      randomMoves.push("moveDown");
+    }
+    if (this.canMove("left", here)) {
+      randomMoves.push("moveLeft");
+    }
+    if (this.canMove("right", here)) {
+      randomMoves.push("moveRight");
+    }
+    this.moveWithOption(randomMoves);
   }
 
   this.pathfind = function() {
@@ -39,7 +54,6 @@ function Enemy (name) {
     // this array will be populated with moves that will advance toward the target
     var validMoves = [];
 
-    // TODO: put this in a function isLeftCloser(), etc.
     if (this.canMove("up", here) && this.distanceFromTo(up, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveUp");
     }
@@ -53,7 +67,12 @@ function Enemy (name) {
       validMoves.push("moveRight");
     }
 
-    this.moveWithOption(validMoves);
+    if (validMoves.length) {
+      this.moveWithOption(validMoves);
+    }
+    else {
+      this.moveRandomly();
+    }
   }
 
   this.die = function() {

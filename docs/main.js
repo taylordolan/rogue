@@ -248,9 +248,6 @@ function Enemy (name) {
     if (board[n][0] && board[n][0].hasHealth) {
       health--;
     }
-    else if (board[n][0] && board[n][0].solid) {
-      return true;
-    }
     else {
       board[this.tile()].pop(this);
       board[n].push(this);
@@ -261,6 +258,24 @@ function Enemy (name) {
   this.moveWithOption = function(array) {
     option = Math.floor(Math.random() * array.length);
     this[array[option]]();
+  }
+
+  this.moveRandomly = function() {
+    var here = this.tile();
+    var randomMoves = [];
+    if (this.canMove("up", here)) {
+      randomMoves.push("moveUp");
+    }
+    if (this.canMove("down", here)) {
+      randomMoves.push("moveDown");
+    }
+    if (this.canMove("left", here)) {
+      randomMoves.push("moveLeft");
+    }
+    if (this.canMove("right", here)) {
+      randomMoves.push("moveRight");
+    }
+    this.moveWithOption(randomMoves);
   }
 
   this.pathfind = function() {
@@ -275,7 +290,6 @@ function Enemy (name) {
     // this array will be populated with moves that will advance toward the target
     var validMoves = [];
 
-    // TODO: put this in a function isLeftCloser(), etc.
     if (this.canMove("up", here) && this.distanceFromTo(up, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveUp");
     }
@@ -289,7 +303,12 @@ function Enemy (name) {
       validMoves.push("moveRight");
     }
 
-    this.moveWithOption(validMoves);
+    if (validMoves.length) {
+      this.moveWithOption(validMoves);
+    }
+    else {
+      this.moveRandomly();
+    }
   }
 
   this.die = function() {
@@ -387,10 +406,15 @@ function Hero() {
     var downLeft = down - 1;
     var downRight = down + 1;
     var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
+    var nearShipAndEmpty = [];
 
-    // can potentially deploy a hero to a space occupied by another hero.
-    // I'm going to leave this as-is for now.
-    board[nearShip[Math.floor(Math.random()*nearShip.length)]].push(this);
+    for (var i = 0; i < nearShip.length; i++) {
+      if (!board[nearShip[i]].length) {
+        nearShipAndEmpty.push(nearShip[i]);
+      }
+    }
+
+    board[nearShipAndEmpty[Math.floor(Math.random()*nearShipAndEmpty.length)]].push(this);
   }
 }
 
@@ -497,7 +521,6 @@ function Item() {
   this.shouldAvoid = function(n) {
 
     var avoid = false;
-
     if (this.avoids) {
       for (var i = 0; i < this.avoids.length; i++) {
         if (board[n][0] && board[n][0].type === this.avoids[i]) {
@@ -505,7 +528,6 @@ function Item() {
         }
       }
     }
-
     return avoid;
   }
 

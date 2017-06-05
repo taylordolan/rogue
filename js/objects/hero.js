@@ -37,10 +37,15 @@ function Hero() {
     var downLeft = down - 1;
     var downRight = down + 1;
     var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
+    var nearShipAndEmpty = [];
 
-    // can potentially deploy a hero to a space occupied by another hero.
-    // I'm going to leave this as-is for now.
-    board[nearShip[Math.floor(Math.random()*nearShip.length)]].push(this);
+    for (var i = 0; i < nearShip.length; i++) {
+      if (!board[nearShip[i]].length) {
+        nearShipAndEmpty.push(nearShip[i]);
+      }
+    }
+
+    board[nearShipAndEmpty[Math.floor(Math.random()*nearShipAndEmpty.length)]].push(this);
   }
 }
 
