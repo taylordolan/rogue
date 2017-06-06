@@ -10,6 +10,10 @@ function Hero() {
       board[n][0].die();
     }
 
+    else if (player.lunge && this.lunge(n)) {
+      return
+    }
+
     else if (board[n][0] && board[n][0].type === "fuel") {
       board[n][0].destroy();
       board[this.tile()].pop(this);
@@ -24,6 +28,35 @@ function Hero() {
     if (score === 2) {
       this.avoids = ["wall"];
     }
+  }
+
+  this.lunge = function(n) {
+
+    var here = this.tile();
+    var dest = n;
+
+    if (dest === here - boardSize && isAdjacent(dest, dest - boardSize)) {
+      var lungeTarget = dest - boardSize;
+    }
+    else if (dest === here + boardSize && isAdjacent(dest, dest + boardSize)) {
+      var lungeTarget = dest + boardSize;
+    }
+    else if (dest === here + 1 && isAdjacent(dest, dest + 1)) {
+      var lungeTarget = dest + 1;
+    }
+    else if (dest === here - 1 && isAdjacent(dest, dest - 1)) {
+      var lungeTarget = dest - 1;
+    }
+
+    if (lungeTarget) {
+      if (board[lungeTarget][0] && board[lungeTarget][0].type === "enemy") {
+        board[lungeTarget][0].die();
+        board[this.tile()].pop(this);
+        board[dest].push(this);
+        return true;
+      }
+    }
+    else return false;
   }
 
   this.deployNearShip = function() {
