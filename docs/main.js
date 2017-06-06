@@ -375,8 +375,17 @@ function Hero() {
   this.type = "hero";
 
   this.setTile = function(n) {
+
+    if (player.moveThroughWalls) {
+      this.avoids = ["ship"];
+    }
+
     if (board[n][0] && board[n][0].type === "enemy") {
       board[n][0].die();
+    }
+
+    else if (player.moveThroughWalls && this.moveThroughWalls(n)) {
+      return
     }
 
     else if (player.lunge && this.lunge(n)) {
@@ -402,28 +411,51 @@ function Hero() {
   this.lunge = function(n) {
 
     var here = this.tile();
-    var dest = n;
 
-    if (dest === here - boardSize && isAdjacent(dest, dest - boardSize)) {
-      var lungeTarget = dest - boardSize;
+    if (n === here - boardSize && isAdjacent(n, n - boardSize)) {
+      var target = n - boardSize;
     }
-    else if (dest === here + boardSize && isAdjacent(dest, dest + boardSize)) {
-      var lungeTarget = dest + boardSize;
+    else if (n === here + boardSize && isAdjacent(n, n + boardSize)) {
+      var target = n + boardSize;
     }
-    else if (dest === here + 1 && isAdjacent(dest, dest + 1)) {
-      var lungeTarget = dest + 1;
+    else if (n === here + 1 && isAdjacent(n, n + 1)) {
+      var target = n + 1;
     }
-    else if (dest === here - 1 && isAdjacent(dest, dest - 1)) {
-      var lungeTarget = dest - 1;
+    else if (n === here - 1 && isAdjacent(n, n - 1)) {
+      var target = n - 1;
     }
 
-    if (lungeTarget) {
-      if (board[lungeTarget][0] && board[lungeTarget][0].type === "enemy") {
-        board[lungeTarget][0].die();
+    if (target) {
+      if (board[target][0] && board[target][0].type === "enemy") {
+        board[target][0].die();
         board[this.tile()].pop(this);
-        board[dest].push(this);
+        board[n].push(this);
         return true;
       }
+    }
+    else return false;
+  }
+
+  this.moveThroughWalls = function(n) {
+
+    var here = this.tile();
+
+    if (n === here - boardSize && isAdjacent(n, n - boardSize)) {
+      var target = n - boardSize;
+    }
+    else if (n === here + boardSize && isAdjacent(n, n + boardSize)) {
+      var target = n + boardSize;
+    }
+    else if (n === here + 1 && isAdjacent(n, n + 1)) {
+      var target = n + 1;
+    }
+    else if (n === here - 1 && isAdjacent(n, n - 1)) {
+      var target = n - 1;
+    }
+
+    if (board[n][0] && board[n][0].type === "wall") {
+      this.setTile(target);
+      return true;
     }
     else return false;
   }
@@ -682,6 +714,7 @@ function Player() {
 
   // abilities
   this.lunge = true;
+  this.moveThroughWalls = true;
 }
 
 var player = new Player();
