@@ -474,7 +474,7 @@ function Enemy (name) {
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile])
+    board[this.tile()].splice(board[this.tile]);
     EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
   }
 }
@@ -539,7 +539,10 @@ function Hero() {
   this.setTile = function(n) {
 
     if (player.moveThroughWalls) {
-      this.avoids = ["ship"];
+      var index = this.avoids.indexOf("wall");
+      if (index !== -1) {
+        this.avoids.splice(index, 1);
+      }
     }
 
     if (board[n][0] && board[n][0].type === "enemy") {
@@ -579,7 +582,10 @@ function Hero() {
     }
 
     if (score === 2) {
-      this.avoids = ["wall"];
+      var index = this.avoids.indexOf("ship");
+      if (index !== -1) {
+        this.avoids.splice(index, 1);
+      }
     }
   }
 

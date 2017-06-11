@@ -76,7 +76,7 @@ function Enemy (name) {
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile])
+    board[this.tile()].splice(board[this.tile]);
     EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
   }
 }
