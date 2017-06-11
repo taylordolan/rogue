@@ -15,12 +15,25 @@ function Hero() {
       board[n][0].die();
     }
 
-    else if (player.moveThroughWalls && this.moveThroughWalls(n)) {
-      return
+    else if (isWall(n) && player.moveThroughWalls) {
+
+      if (n === upFrom(this.tile())) {
+        var d = "up";
+      }
+      else if (n === downFrom(this.tile())) {
+        var d = "down";
+      }
+      else if (n === leftFrom(this.tile())) {
+        var d = "left";
+      }
+      else if (n === rightFrom(this.tile())) {
+        var d = "right";
+      }
+      this.setTile(this.moveThroughWalls(d, n));
     }
 
     else if (player.lunge && this.lunge(n)) {
-      return
+      return;
     }
 
     else if (board[n][0] && board[n][0].type === "fuel") {
@@ -43,17 +56,17 @@ function Hero() {
 
     var here = this.tile();
 
-    if (n === here - boardSize && isAdjacent(n, n - boardSize)) {
-      var target = n - boardSize;
+    if (n === upFrom(here) && isAdjacent(n, upFrom(n))) {
+      var target = upFrom(n);
     }
-    else if (n === here + boardSize && isAdjacent(n, n + boardSize)) {
-      var target = n + boardSize;
+    else if (n === downFrom(here) && isAdjacent(n, downFrom(n))) {
+      var target = downFrom(n);
     }
-    else if (n === here + 1 && isAdjacent(n, n + 1)) {
-      var target = n + 1;
+    else if (n === rightFrom(here) && isAdjacent(n, rightFrom(n))) {
+      var target = rightFrom(n);
     }
-    else if (n === here - 1 && isAdjacent(n, n - 1)) {
-      var target = n - 1;
+    else if (n === leftFrom(here) && isAdjacent(n, leftFrom(n))) {
+      var target = leftFrom(n);
     }
 
     if (target) {
@@ -67,40 +80,41 @@ function Hero() {
     else return false;
   }
 
-  this.moveThroughWalls = function(n) {
+  this.moveThroughWalls = function(direction, n) {
 
-    var here = this.tile();
-
-    if (n === here - boardSize && isAdjacent(n, n - boardSize)) {
-      var target = n - boardSize;
+    if (direction === "up") {
+      while (isWall(n)) {
+        n = upFrom(n);
+      }
     }
-    else if (n === here + boardSize && isAdjacent(n, n + boardSize)) {
-      var target = n + boardSize;
+    else if (direction === "down") {
+      while (isWall(n)) {
+        n = downFrom(n);
+      }
     }
-    else if (n === here + 1 && isAdjacent(n, n + 1)) {
-      var target = n + 1;
+    else if (direction === "left") {
+      while (isWall(n)) {
+        n = leftFrom(n);
+      }
     }
-    else if (n === here - 1 && isAdjacent(n, n - 1)) {
-      var target = n - 1;
+    else if (direction === "right") {
+      while (isWall(n)) {
+        n = rightFrom(n);
+      }
     }
-
-    if (board[n][0] && board[n][0].type === "wall") {
-      this.setTile(target);
-      return true;
-    }
-    else return false;
+    return n;
   }
 
   this.deployNearShip = function() {
     var here = ship.tile();
-    var up = here - boardSize;
-    var down = here + boardSize;
-    var left = here - 1;
-    var right = here + 1;
-    var upLeft = up - 1;
-    var upRight = up + 1;
-    var downLeft = down - 1;
-    var downRight = down + 1;
+    var up = upFrom(here);
+    var down = downFrom(here);
+    var left = leftFrom(here);
+    var right = rightFrom(here);
+    var upLeft = upFrom(here) - 1;
+    var upRight = upFrom(here) + 1;
+    var downLeft = downFrom(here) - 1;
+    var downRight = downFrom(here) + 1;
     var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
     var nearShipAndEmpty = [];
 

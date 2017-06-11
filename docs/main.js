@@ -26,11 +26,32 @@ function rowFromTile(n) {
   }
 }
 
-// assumes walls are the only solid object
-// right now this function is used in testing valid move destinations,
-// so targets like enemies, heroes, and ships can't be solid.
 function isWall(n) {
-  return board[n].length > 0 && typeof board[n][0]["solid"] !== "undefined"
+  return board[n].length > 0 && typeof board[n][0]["type"] !== "undefined" && board[n][0]["type"] === "wall";
+}
+
+function upFrom(n) {
+  if (isAdjacent(n, n - boardSize)) {
+    return n - boardSize;
+  }
+}
+
+function downFrom(n) {
+  if (isAdjacent(n, n + boardSize)) {
+    return n + boardSize;
+  }
+}
+
+function leftFrom(n) {
+  if (isAdjacent(n, n - 1)) {
+    return n - 1;
+  }
+}
+
+function rightFrom(n) {
+  if (isAdjacent(n, n + 1)) {
+    return n + 1;
+  }
 }
 
 function createRandomEnemy() {
@@ -93,7 +114,7 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 8 === 0) {
+  if (turn && turn % 5 === 0) {
     createRandomEnemy();
   }
   renderBoard();
@@ -233,6 +254,147 @@ ShipHunterFactory = {
     }
   }
 };
+
+function Wall() {
+
+  Item.call(this);
+  this.char = "#";
+  this.solid = true;
+  this.type = "wall";
+
+  this.destroy = function() {
+    board[this.tile()].splice(board[this.tile])
+  }
+}
+
+function generateWalls() {
+
+  for (var i = 0; i < board.length; i++) {
+    if (board[i][0] && board[i][0].char === '#') {
+      board[i] = [];
+    }
+  }
+
+  function isCorner(n) {
+    var a = 0;
+    var b = boardSize - 1;
+    var c = boardSize * boardSize - boardSize;
+    var d = boardSize * boardSize - 1;
+    var corners = [a, b, c, d];
+
+    for (var i = 0; i < corners.length; i++) {
+      if (n === corners[i]) {
+        return true;
+      }
+    }
+  }
+
+  function clearNearShip() {
+
+    var here = ship.tile();
+    var up = here - boardSize;
+    var down = here + boardSize;
+    var left = here - 1;
+    var right = here + 1;
+    var upLeft = up - 1;
+    var upRight = up + 1;
+    var downLeft = down - 1;
+    var downRight = down + 1;
+    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
+
+    for (var i = 0; i < nearShip.length; i++) {
+      if (isWall(nearShip[i])) {
+        board[nearShip[i]][0].destroy();
+      }
+    }
+  }
+
+  for (var i=0; i<board.length; i++) {
+    var flip = Math.floor(Math.random() * 8);
+    if (flip < 1 && board[i].length === 0 && !isCorner(i)) {
+      board[i][0] = new Wall();
+    }
+  }
+
+  if (!isMapOpen()) {
+    generateWalls();
+  }
+
+  clearNearShip();
+  renderBoard();
+}
+
+function isMapOpen() {
+  var notWalls = [];
+
+  for (var i = 0; i < board.length; i++) {
+    if (!board[i].length || board[i][0].char !== '#') {
+      notWalls.push(i);
+    }
+  }
+
+  var numberOfWalls = board.length - notWalls.length;
+
+  function isConnected(startTile) {
+    lookedTiles = [];
+    lookedTiles.push(startTile);
+
+    function isInLookedTiles(n) {
+      for (var i=0; i<lookedTiles.length; i++) {
+        if (lookedTiles[i] === n) {
+          return true;
+        }
+      }
+    }
+
+    function lookAdjacentTiles(n) {
+
+      if (colFromTile(n) > 0 && !isWall(n-1)) {
+        var l = n - 1;
+      }
+      if (colFromTile(n) < boardSize - 1 && !isWall(n+1)) {
+        var r = n + 1;
+      }
+      if (rowFromTile(n) > 0 && !isWall(n-boardSize)) {
+        var t = n - boardSize;
+      }
+      if (rowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
+        var b = n + boardSize;
+      }
+      if (!isInLookedTiles(l)) {
+        lookedTiles.push(l);
+      }
+      if (!isInLookedTiles(r)) {
+        lookedTiles.push(r);
+      }
+      if (!isInLookedTiles(t)) {
+        lookedTiles.push(t);
+      }
+      if (!isInLookedTiles(b)) {
+        lookedTiles.push(b);
+      }
+    }
+
+    for (var i = 0; i < board.length; i++) {
+      var temp = lookedTiles.length;
+      for (var j = 0; j < temp; j++) {
+        lookAdjacentTiles(lookedTiles[j]);
+      }
+    }
+
+    return lookedTiles.length + numberOfWalls === board.length + 1;
+  }
+
+  var good = true;
+
+  // for (var i = 0; i < notWalls.length; i++) {
+  if (!isConnected(notWalls[0])) {
+    good = false;
+  }
+  // }
+
+  return good;
+}
 
 function Enemy (name) {
 
@@ -384,12 +546,25 @@ function Hero() {
       board[n][0].die();
     }
 
-    else if (player.moveThroughWalls && this.moveThroughWalls(n)) {
-      return
+    else if (isWall(n) && player.moveThroughWalls) {
+
+      if (n === upFrom(this.tile())) {
+        var d = "up";
+      }
+      else if (n === downFrom(this.tile())) {
+        var d = "down";
+      }
+      else if (n === leftFrom(this.tile())) {
+        var d = "left";
+      }
+      else if (n === rightFrom(this.tile())) {
+        var d = "right";
+      }
+      this.setTile(this.moveThroughWalls(d, n));
     }
 
     else if (player.lunge && this.lunge(n)) {
-      return
+      return;
     }
 
     else if (board[n][0] && board[n][0].type === "fuel") {
@@ -412,17 +587,17 @@ function Hero() {
 
     var here = this.tile();
 
-    if (n === here - boardSize && isAdjacent(n, n - boardSize)) {
-      var target = n - boardSize;
+    if (n === upFrom(here) && isAdjacent(n, upFrom(n))) {
+      var target = upFrom(n);
     }
-    else if (n === here + boardSize && isAdjacent(n, n + boardSize)) {
-      var target = n + boardSize;
+    else if (n === downFrom(here) && isAdjacent(n, downFrom(n))) {
+      var target = downFrom(n);
     }
-    else if (n === here + 1 && isAdjacent(n, n + 1)) {
-      var target = n + 1;
+    else if (n === rightFrom(here) && isAdjacent(n, rightFrom(n))) {
+      var target = rightFrom(n);
     }
-    else if (n === here - 1 && isAdjacent(n, n - 1)) {
-      var target = n - 1;
+    else if (n === leftFrom(here) && isAdjacent(n, leftFrom(n))) {
+      var target = leftFrom(n);
     }
 
     if (target) {
@@ -436,40 +611,41 @@ function Hero() {
     else return false;
   }
 
-  this.moveThroughWalls = function(n) {
+  this.moveThroughWalls = function(direction, n) {
 
-    var here = this.tile();
-
-    if (n === here - boardSize && isAdjacent(n, n - boardSize)) {
-      var target = n - boardSize;
+    if (direction === "up") {
+      while (isWall(n)) {
+        n = upFrom(n);
+      }
     }
-    else if (n === here + boardSize && isAdjacent(n, n + boardSize)) {
-      var target = n + boardSize;
+    else if (direction === "down") {
+      while (isWall(n)) {
+        n = downFrom(n);
+      }
     }
-    else if (n === here + 1 && isAdjacent(n, n + 1)) {
-      var target = n + 1;
+    else if (direction === "left") {
+      while (isWall(n)) {
+        n = leftFrom(n);
+      }
     }
-    else if (n === here - 1 && isAdjacent(n, n - 1)) {
-      var target = n - 1;
+    else if (direction === "right") {
+      while (isWall(n)) {
+        n = rightFrom(n);
+      }
     }
-
-    if (board[n][0] && board[n][0].type === "wall") {
-      this.setTile(target);
-      return true;
-    }
-    else return false;
+    return n;
   }
 
   this.deployNearShip = function() {
     var here = ship.tile();
-    var up = here - boardSize;
-    var down = here + boardSize;
-    var left = here - 1;
-    var right = here + 1;
-    var upLeft = up - 1;
-    var upRight = up + 1;
-    var downLeft = down - 1;
-    var downRight = down + 1;
+    var up = upFrom(here);
+    var down = downFrom(here);
+    var left = leftFrom(here);
+    var right = rightFrom(here);
+    var upLeft = upFrom(here) - 1;
+    var upRight = upFrom(here) + 1;
+    var downLeft = downFrom(here) - 1;
+    var downRight = downFrom(here) + 1;
     var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
     var nearShipAndEmpty = [];
 
@@ -733,147 +909,6 @@ function Ship() {
 }
 
 var ship = new Ship();
-
-function Wall() {
-
-  Item.call(this);
-  this.char = "#";
-  this.solid = true;
-  this.type = "wall";
-
-  this.destroy = function() {
-    board[this.tile()].splice(board[this.tile])
-  }
-}
-
-function generateWalls() {
-
-  for (var i = 0; i < board.length; i++) {
-    if (board[i][0] && board[i][0].char === '#') {
-      board[i] = [];
-    }
-  }
-
-  function isCorner(n) {
-    var a = 0;
-    var b = boardSize - 1;
-    var c = boardSize * boardSize - boardSize;
-    var d = boardSize * boardSize - 1;
-    var corners = [a, b, c, d];
-
-    for (var i = 0; i < corners.length; i++) {
-      if (n === corners[i]) {
-        return true;
-      }
-    }
-  }
-
-  function clearNearShip() {
-
-    var here = ship.tile();
-    var up = here - boardSize;
-    var down = here + boardSize;
-    var left = here - 1;
-    var right = here + 1;
-    var upLeft = up - 1;
-    var upRight = up + 1;
-    var downLeft = down - 1;
-    var downRight = down + 1;
-    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
-
-    for (var i = 0; i < nearShip.length; i++) {
-      if (isWall(nearShip[i])) {
-        board[nearShip[i]][0].destroy();
-      }
-    }
-  }
-
-  for (var i=0; i<board.length; i++) {
-    var flip = Math.floor(Math.random() * 8);
-    if (flip < 1 && board[i].length === 0 && !isCorner(i)) {
-      board[i][0] = new Wall();
-    }
-  }
-
-  if (!isMapOpen()) {
-    generateWalls();
-  }
-
-  clearNearShip();
-  renderBoard();
-}
-
-function isMapOpen() {
-  var notWalls = [];
-
-  for (var i = 0; i < board.length; i++) {
-    if (!board[i].length || board[i][0].char !== '#') {
-      notWalls.push(i);
-    }
-  }
-
-  var numberOfWalls = board.length - notWalls.length;
-
-  function isConnected(startTile) {
-    lookedTiles = [];
-    lookedTiles.push(startTile);
-
-    function isInLookedTiles(n) {
-      for (var i=0; i<lookedTiles.length; i++) {
-        if (lookedTiles[i] === n) {
-          return true;
-        }
-      }
-    }
-
-    function lookAdjacentTiles(n) {
-
-      if (colFromTile(n) > 0 && !isWall(n-1)) {
-        var l = n - 1;
-      }
-      if (colFromTile(n) < boardSize - 1 && !isWall(n+1)) {
-        var r = n + 1;
-      }
-      if (rowFromTile(n) > 0 && !isWall(n-boardSize)) {
-        var t = n - boardSize;
-      }
-      if (rowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
-        var b = n + boardSize;
-      }
-      if (!isInLookedTiles(l)) {
-        lookedTiles.push(l);
-      }
-      if (!isInLookedTiles(r)) {
-        lookedTiles.push(r);
-      }
-      if (!isInLookedTiles(t)) {
-        lookedTiles.push(t);
-      }
-      if (!isInLookedTiles(b)) {
-        lookedTiles.push(b);
-      }
-    }
-
-    for (var i = 0; i < board.length; i++) {
-      var temp = lookedTiles.length;
-      for (var j = 0; j < temp; j++) {
-        lookAdjacentTiles(lookedTiles[j]);
-      }
-    }
-
-    return lookedTiles.length + numberOfWalls === board.length + 1;
-  }
-
-  var good = true;
-
-  // for (var i = 0; i < notWalls.length; i++) {
-  if (!isConnected(notWalls[0])) {
-    good = false;
-  }
-  // }
-
-  return good;
-}
 
 window.addEventListener("load", function() {
 

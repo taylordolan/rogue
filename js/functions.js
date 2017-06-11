@@ -14,11 +14,32 @@ function rowFromTile(n) {
   }
 }
 
-// assumes walls are the only solid object
-// right now this function is used in testing valid move destinations,
-// so targets like enemies, heroes, and ships can't be solid.
 function isWall(n) {
-  return board[n].length > 0 && typeof board[n][0]["solid"] !== "undefined"
+  return board[n].length > 0 && typeof board[n][0]["type"] !== "undefined" && board[n][0]["type"] === "wall";
+}
+
+function upFrom(n) {
+  if (isAdjacent(n, n - boardSize)) {
+    return n - boardSize;
+  }
+}
+
+function downFrom(n) {
+  if (isAdjacent(n, n + boardSize)) {
+    return n + boardSize;
+  }
+}
+
+function leftFrom(n) {
+  if (isAdjacent(n, n - 1)) {
+    return n - 1;
+  }
+}
+
+function rightFrom(n) {
+  if (isAdjacent(n, n + 1)) {
+    return n + 1;
+  }
 }
 
 function createRandomEnemy() {
@@ -81,7 +102,7 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 8 === 0) {
+  if (turn && turn % 5 === 0) {
     createRandomEnemy();
   }
   renderBoard();
