@@ -1,8 +1,9 @@
 function Player() {
 
   // abilities
-  this.lunge = true;
-  this.moveThroughWalls = true;
+  this.lunge = false;
+  this.moveThroughWalls = false;
+  this.shoot = false;
 }
 
 var player = new Player();

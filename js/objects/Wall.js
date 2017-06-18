@@ -52,7 +52,7 @@ function generateWalls() {
     }
   }
 
-  for (var i=0; i<board.length; i++) {
+  for (var i = 0; i < board.length; i++) {
     var flip = Math.floor(Math.random() * 8);
     if (flip < 1 && board[i].length === 0 && !isCorner(i)) {
       board[i][0] = new Wall();
@@ -130,11 +130,9 @@ function isMapOpen() {
 
   var good = true;
 
-  // for (var i = 0; i < notWalls.length; i++) {
   if (!isConnected(notWalls[0])) {
     good = false;
   }
-  // }
 
   return good;
 }

@@ -14,6 +14,10 @@ function rowFromTile(n) {
   }
 }
 
+function isEnemy(n) {
+  return board[n].length > 0 && typeof board[n][0]["type"] !== "undefined" && board[n][0]["type"] === "enemy";
+}
+
 function isWall(n) {
   return board[n].length > 0 && typeof board[n][0]["type"] !== "undefined" && board[n][0]["type"] === "wall";
 }

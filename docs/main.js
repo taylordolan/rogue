@@ -26,6 +26,10 @@ function rowFromTile(n) {
   }
 }
 
+function isEnemy(n) {
+  return board[n].length > 0 && typeof board[n][0]["type"] !== "undefined" && board[n][0]["type"] === "enemy";
+}
+
 function isWall(n) {
   return board[n].length > 0 && typeof board[n][0]["type"] !== "undefined" && board[n][0]["type"] === "wall";
 }
@@ -309,7 +313,7 @@ function generateWalls() {
     }
   }
 
-  for (var i=0; i<board.length; i++) {
+  for (var i = 0; i < board.length; i++) {
     var flip = Math.floor(Math.random() * 8);
     if (flip < 1 && board[i].length === 0 && !isCorner(i)) {
       board[i][0] = new Wall();
@@ -387,11 +391,9 @@ function isMapOpen() {
 
   var good = true;
 
-  // for (var i = 0; i < notWalls.length; i++) {
   if (!isConnected(notWalls[0])) {
     good = false;
   }
-  // }
 
   return good;
 }
@@ -538,6 +540,25 @@ function Hero() {
 
   this.setTile = function(n) {
 
+    if (player.shoot) {
+
+      if (n === upFrom(this.tile())) {
+        var d = "up";
+      }
+      else if (n === downFrom(this.tile())) {
+        var d = "down";
+      }
+      else if (n === leftFrom(this.tile())) {
+        var d = "left";
+      }
+      else if (n === rightFrom(this.tile())) {
+        var d = "right";
+      }
+      if (this.shoot(d, n)) {
+        return;
+      }
+    }
+
     if (player.moveThroughWalls) {
       var index = this.avoids.indexOf("wall");
       if (index !== -1) {
@@ -545,7 +566,7 @@ function Hero() {
       }
     }
 
-    if (board[n][0] && board[n][0].type === "enemy") {
+    else if (board[n][0] && board[n][0].type === "enemy") {
       board[n][0].die();
     }
 
@@ -586,6 +607,61 @@ function Hero() {
       if (index !== -1) {
         this.avoids.splice(index, 1);
       }
+    }
+  }
+
+  this.shoot = function(direction, n) {
+
+    if (direction === "up") {
+      console.log(n);
+      while (!isWall(n) && !isEnemy(n)) {
+        if (isAdjacent(n, upFrom(n))) {
+          n = upFrom(n);
+        }
+        else {
+          break;
+        }
+      }
+    }
+    if (direction === "down") {
+      console.log(n);
+      while (!isWall(n) && !isEnemy(n)) {
+        if (isAdjacent(n, downFrom(n))) {
+          n = downFrom(n);
+        }
+        else {
+          break;
+        }
+      }
+    }
+    if (direction === "left") {
+      console.log(n);
+      while (!isWall(n) && !isEnemy(n)) {
+        if (isAdjacent(n, leftFrom(n))) {
+          n = leftFrom(n);
+        }
+        else {
+          break;
+        }
+      }
+    }
+    if (direction === "right") {
+      console.log(n);
+      while (!isWall(n) && !isEnemy(n)) {
+        if (isAdjacent(n, rightFrom(n))) {
+          n = rightFrom(n);
+        }
+        else {
+          break;
+        }
+      }
+    }
+    if (isEnemy(n)) {
+      board[n][0].die();
+      return true;
+    }
+    else {
+      return false;
     }
   }
 
@@ -895,8 +971,9 @@ function Item() {
 function Player() {
 
   // abilities
-  this.lunge = true;
-  this.moveThroughWalls = true;
+  this.lunge = false;
+  this.moveThroughWalls = false;
+  this.shoot = false;
 }
 
 var player = new Player();
