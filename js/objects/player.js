@@ -3,8 +3,8 @@ function Player() {
   // abilities
   this.lunge = false;
   this.moveThroughWalls = false;
-  this.shoot = false;
-  this.destroyWalls = true;
+  this.shoot = true;
+  this.destroyWalls = false;
 }
 
 var player = new Player();

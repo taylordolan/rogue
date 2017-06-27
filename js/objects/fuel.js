@@ -2,6 +2,7 @@ function Fuel() {
 
   Item.call(this);
   this.char = "f";
+  this.avoids = ["wall"];
   this.type = "fuel";
 
   this.deploy = function() {

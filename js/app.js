@@ -3,10 +3,10 @@ window.addEventListener("load", function() {
   ship.deployToCenterTile();
   heroA.deployNearShip();
   heroB.deployNearShip();
+  generateWalls();
   fuelA.deploy();
   fuelB.deploy();
   createRandomEnemy();
-  generateWalls();
   renderBoard();
 
   document.onkeydown = checkKey;

@@ -17,9 +17,10 @@ function Hero() {
     if (player.destroyWalls && this.destroyWalls(n)) {
       board[this.tile()].pop(this);
       board[n].push(this);
+      return;
     }
 
-    else if (player.shoot) {
+    if (player.shoot) {
 
       if (n === upFrom(this.tile())) {
         var d = "up";
@@ -38,7 +39,7 @@ function Hero() {
       }
     }
 
-    else if (board[n][0] && board[n][0].type === "enemy") {
+    if (board[n][0] && board[n][0].type === "enemy") {
       board[n][0].die();
     }
 
