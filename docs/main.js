@@ -118,7 +118,7 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 5 === 0) {
+  if (turn && turn % 2 === 0) {
     createRandomEnemy();
   }
   renderBoard();
@@ -263,7 +263,6 @@ function Wall() {
 
   Item.call(this);
   this.char = "#";
-  this.solid = true;
   this.type = "wall";
 
   this.destroy = function() {

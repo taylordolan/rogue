@@ -2,7 +2,6 @@ function Wall() {
 
   Item.call(this);
   this.char = "#";
-  this.solid = true;
   this.type = "wall";
 
   this.destroy = function() {
