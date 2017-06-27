@@ -118,7 +118,7 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 3 === 0) {
+  if (turn && turn % 2 === 0) {
     createRandomEnemy();
   }
   renderBoard();
@@ -407,16 +407,13 @@ function Hero() {
 
   this.destroyWalls = function(n) {
 
-    var surrounding = [
-      upFrom(n),
-      downFrom(n),
-      leftFrom(n),
-      rightFrom(n),
-      leftFrom(upFrom(n)),
-      rightFrom(upFrom(n)),
-      leftFrom(downFrom(n)),
-      rightFrom(downFrom(n))
-    ];
+    var surrounding = [];
+    for (var i = 0; i < board.length; i++) {
+      if (this.distanceFromTo(i, n) <= 3) {
+        // console.log(i);
+        surrounding.push(i);
+      }
+    }
 
     if (isWall(n)) {
       board[n][0].destroy();
@@ -573,7 +570,7 @@ function HeroHunter (name) {
 
   Enemy.call(this);
   this.char = "h";
-  this.avoids = ["wall", "ship", "enemy"];
+  this.avoids = ["wall", "ship", "enemy", "fuel"];
   this.target = function() {
     var distA = (this.distanceFromTo(this.tile(), heroA.tile()));
     var distB = (this.distanceFromTo(this.tile(), heroB.tile()));
@@ -837,7 +834,7 @@ function Player() {
   this.lunge = false;
   this.moveThroughWalls = false;
   this.shoot = true;
-  this.destroyWalls = false;
+  this.destroyWalls = true;
 }
 
 var player = new Player();
@@ -861,7 +858,7 @@ function ShipHunter (name) {
 
   Enemy.call(this);
   this.char = "s";
-  this.avoids = ["wall", "enemy"];
+  this.avoids = ["wall", "enemy", "fuel"];
   this.target = function() {
     return ship.tile();
   }

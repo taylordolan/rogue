@@ -85,16 +85,13 @@ function Hero() {
 
   this.destroyWalls = function(n) {
 
-    var surrounding = [
-      upFrom(n),
-      downFrom(n),
-      leftFrom(n),
-      rightFrom(n),
-      leftFrom(upFrom(n)),
-      rightFrom(upFrom(n)),
-      leftFrom(downFrom(n)),
-      rightFrom(downFrom(n))
-    ];
+    var surrounding = [];
+    for (var i = 0; i < board.length; i++) {
+      if (this.distanceFromTo(i, n) <= 3) {
+        // console.log(i);
+        surrounding.push(i);
+      }
+    }
 
     if (isWall(n)) {
       board[n][0].destroy();

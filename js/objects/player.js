@@ -4,7 +4,7 @@ function Player() {
   this.lunge = false;
   this.moveThroughWalls = false;
   this.shoot = true;
-  this.destroyWalls = false;
+  this.destroyWalls = true;
 }
 
 var player = new Player();
