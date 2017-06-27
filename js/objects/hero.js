@@ -7,7 +7,19 @@ function Hero() {
 
   this.setTile = function(n) {
 
-    if (player.shoot) {
+    if (player.moveThroughWalls || player.destroyWalls) {
+      var index = this.avoids.indexOf("wall");
+      if (index !== -1) {
+        this.avoids.splice(index, 1);
+      }
+    }
+
+    if (player.destroyWalls && this.destroyWalls(n)) {
+      board[this.tile()].pop(this);
+      board[n].push(this);
+    }
+
+    else if (player.shoot) {
 
       if (n === upFrom(this.tile())) {
         var d = "up";
@@ -23,13 +35,6 @@ function Hero() {
       }
       if (this.shoot(d, n)) {
         return;
-      }
-    }
-
-    if (player.moveThroughWalls) {
-      var index = this.avoids.indexOf("wall");
-      if (index !== -1) {
-        this.avoids.splice(index, 1);
       }
     }
 
@@ -74,6 +79,34 @@ function Hero() {
       if (index !== -1) {
         this.avoids.splice(index, 1);
       }
+    }
+  }
+
+  this.destroyWalls = function(n) {
+
+    var surrounding = [
+      upFrom(n),
+      downFrom(n),
+      leftFrom(n),
+      rightFrom(n),
+      leftFrom(upFrom(n)),
+      rightFrom(upFrom(n)),
+      leftFrom(downFrom(n)),
+      rightFrom(downFrom(n))
+    ];
+
+    if (isWall(n)) {
+      board[n][0].destroy();
+
+      for (var i = 0; i < surrounding.length; i++) {
+        if (isEnemy(surrounding[i])) {
+          board[surrounding[i]][0].die();
+        }
+      }
+      return true;
+    }
+    else {
+      return false;
     }
   }
 
