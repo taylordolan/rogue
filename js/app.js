@@ -7,7 +7,7 @@ window.addEventListener("load", function() {
   fuelA.deploy();
   fuelB.deploy();
   createRandomEnemy();
-  renderBoard();
+  render();
 
   document.onkeydown = checkKey;
   function checkKey(e) {

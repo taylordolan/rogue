@@ -121,10 +121,10 @@ function advanceTurn() {
   if (turn && turn % 4 === 0) {
     createRandomEnemy();
   }
-  renderBoard();
+  render();
 }
 
-function renderBoard() {
+function render() {
   // reset score contents
   scoreElement.innerHTML = '';
   if (health < 1) {
@@ -962,7 +962,7 @@ function generateWalls() {
   }
 
   clearNearShip();
-  renderBoard();
+  render();
 }
 
 function isMapOpen() {
@@ -1059,7 +1059,7 @@ window.addEventListener("load", function() {
   fuelA.deploy();
   fuelB.deploy();
   createRandomEnemy();
-  renderBoard();
+  render();
 
   document.onkeydown = checkKey;
   function checkKey(e) {

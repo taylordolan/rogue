@@ -63,7 +63,7 @@ function generateWalls() {
   }
 
   clearNearShip();
-  renderBoard();
+  render();
 }
 
 function isMapOpen() {
