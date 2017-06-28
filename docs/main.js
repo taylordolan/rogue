@@ -118,7 +118,7 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 2 === 0) {
+  if (turn && turn % 4 === 0) {
     createRandomEnemy();
   }
   renderBoard();
@@ -342,6 +342,10 @@ function Hero() {
       return;
     }
 
+    if (player.webs) {
+      this.web(this.tile());
+    }
+
     if (player.shoot) {
 
       if (n === upFrom(this.tile())) {
@@ -393,7 +397,8 @@ function Hero() {
     }
 
     else if (!this.shouldAvoid(n)) {
-      board[this.tile()].pop(this);
+      // board[this.tile()].pop(this);
+      board[this.tile()].splice(board[this.tile], 1);
       board[n].push(this);
     }
 
@@ -403,6 +408,10 @@ function Hero() {
         this.avoids.splice(index, 1);
       }
     }
+  }
+
+  this.web = function(tile) {
+    new Web().deploy(tile);
   }
 
   this.destroyWalls = function(n) {
@@ -831,10 +840,11 @@ function Item() {
 function Player() {
 
   // abilities
-  this.lunge = false;
-  this.moveThroughWalls = false;
-  this.shoot = true;
-  this.destroyWalls = true;
+  this.lunge = 0;
+  this.moveThroughWalls = 0;
+  this.shoot = 1;
+  this.destroyWalls = 0;
+  this.webs = 0;
 }
 
 var player = new Player();
@@ -1023,6 +1033,21 @@ function isMapOpen() {
   }
 
   return good;
+}
+
+function Web() {
+
+  Item.call(this);
+  this.char = ",";
+  this.type = "web";
+
+  this.deploy = function(tile) {
+    board[tile].push(this);
+  }
+
+  this.destroy = function() {
+    board[this.tile()].splice(board[this.tile]);
+  }
 }
 
 window.addEventListener("load", function() {

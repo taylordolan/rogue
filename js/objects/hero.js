@@ -20,6 +20,10 @@ function Hero() {
       return;
     }
 
+    if (player.webs) {
+      this.web(this.tile());
+    }
+
     if (player.shoot) {
 
       if (n === upFrom(this.tile())) {
@@ -71,7 +75,8 @@ function Hero() {
     }
 
     else if (!this.shouldAvoid(n)) {
-      board[this.tile()].pop(this);
+      // board[this.tile()].pop(this);
+      board[this.tile()].splice(board[this.tile], 1);
       board[n].push(this);
     }
 
@@ -81,6 +86,10 @@ function Hero() {
         this.avoids.splice(index, 1);
       }
     }
+  }
+
+  this.web = function(tile) {
+    new Web().deploy(tile);
   }
 
   this.destroyWalls = function(n) {
