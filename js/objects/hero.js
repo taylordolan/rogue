@@ -2,25 +2,22 @@ function Hero() {
 
   Item.call(this);
   this.hasHealth = true;
-  this.avoids = ["wall", "ship"];
+  this.avoids = ["wall", "ship", "hero"];
   this.type = "hero";
 
   this.setTile = function(n) {
 
     if (player.moveThroughWalls || player.destroyWalls) {
-      var index = this.avoids.indexOf("wall");
-      if (index !== -1) {
-        this.avoids.splice(index, 1);
-      }
+      removeFromArray(this.avoids, "wall");
     }
 
     if (player.destroyWalls && this.destroyWalls(n)) {
-      board[this.tile()].pop(this);
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
       return;
     }
 
-    if (player.webs) {
+    if (player.webs && !isInTile(this.tile(), "web")) {
       this.web(this.tile());
     }
 
@@ -43,8 +40,8 @@ function Hero() {
       }
     }
 
-    if (board[n][0] && board[n][0].type === "enemy") {
-      board[n][0].die();
+    if (isInTile(n, "enemy")) {
+      isInTile(n, "enemy").die();
     }
 
     else if (isWall(n) && player.moveThroughWalls) {
@@ -68,23 +65,15 @@ function Hero() {
       return;
     }
 
-    else if (board[n][0] && board[n][0].type === "fuel") {
-      board[n][0].destroy();
-      board[this.tile()].pop(this);
+    else if (isInTile(n, "fuel")) {
+      isInTile(n, "fuel").destroy();
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
 
     else if (!this.shouldAvoid(n)) {
-      // board[this.tile()].pop(this);
-      board[this.tile()].splice(board[this.tile], 1);
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
-    }
-
-    if (score === 2) {
-      var index = this.avoids.indexOf("ship");
-      if (index !== -1) {
-        this.avoids.splice(index, 1);
-      }
     }
   }
 
@@ -93,21 +82,17 @@ function Hero() {
   }
 
   this.destroyWalls = function(n) {
-
     var surrounding = [];
     for (var i = 0; i < board.length; i++) {
       if (this.distanceFromTo(i, n) <= 3) {
-        // console.log(i);
         surrounding.push(i);
       }
     }
-
     if (isWall(n)) {
       board[n][0].destroy();
-
       for (var i = 0; i < surrounding.length; i++) {
-        if (isEnemy(surrounding[i])) {
-          board[surrounding[i]][0].die();
+        if (isInTile(surrounding[i], "enemy")) {
+          isInTile(surrounding[i], "enemy").die();
         }
       }
       return true;
@@ -120,8 +105,7 @@ function Hero() {
   this.shoot = function(direction, n) {
 
     if (direction === "up") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, upFrom(n))) {
           n = upFrom(n);
         }
@@ -131,8 +115,7 @@ function Hero() {
       }
     }
     if (direction === "down") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
         }
@@ -142,8 +125,7 @@ function Hero() {
       }
     }
     if (direction === "left") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
         }
@@ -153,8 +135,7 @@ function Hero() {
       }
     }
     if (direction === "right") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
         }
@@ -163,8 +144,8 @@ function Hero() {
         }
       }
     }
-    if (isEnemy(n)) {
-      board[n][0].die();
+    if (isInTile(n, "enemy")) {
+      isInTile(n, "enemy").die();
       return true;
     }
     else {
@@ -250,5 +231,5 @@ function Hero() {
 
 var heroA = new Hero();
 var heroB = new Hero();
-heroA.char = 'a';
-heroB.char = 'b';
+heroA.char = "a";
+heroB.char = "b";

@@ -111,3 +111,18 @@ function advanceTurn() {
   }
   render();
 }
+
+function isInTile(tile, type) {
+  for (var i = 0; i < board[tile].length; i++) {
+    if (board[tile][i].type == type) {
+      return board[tile][i];
+    }
+  }
+  return false;
+}
+
+function removeFromArray(array, value) {
+  if (array.indexOf(value) !== -1) {
+    array.splice(array.indexOf(value), 1);
+  }
+}

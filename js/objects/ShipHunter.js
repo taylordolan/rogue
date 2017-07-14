@@ -2,14 +2,14 @@ function ShipHunter (name) {
 
   Enemy.call(this);
   this.char = "s";
-  this.avoids = ["wall", "enemy", "fuel"];
+  this.avoids = ["wall", "enemy", "hero"];
   this.target = function() {
     return ship.tile();
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile])
-    ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
+    removeFromArray(board[this.tile()], this);
+    removeFromArray(ShipHunterFactory.allShipHunters, this);
   }
 }
 

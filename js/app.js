@@ -1,5 +1,6 @@
 window.addEventListener("load", function() {
 
+  setUpBoard();
   ship.deployToCenterTile();
   heroA.deployNearShip();
   heroB.deployNearShip();

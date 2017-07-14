@@ -98,7 +98,7 @@ function Item() {
     var avoid = false;
     if (this.avoids) {
       for (var i = 0; i < this.avoids.length; i++) {
-        if (board[n][0] && board[n][0].type === this.avoids[i]) {
+        if (isInTile(n, this.avoids[i])) {
           avoid = true;
         }
       }
@@ -139,7 +139,7 @@ function Item() {
       else return false;
     }
     else {
-      console.log("bad direction passed to canMove()");
+      console.error("bad direction passed to canMove()");
     }
   }
 

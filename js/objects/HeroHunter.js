@@ -2,7 +2,7 @@ function HeroHunter (name) {
 
   Enemy.call(this);
   this.char = "h";
-  this.avoids = ["wall", "ship", "enemy", "fuel"];
+  this.avoids = ["wall", "ship", "enemy"];
   this.target = function() {
     var distA = (this.distanceFromTo(this.tile(), heroA.tile()));
     var distB = (this.distanceFromTo(this.tile(), heroB.tile()));
@@ -15,8 +15,8 @@ function HeroHunter (name) {
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile])
-    HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
+    removeFromArray(board[this.tile()], this);
+    removeFromArray(HeroHunterFactory.allHeroHunters, this);
   }
 }
 

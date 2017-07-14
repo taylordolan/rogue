@@ -6,6 +6,53 @@ body {
   font-size: 30px;
   height: 95vh;
   justify-content: center;
-  letter-spacing: .4em;
   width: 100vw;
+}
+
+.tile {
+  display: inline-flex;
+  height: 30px;
+  width: 30px;
+}
+
+.tile * {
+  position: absolute;
+}
+
+.health {
+  font-size: .8em;
+  letter-spacing: .15em;
+}
+
+.up::before {
+  color: red;
+  content: "×";
+  position: absolute;
+  top: -30px;
+  z-index: 1;
+}
+
+.down::after {
+  bottom: -30px;
+  color: red;
+  content: "×";
+  left: 0;
+  position: absolute;
+  z-index: 1;
+}
+
+.left::before {
+  color: red;
+  content: "×";
+  left: -30px;
+  position: absolute;
+  z-index: 1;
+}
+
+.right::after {
+  color: red;
+  content: "×";
+  left: 30px;
+  position: absolute;
+  z-index: 1;
 }
