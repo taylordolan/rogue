@@ -112,7 +112,7 @@ function advanceTurn() {
   render();
 }
 
-function tileIncludes(tile, type) {
+function isInTile(tile, type) {
   for (var i = 0; i < board[tile].length; i++) {
     if (board[tile][i].type == type) {
       return board[tile][i];

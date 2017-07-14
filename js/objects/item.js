@@ -98,7 +98,7 @@ function Item() {
     var avoid = false;
     if (this.avoids) {
       for (var i = 0; i < this.avoids.length; i++) {
-        if (tileIncludes(n, this.avoids[i])) {
+        if (isInTile(n, this.avoids[i])) {
           avoid = true;
         }
       }

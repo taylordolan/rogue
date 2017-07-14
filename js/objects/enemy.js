@@ -51,8 +51,8 @@ function Enemy (name) {
     var left = here - 1;
     var right = here + 1;
 
-    if (tileIncludes(here, "web")) {
-      tileIncludes(here, "web").destroy();
+    if (isInTile(here, "web")) {
+      isInTile(here, "web").destroy();
       return;
     }
 

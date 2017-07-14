@@ -122,7 +122,7 @@ function advanceTurn() {
   render();
 }
 
-function tileIncludes(tile, type) {
+function isInTile(tile, type) {
   for (var i = 0; i < board[tile].length; i++) {
     if (board[tile][i].type == type) {
       return board[tile][i];
@@ -167,41 +167,41 @@ function render() {
   renderHealth();
   for (var i = 0; i < tileElements.length; i++) {
     tileElements[i].innerHTML = "";
-    if (tileIncludes(i, "heroA")) {
+    if (isInTile(i, "heroA")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "heroA").char;
+      span.innerHTML = isInTile(i, "heroA").char;
       span.classList.add("hero-a");
       tileElements[i].appendChild(span);
     }
-    else if (tileIncludes(i, "heroB")) {
+    else if (isInTile(i, "heroB")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "heroB").char;
+      span.innerHTML = isInTile(i, "heroB").char;
       span.classList.add("hero-b");
       tileElements[i].appendChild(span);
     }
-    else if (tileIncludes(i, "ship")) {
+    else if (isInTile(i, "ship")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "ship").char;
+      span.innerHTML = isInTile(i, "ship").char;
       tileElements[i].appendChild(span);
     }
-    else if (tileIncludes(i, "wall")) {
+    else if (isInTile(i, "wall")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "wall").char;
+      span.innerHTML = isInTile(i, "wall").char;
       tileElements[i].appendChild(span);
     }
-    else if (tileIncludes(i, "enemy")) {
+    else if (isInTile(i, "enemy")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "enemy").char;
+      span.innerHTML = isInTile(i, "enemy").char;
       tileElements[i].appendChild(span);
     }
-    if (tileIncludes(i, "web")) {
+    if (isInTile(i, "web")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "web").char;
+      span.innerHTML = isInTile(i, "web").char;
       tileElements[i].appendChild(span);
     }
-    if (tileIncludes(i, "fuel")) {
+    if (isInTile(i, "fuel")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "fuel").char;
+      span.innerHTML = isInTile(i, "fuel").char;
       tileElements[i].appendChild(span);
     }
     if (!board[i].length)  {
@@ -507,8 +507,8 @@ function Enemy (name) {
     var left = here - 1;
     var right = here + 1;
 
-    if (tileIncludes(here, "web")) {
-      tileIncludes(here, "web").destroy();
+    if (isInTile(here, "web")) {
+      isInTile(here, "web").destroy();
       return;
     }
 
@@ -616,7 +616,7 @@ function Hero() {
       return;
     }
 
-    if (player.webs && !tileIncludes(this.tile(), "web")) {
+    if (player.webs && !isInTile(this.tile(), "web")) {
       this.web(this.tile());
     }
 
@@ -639,8 +639,8 @@ function Hero() {
       }
     }
 
-    if (tileIncludes(n, "enemy")) {
-      tileIncludes(n, "enemy").die();
+    if (isInTile(n, "enemy")) {
+      isInTile(n, "enemy").die();
     }
 
     else if (isWall(n) && player.moveThroughWalls) {
@@ -664,8 +664,8 @@ function Hero() {
       return;
     }
 
-    else if (tileIncludes(n, "fuel")) {
-      tileIncludes(n, "fuel").destroy();
+    else if (isInTile(n, "fuel")) {
+      isInTile(n, "fuel").destroy();
       var index = board[this.tile()].indexOf(this);
       if (index !== -1) {
         board[this.tile()].splice(index, 1);
@@ -696,8 +696,8 @@ function Hero() {
     if (isWall(n)) {
       board[n][0].destroy();
       for (var i = 0; i < surrounding.length; i++) {
-        if (tileIncludes(surrounding[i], "enemy")) {
-          tileIncludes(surrounding[i], "enemy").die();
+        if (isInTile(surrounding[i], "enemy")) {
+          isInTile(surrounding[i], "enemy").die();
         }
       }
       return true;
@@ -710,7 +710,7 @@ function Hero() {
   this.shoot = function(direction, n) {
 
     if (direction === "up") {
-      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
         if (isAdjacent(n, upFrom(n))) {
           n = upFrom(n);
         }
@@ -720,7 +720,7 @@ function Hero() {
       }
     }
     if (direction === "down") {
-      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
         }
@@ -730,7 +730,7 @@ function Hero() {
       }
     }
     if (direction === "left") {
-      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
         }
@@ -740,7 +740,7 @@ function Hero() {
       }
     }
     if (direction === "right") {
-      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
         }
@@ -749,8 +749,8 @@ function Hero() {
         }
       }
     }
-    if (tileIncludes(n, "enemy")) {
-      tileIncludes(n, "enemy").die();
+    if (isInTile(n, "enemy")) {
+      isInTile(n, "enemy").die();
       return true;
     }
     else {
@@ -941,7 +941,7 @@ function Item() {
     var avoid = false;
     if (this.avoids) {
       for (var i = 0; i < this.avoids.length; i++) {
-        if (tileIncludes(n, this.avoids[i])) {
+        if (isInTile(n, this.avoids[i])) {
           avoid = true;
         }
       }

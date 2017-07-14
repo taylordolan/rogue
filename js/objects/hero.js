@@ -23,7 +23,7 @@ function Hero() {
       return;
     }
 
-    if (player.webs && !tileIncludes(this.tile(), "web")) {
+    if (player.webs && !isInTile(this.tile(), "web")) {
       this.web(this.tile());
     }
 
@@ -46,8 +46,8 @@ function Hero() {
       }
     }
 
-    if (tileIncludes(n, "enemy")) {
-      tileIncludes(n, "enemy").die();
+    if (isInTile(n, "enemy")) {
+      isInTile(n, "enemy").die();
     }
 
     else if (isWall(n) && player.moveThroughWalls) {
@@ -71,8 +71,8 @@ function Hero() {
       return;
     }
 
-    else if (tileIncludes(n, "fuel")) {
-      tileIncludes(n, "fuel").destroy();
+    else if (isInTile(n, "fuel")) {
+      isInTile(n, "fuel").destroy();
       var index = board[this.tile()].indexOf(this);
       if (index !== -1) {
         board[this.tile()].splice(index, 1);
@@ -103,8 +103,8 @@ function Hero() {
     if (isWall(n)) {
       board[n][0].destroy();
       for (var i = 0; i < surrounding.length; i++) {
-        if (tileIncludes(surrounding[i], "enemy")) {
-          tileIncludes(surrounding[i], "enemy").die();
+        if (isInTile(surrounding[i], "enemy")) {
+          isInTile(surrounding[i], "enemy").die();
         }
       }
       return true;
@@ -117,7 +117,7 @@ function Hero() {
   this.shoot = function(direction, n) {
 
     if (direction === "up") {
-      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
         if (isAdjacent(n, upFrom(n))) {
           n = upFrom(n);
         }
@@ -127,7 +127,7 @@ function Hero() {
       }
     }
     if (direction === "down") {
-      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
         }
@@ -137,7 +137,7 @@ function Hero() {
       }
     }
     if (direction === "left") {
-      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
         }
@@ -147,7 +147,7 @@ function Hero() {
       }
     }
     if (direction === "right") {
-      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
         }
@@ -156,8 +156,8 @@ function Hero() {
         }
       }
     }
-    if (tileIncludes(n, "enemy")) {
-      tileIncludes(n, "enemy").die();
+    if (isInTile(n, "enemy")) {
+      isInTile(n, "enemy").die();
       return true;
     }
     else {

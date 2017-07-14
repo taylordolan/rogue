@@ -34,41 +34,41 @@ function render() {
   renderHealth();
   for (var i = 0; i < tileElements.length; i++) {
     tileElements[i].innerHTML = "";
-    if (tileIncludes(i, "heroA")) {
+    if (isInTile(i, "heroA")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "heroA").char;
+      span.innerHTML = isInTile(i, "heroA").char;
       span.classList.add("hero-a");
       tileElements[i].appendChild(span);
     }
-    else if (tileIncludes(i, "heroB")) {
+    else if (isInTile(i, "heroB")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "heroB").char;
+      span.innerHTML = isInTile(i, "heroB").char;
       span.classList.add("hero-b");
       tileElements[i].appendChild(span);
     }
-    else if (tileIncludes(i, "ship")) {
+    else if (isInTile(i, "ship")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "ship").char;
+      span.innerHTML = isInTile(i, "ship").char;
       tileElements[i].appendChild(span);
     }
-    else if (tileIncludes(i, "wall")) {
+    else if (isInTile(i, "wall")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "wall").char;
+      span.innerHTML = isInTile(i, "wall").char;
       tileElements[i].appendChild(span);
     }
-    else if (tileIncludes(i, "enemy")) {
+    else if (isInTile(i, "enemy")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "enemy").char;
+      span.innerHTML = isInTile(i, "enemy").char;
       tileElements[i].appendChild(span);
     }
-    if (tileIncludes(i, "web")) {
+    if (isInTile(i, "web")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "web").char;
+      span.innerHTML = isInTile(i, "web").char;
       tileElements[i].appendChild(span);
     }
-    if (tileIncludes(i, "fuel")) {
+    if (isInTile(i, "fuel")) {
       var span = document.createElement("span");
-      span.innerHTML = tileIncludes(i, "fuel").char;
+      span.innerHTML = isInTile(i, "fuel").char;
       tileElements[i].appendChild(span);
     }
     if (!board[i].length)  {
