@@ -13,7 +13,7 @@ function Enemy (name) {
       health--;
     }
     else {
-      board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
   }
@@ -78,9 +78,5 @@ function Enemy (name) {
     else {
       this.moveRandomly();
     }
-  }
-
-  this.die = function() {
-    EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this), 1);
   }
 }

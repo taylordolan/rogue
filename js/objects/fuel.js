@@ -41,7 +41,7 @@ function Fuel() {
   }
 
   this.destroy = function() {
-    board[this.tile()].splice(board[this.tile]);
+    removeFromArray(board[this.tile()], this);
   }
 }
 

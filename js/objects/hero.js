@@ -8,17 +8,11 @@ function Hero() {
   this.setTile = function(n) {
 
     if (player.moveThroughWalls || player.destroyWalls) {
-      var index = this.avoids.indexOf("wall");
-      if (index !== -1) {
-        this.avoids.splice(index, 1);
-      }
+      removeFromArray(this.avoids, "wall");
     }
 
     if (player.destroyWalls && this.destroyWalls(n)) {
-      var index = board[this.tile()].indexOf(this);
-      if (index !== -1) {
-        board[this.tile()].splice(index, 1);
-      }
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
       return;
     }
@@ -73,18 +67,12 @@ function Hero() {
 
     else if (isInTile(n, "fuel")) {
       isInTile(n, "fuel").destroy();
-      var index = board[this.tile()].indexOf(this);
-      if (index !== -1) {
-        board[this.tile()].splice(index, 1);
-      }
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
 
     else if (!this.shouldAvoid(n)) {
-      var index = board[this.tile()].indexOf(this);
-      if (index !== -1) {
-        board[this.tile()].splice(index, 1);
-      }
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
   }

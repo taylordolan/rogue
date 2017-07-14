@@ -15,8 +15,8 @@ function HeroHunter (name) {
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
-    HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
+    removeFromArray(board[this.tile()], this);
+    removeFromArray(HeroHunterFactory.allHeroHunters, this);
   }
 }
 

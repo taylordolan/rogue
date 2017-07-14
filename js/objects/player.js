@@ -5,7 +5,7 @@ function Player() {
   this.moveThroughWalls = 0;
   this.shoot            = 0;
   this.destroyWalls     = 0;
-  this.webs             = 0;
+  this.webs             = 1;
 }
 
 var player = new Player();

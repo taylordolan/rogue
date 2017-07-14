@@ -8,8 +8,8 @@ function ShipHunter (name) {
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
-    ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
+    removeFromArray(board[this.tile()], this);
+    removeFromArray(ShipHunterFactory.allShipHunters, this);
   }
 }
 

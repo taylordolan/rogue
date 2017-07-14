@@ -133,6 +133,12 @@ function isInTile(tile, type) {
   return false;
 }
 
+function removeFromArray(array, value) {
+  if (array.indexOf(value) !== -1) {
+    array.splice(array.indexOf(value), 1);
+  }
+}
+
 function setUpBoard() {
   for (var i = 0; i < board.length; i++) {
     boardElement.innerHTML += "<span class='tile' data-id='" + i + "'></span>"
@@ -259,8 +265,8 @@ function HeroHunter (name) {
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
-    HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
+    removeFromArray(board[this.tile()], this);
+    removeFromArray(HeroHunterFactory.allHeroHunters, this);
   }
 }
 
@@ -292,8 +298,8 @@ function ShipHunter (name) {
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
-    ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
+    removeFromArray(board[this.tile()], this);
+    removeFromArray(ShipHunterFactory.allShipHunters, this);
   }
 }
 
@@ -468,7 +474,7 @@ function Enemy (name) {
       health--;
     }
     else {
-      board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
   }
@@ -534,10 +540,6 @@ function Enemy (name) {
       this.moveRandomly();
     }
   }
-
-  this.die = function() {
-    EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this), 1);
-  }
 }
 
 function Fuel() {
@@ -583,7 +585,7 @@ function Fuel() {
   }
 
   this.destroy = function() {
-    board[this.tile()].splice(board[this.tile]);
+    removeFromArray(board[this.tile()], this);
   }
 }
 
@@ -600,17 +602,11 @@ function Hero() {
   this.setTile = function(n) {
 
     if (player.moveThroughWalls || player.destroyWalls) {
-      var index = this.avoids.indexOf("wall");
-      if (index !== -1) {
-        this.avoids.splice(index, 1);
-      }
+      removeFromArray(this.avoids, "wall");
     }
 
     if (player.destroyWalls && this.destroyWalls(n)) {
-      var index = board[this.tile()].indexOf(this);
-      if (index !== -1) {
-        board[this.tile()].splice(index, 1);
-      }
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
       return;
     }
@@ -665,18 +661,12 @@ function Hero() {
 
     else if (isInTile(n, "fuel")) {
       isInTile(n, "fuel").destroy();
-      var index = board[this.tile()].indexOf(this);
-      if (index !== -1) {
-        board[this.tile()].splice(index, 1);
-      }
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
 
     else if (!this.shouldAvoid(n)) {
-      var index = board[this.tile()].indexOf(this);
-      if (index !== -1) {
-        board[this.tile()].splice(index, 1);
-      }
+      removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
   }
@@ -1069,7 +1059,7 @@ function Player() {
   this.moveThroughWalls = 0;
   this.shoot            = 0;
   this.destroyWalls     = 0;
-  this.webs             = 0;
+  this.webs             = 1;
 }
 
 var player = new Player();
@@ -1100,7 +1090,7 @@ function Web() {
   }
 
   this.destroy = function() {
-    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
+    removeFromArray(board[this.tile()], this);
   }
 }
 

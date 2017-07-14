@@ -120,3 +120,9 @@ function isInTile(tile, type) {
   }
   return false;
 }
+
+function removeFromArray(array, value) {
+  if (array.indexOf(value) !== -1) {
+    array.splice(array.indexOf(value), 1);
+  }
+}
