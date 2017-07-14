@@ -25,34 +25,34 @@ body {
 }
 
 .up::before {
+  color: red;
   content: "×";
   position: absolute;
   top: -30px;
   z-index: 1;
-  color: red;
 }
 
 .down::after {
-  content: "×";
-  position: absolute;
   bottom: -30px;
-  left: 0;
-  z-index: 1;
   color: red;
+  content: "×";
+  left: 0;
+  position: absolute;
+  z-index: 1;
 }
 
 .left::before {
-  content: "×";
-  position: absolute;
-  left: -30px;
-  z-index: 1;
   color: red;
+  content: "×";
+  left: -30px;
+  position: absolute;
+  z-index: 1;
 }
 
 .right::after {
-  content: "×";
-  position: absolute;
-  left: 30px;
-  z-index: 1;
   color: red;
+  content: "×";
+  left: 30px;
+  position: absolute;
+  z-index: 1;
 }
