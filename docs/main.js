@@ -2,8 +2,6 @@ var board = [];
 var boardElement = document.getElementsByClassName("board")[0];
 var boardSize = 11;
 var health = 3;
-var score = 0;
-var scoreElement = document.getElementsByClassName("score")[0];
 var turn = 0;
 
 for (var i = 0; i < boardSize * boardSize; i++) {
@@ -118,7 +116,7 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 5 === 0) {
+  if (turn && turn % 4 === 0) {
     createRandomEnemy();
   }
   render();
@@ -587,7 +585,6 @@ function Fuel() {
 
   this.destroy = function() {
     board[this.tile()].splice(board[this.tile]);
-    score++;
   }
 }
 
@@ -682,13 +679,6 @@ function Hero() {
         board[this.tile()].splice(index, 1);
       }
       board[n].push(this);
-    }
-
-    if (score === 2) {
-      var index = this.avoids.indexOf("ship");
-      if (index !== -1) {
-        this.avoids.splice(index, 1);
-      }
     }
   }
 

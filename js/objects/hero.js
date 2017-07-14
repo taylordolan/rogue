@@ -87,13 +87,6 @@ function Hero() {
       }
       board[n].push(this);
     }
-
-    if (score === 2) {
-      var index = this.avoids.indexOf("ship");
-      if (index !== -1) {
-        this.avoids.splice(index, 1);
-      }
-    }
   }
 
   this.web = function(tile) {
