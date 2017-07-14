@@ -106,8 +106,17 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 4 === 0) {
+  if (turn && turn % 5 === 0) {
     createRandomEnemy();
   }
   render();
+}
+
+function tileIncludes(tile, type) {
+  for (var i = 0; i < board[tile].length; i++) {
+    if (board[tile][i].type == type) {
+      return board[tile][i];
+    }
+  }
+  return false;
 }

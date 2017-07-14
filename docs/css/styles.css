@@ -6,6 +6,76 @@ body {
   font-size: 30px;
   height: 95vh;
   justify-content: center;
-  letter-spacing: .4em;
   width: 100vw;
+}
+
+.health.health {
+  text-align: left;
+  display: inline;
+  font-size: .8em;
+  letter-spacing: .15em;
+}
+
+.board > span {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  position: relative;
+}
+
+.vertical,
+.horizontal {
+  position: relative;
+}
+
+.up::before {
+  content: "×";
+  position: absolute;
+  top: -30px;
+  z-index: 1;
+  color: red;
+}
+
+.down::after {
+  content: "×";
+  position: absolute;
+  bottom: -30px;
+  left: 0;
+  z-index: 1;
+  color: red;
+}
+
+.left::before {
+  content: "×";
+  position: absolute;
+  left: -30px;
+  z-index: 1;
+  color: red;
+}
+
+.right::after {
+  content: "×";
+  position: absolute;
+  left: 30px;
+  z-index: 1;
+  color: red;
+}
+
+/*.board > span * + * {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 15px;
+}*/
+
+.dim {
+  color: green;
+}
+
+.web {
+  position: absolute;
+}
+
+.board > span * {
+  position: absolute;
 }

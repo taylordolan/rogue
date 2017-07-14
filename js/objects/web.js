@@ -1,7 +1,7 @@
 function Web() {
 
   Item.call(this);
-  this.char = ",";
+  this.char = "/";
   this.type = "web";
 
   this.deploy = function(tile) {
@@ -9,6 +9,7 @@ function Web() {
   }
 
   this.destroy = function() {
-    board[this.tile()].splice(board[this.tile]);
+    // board[this.tile()].splice(board[this.tile]);
+    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
   }
 }

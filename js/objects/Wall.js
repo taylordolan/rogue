@@ -52,7 +52,7 @@ function generateWalls() {
   }
 
   for (var i = 0; i < board.length; i++) {
-    var flip = Math.floor(Math.random() * 3);
+    var flip = Math.floor(Math.random() * 4);
     if (flip < 1 && board[i].length === 0 && !isCorner(i)) {
       board[i][0] = new Wall();
     }

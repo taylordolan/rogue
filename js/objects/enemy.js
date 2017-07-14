@@ -9,11 +9,12 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (board[n][0] && board[n][0].hasHealth) {
+    // if (n == this.target()) {
+    if (n == heroA.tile() || n == heroB.tile() || n == ship.tile()) {
       health--;
     }
     else {
-      board[this.tile()].pop(this);
+      board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
       board[n].push(this);
     }
   }
@@ -51,6 +52,11 @@ function Enemy (name) {
     var left = here - 1;
     var right = here + 1;
 
+    if (tileIncludes(here, "web")) {
+      tileIncludes(here, "web").destroy();
+      return;
+    }
+
     // this array will be populated with moves that will advance toward the target
     var validMoves = [];
 
@@ -76,7 +82,12 @@ function Enemy (name) {
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile]);
-    EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
+    // board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
+    // var index = board[this.tile()].indexOf(this);
+    // console.log(index);
+    // if (index !== -1) {
+    //   board[this.tile()].splice(index, 1);
+    // }
+    EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this), 1);
   }
 }

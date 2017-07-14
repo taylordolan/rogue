@@ -118,72 +118,132 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 4 === 0) {
+  if (turn && turn % 5 === 0) {
     createRandomEnemy();
   }
   render();
 }
 
-function render() {
-  // reset score contents
-  scoreElement.innerHTML = '';
-  if (health < 1) {
-    scoreElement.innerHTML += "0";
+function tileIncludes(tile, type) {
+  for (var i = 0; i < board[tile].length; i++) {
+    if (board[tile][i].type == type) {
+      return board[tile][i];
+    }
   }
-  else {
-    scoreElement.innerHTML += health;
-  }
-  for (var i=0; i<boardSize-3; i++) {
-    scoreElement.innerHTML += "&nbsp;";
-  }
-  if (score < 10) {
-    scoreElement.innerHTML += "&nbsp;";
-  }
-  scoreElement.innerHTML += score;
-  scoreElement.innerHTML += "<br><br>";
+  return false;
+}
 
-  // reset board contents
-  boardElement.innerHTML = '';
-  if (health < 1) {
-    for (var i=0; i<boardSize; i++) {
-      for (var j=0; j<boardSize; j++) {
-        boardElement.innerHTML += "x";
-      }
+var tileElements = [];
+var healthElement;
+
+function newRender() {
+  for (var i = 0; i < board.length; i++) {
+    boardElement.innerHTML += "<span data-id='" + i + "'></span>"
+    if ((i + 1) % boardSize === 0) {
       boardElement.innerHTML += "<br>";
     }
-  } else {
-    for (var i=0; i<board.length; i++) {
-      // for tiles that are populated, render their letters
-      if (board[i].length) {
-        boardElement.innerHTML += board[i][0].char;
-      }
-      // on even numbered turns, put '•' above and below hero A
-      else if (turn % 2 === 0 && (i === heroA.tile() - boardSize || i === heroA.tile() + boardSize)) {
-        boardElement.innerHTML += '•';
-      }
-      // on odd numbered turns, put '•' above and below hero B
-      else if (i === heroB.tile() - boardSize && (turn + 1) % 2 === 0 || i === heroB.tile() + boardSize && (turn + 1) % 2 === 0) {
-        boardElement.innerHTML += '•';
-      }
-      // on odd numbered turns, put '•' to the left and right of hero A
-      else if ((turn + 1) % 2 === 0 && (i === heroA.tile() - 1 && (i + 1) % boardSize !== 0 || i === heroA.tile() + 1 && i % boardSize !== 0)) {
-        boardElement.innerHTML += '•';
-      }
-      // on odd numbered turns, put '•' to the left and right of hero B
-      else if (turn % 2 === 0 && (i === heroB.tile() - 1 && (i + 1) % boardSize !== 0 || i === heroB.tile() + 1 && i % boardSize !== 0)) {
-        boardElement.innerHTML += '•';
-      }
-      // put '.' on empty tiles
-      else if (board[i].length === 0) {
-        boardElement.innerHTML += '.';
-      }
-      // insert line breaks
-      if ((i + 1) % boardSize === 0) {
-        boardElement.innerHTML += '<br>';
-      }
+  }
+  tileElements = boardElement.querySelectorAll("[data-id]");
+  healthElement = document.createElement("span");
+  healthElement.classList.add("health");
+  boardElement.appendChild(healthElement);
+}
+
+function getElement(tile) {
+  for (var i = 0; i < tileElements.length; i++) {
+    if (tileElements[i].getAttribute("data-id") == tile.toString()) {
+      return tileElements[i];
     }
   }
-  boardElement.innerHTML += "<br><br>";
+}
+
+function renderHealth() {
+  healthElement.innerHTML = "";
+  for (var i = 0; i < health; i++) {
+    healthElement.innerHTML += "❤️";
+  }
+  healthElement.innerHTML += "<br>";
+}
+
+function render() {
+  renderHealth();
+  for (var i = 0; i < tileElements.length; i++) {
+    tileElements[i].innerHTML = "";
+    if (tileIncludes(i, "heroA")) {
+      var span = document.createElement("span");
+      span.innerHTML = tileIncludes(i, "heroA").char;
+      span.classList.add("hero-a");
+      tileElements[i].appendChild(span);
+    }
+    else if (tileIncludes(i, "heroB")) {
+      var span = document.createElement("span");
+      span.innerHTML = tileIncludes(i, "heroB").char;
+      span.classList.add("hero-b");
+      tileElements[i].appendChild(span);
+    }
+    else if (tileIncludes(i, "ship")) {
+      var span = document.createElement("span");
+      span.innerHTML = tileIncludes(i, "ship").char;
+      tileElements[i].appendChild(span);
+    }
+    else if (tileIncludes(i, "wall")) {
+      var span = document.createElement("span");
+      span.innerHTML = tileIncludes(i, "wall").char;
+      tileElements[i].appendChild(span);
+    }
+    else if (tileIncludes(i, "enemy")) {
+      var span = document.createElement("span");
+      span.innerHTML = tileIncludes(i, "enemy").char;
+      tileElements[i].appendChild(span);
+    }
+    if (tileIncludes(i, "web")) {
+      var span = document.createElement("span");
+      span.classList.add("web");
+      span.innerHTML = tileIncludes(i, "web").char;
+      tileElements[i].appendChild(span);
+    }
+    if (tileIncludes(i, "fuel")) {
+      var span = document.createElement("span");
+      span.innerHTML = tileIncludes(i, "fuel").char;
+      tileElements[i].appendChild(span);
+    }
+    if (!board[i].length)  {
+      var span = document.createElement("span");
+      span.innerHTML = "·";
+      tileElements[i].appendChild(span);
+    }
+  }
+
+  var heroAElement = document.getElementsByClassName("hero-a")[0];
+  var heroBElement = document.getElementsByClassName("hero-b")[0];
+  if (turn % 2 === 0) {
+    if (heroA.canMove("up", heroA.tile())) {
+      heroAElement.classList.add("up");
+    }
+    if (heroA.canMove("down", heroA.tile())) {
+      heroAElement.classList.add("down");
+    }
+    if (heroB.canMove("left", heroB.tile())) {
+      heroBElement.classList.add("left");
+    }
+    if (heroB.canMove("right", heroB.tile())) {
+      heroBElement.classList.add("right");
+    }
+  }
+  if ((turn + 1) % 2 === 0) {
+    if (heroB.canMove("up", heroB.tile())) {
+      heroBElement.classList.add("up");
+    }
+    if (heroB.canMove("down", heroB.tile())) {
+      heroBElement.classList.add("down");
+    }
+    if (heroA.canMove("left", heroA.tile())) {
+      heroAElement.classList.add("left");
+    }
+    if (heroA.canMove("right", heroA.tile())) {
+      heroAElement.classList.add("right");
+    }
+  }
 }
 
 function Enemy (name) {
@@ -197,11 +257,12 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (board[n][0] && board[n][0].hasHealth) {
+    // if (n == this.target()) {
+    if (n == heroA.tile() || n == heroB.tile() || n == ship.tile()) {
       health--;
     }
     else {
-      board[this.tile()].pop(this);
+      board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
       board[n].push(this);
     }
   }
@@ -239,6 +300,11 @@ function Enemy (name) {
     var left = here - 1;
     var right = here + 1;
 
+    if (tileIncludes(here, "web")) {
+      tileIncludes(here, "web").destroy();
+      return;
+    }
+
     // this array will be populated with moves that will advance toward the target
     var validMoves = [];
 
@@ -264,8 +330,13 @@ function Enemy (name) {
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile]);
-    EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this),1);
+    // board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
+    // var index = board[this.tile()].indexOf(this);
+    // console.log(index);
+    // if (index !== -1) {
+    //   board[this.tile()].splice(index, 1);
+    // }
+    EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this), 1);
   }
 }
 
@@ -324,7 +395,7 @@ function Hero() {
 
   Item.call(this);
   this.hasHealth = true;
-  this.avoids = ["wall", "ship"];
+  this.avoids = ["wall", "ship", "heroA", "heroB"];
   this.type = "hero";
 
   this.setTile = function(n) {
@@ -337,12 +408,15 @@ function Hero() {
     }
 
     if (player.destroyWalls && this.destroyWalls(n)) {
-      board[this.tile()].pop(this);
+      var index = board[this.tile()].indexOf(this);
+      if (index !== -1) {
+        board[this.tile()].splice(index, 1);
+      }
       board[n].push(this);
       return;
     }
 
-    if (player.webs) {
+    if (player.webs && !tileIncludes(this.tile(), "web")) {
       this.web(this.tile());
     }
 
@@ -365,8 +439,8 @@ function Hero() {
       }
     }
 
-    if (board[n][0] && board[n][0].type === "enemy") {
-      board[n][0].die();
+    if (tileIncludes(n, "enemy")) {
+      tileIncludes(n, "enemy").die();
     }
 
     else if (isWall(n) && player.moveThroughWalls) {
@@ -390,15 +464,20 @@ function Hero() {
       return;
     }
 
-    else if (board[n][0] && board[n][0].type === "fuel") {
-      board[n][0].destroy();
-      board[this.tile()].pop(this);
+    else if (tileIncludes(n, "fuel")) {
+      tileIncludes(n, "fuel").destroy();
+      var index = board[this.tile()].indexOf(this);
+      if (index !== -1) {
+        board[this.tile()].splice(index, 1);
+      }
       board[n].push(this);
     }
 
     else if (!this.shouldAvoid(n)) {
-      // board[this.tile()].pop(this);
-      board[this.tile()].splice(board[this.tile], 1);
+      var index = board[this.tile()].indexOf(this);
+      if (index !== -1) {
+        board[this.tile()].splice(index, 1);
+      }
       board[n].push(this);
     }
 
@@ -415,21 +494,17 @@ function Hero() {
   }
 
   this.destroyWalls = function(n) {
-
     var surrounding = [];
     for (var i = 0; i < board.length; i++) {
       if (this.distanceFromTo(i, n) <= 3) {
-        // console.log(i);
         surrounding.push(i);
       }
     }
-
     if (isWall(n)) {
       board[n][0].destroy();
-
       for (var i = 0; i < surrounding.length; i++) {
-        if (isEnemy(surrounding[i])) {
-          board[surrounding[i]][0].die();
+        if (tileIncludes(surrounding[i], "enemy")) {
+          tileIncludes(surrounding[i], "enemy").die();
         }
       }
       return true;
@@ -442,8 +517,7 @@ function Hero() {
   this.shoot = function(direction, n) {
 
     if (direction === "up") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
         if (isAdjacent(n, upFrom(n))) {
           n = upFrom(n);
         }
@@ -453,8 +527,7 @@ function Hero() {
       }
     }
     if (direction === "down") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
         }
@@ -464,8 +537,7 @@ function Hero() {
       }
     }
     if (direction === "left") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
         }
@@ -475,8 +547,7 @@ function Hero() {
       }
     }
     if (direction === "right") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
         }
@@ -485,8 +556,8 @@ function Hero() {
         }
       }
     }
-    if (isEnemy(n)) {
-      board[n][0].die();
+    if (tileIncludes(n, "enemy")) {
+      tileIncludes(n, "enemy").die();
       return true;
     }
     else {
@@ -572,14 +643,16 @@ function Hero() {
 
 var heroA = new Hero();
 var heroB = new Hero();
-heroA.char = 'a';
-heroB.char = 'b';
+heroA.char = "a";
+heroA.type = "heroA";
+heroB.char = "b";
+heroB.type = "heroB";
 
 function HeroHunter (name) {
 
   Enemy.call(this);
   this.char = "h";
-  this.avoids = ["wall", "ship", "enemy", "fuel"];
+  this.avoids = ["wall", "ship", "enemy"];
   this.target = function() {
     var distA = (this.distanceFromTo(this.tile(), heroA.tile()));
     var distB = (this.distanceFromTo(this.tile(), heroB.tile()));
@@ -592,7 +665,7 @@ function HeroHunter (name) {
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile])
+    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
     HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
   }
 }
@@ -715,7 +788,8 @@ function Item() {
     var avoid = false;
     if (this.avoids) {
       for (var i = 0; i < this.avoids.length; i++) {
-        if (board[n][0] && board[n][0].type === this.avoids[i]) {
+        // if (board[n][0] && board[n][0].type === this.avoids[i]) {
+        if (tileIncludes(n, this.avoids[i])) {
           avoid = true;
         }
       }
@@ -756,7 +830,7 @@ function Item() {
       else return false;
     }
     else {
-      console.log("bad direction passed to canMove()");
+      console.error("bad direction passed to canMove()");
     }
   }
 
@@ -840,11 +914,11 @@ function Item() {
 function Player() {
 
   // abilities
-  this.lunge = 0;
+  this.lunge            = 0;
   this.moveThroughWalls = 0;
-  this.shoot = 1;
-  this.destroyWalls = 0;
-  this.webs = 0;
+  this.shoot            = 0;
+  this.destroyWalls     = 0;
+  this.webs             = 0;
 }
 
 var player = new Player();
@@ -868,13 +942,13 @@ function ShipHunter (name) {
 
   Enemy.call(this);
   this.char = "s";
-  this.avoids = ["wall", "enemy", "fuel"];
+  this.avoids = ["wall", "enemy", "heroA", "heroB"];
   this.target = function() {
     return ship.tile();
   }
 
   this.die = function() {
-    board[this.tile()].splice(board[this.tile])
+    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
     ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
   }
 }
@@ -951,7 +1025,7 @@ function generateWalls() {
   }
 
   for (var i = 0; i < board.length; i++) {
-    var flip = Math.floor(Math.random() * 3);
+    var flip = Math.floor(Math.random() * 4);
     if (flip < 1 && board[i].length === 0 && !isCorner(i)) {
       board[i][0] = new Wall();
     }
@@ -1038,7 +1112,7 @@ function isMapOpen() {
 function Web() {
 
   Item.call(this);
-  this.char = ",";
+  this.char = "/";
   this.type = "web";
 
   this.deploy = function(tile) {
@@ -1046,12 +1120,14 @@ function Web() {
   }
 
   this.destroy = function() {
-    board[this.tile()].splice(board[this.tile]);
+    // board[this.tile()].splice(board[this.tile]);
+    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
   }
 }
 
 window.addEventListener("load", function() {
 
+  newRender();
   ship.deployToCenterTile();
   heroA.deployNearShip();
   heroB.deployNearShip();

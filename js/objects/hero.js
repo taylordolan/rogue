@@ -2,7 +2,7 @@ function Hero() {
 
   Item.call(this);
   this.hasHealth = true;
-  this.avoids = ["wall", "ship"];
+  this.avoids = ["wall", "ship", "heroA", "heroB"];
   this.type = "hero";
 
   this.setTile = function(n) {
@@ -15,12 +15,15 @@ function Hero() {
     }
 
     if (player.destroyWalls && this.destroyWalls(n)) {
-      board[this.tile()].pop(this);
+      var index = board[this.tile()].indexOf(this);
+      if (index !== -1) {
+        board[this.tile()].splice(index, 1);
+      }
       board[n].push(this);
       return;
     }
 
-    if (player.webs) {
+    if (player.webs && !tileIncludes(this.tile(), "web")) {
       this.web(this.tile());
     }
 
@@ -43,8 +46,8 @@ function Hero() {
       }
     }
 
-    if (board[n][0] && board[n][0].type === "enemy") {
-      board[n][0].die();
+    if (tileIncludes(n, "enemy")) {
+      tileIncludes(n, "enemy").die();
     }
 
     else if (isWall(n) && player.moveThroughWalls) {
@@ -68,15 +71,20 @@ function Hero() {
       return;
     }
 
-    else if (board[n][0] && board[n][0].type === "fuel") {
-      board[n][0].destroy();
-      board[this.tile()].pop(this);
+    else if (tileIncludes(n, "fuel")) {
+      tileIncludes(n, "fuel").destroy();
+      var index = board[this.tile()].indexOf(this);
+      if (index !== -1) {
+        board[this.tile()].splice(index, 1);
+      }
       board[n].push(this);
     }
 
     else if (!this.shouldAvoid(n)) {
-      // board[this.tile()].pop(this);
-      board[this.tile()].splice(board[this.tile], 1);
+      var index = board[this.tile()].indexOf(this);
+      if (index !== -1) {
+        board[this.tile()].splice(index, 1);
+      }
       board[n].push(this);
     }
 
@@ -93,21 +101,17 @@ function Hero() {
   }
 
   this.destroyWalls = function(n) {
-
     var surrounding = [];
     for (var i = 0; i < board.length; i++) {
       if (this.distanceFromTo(i, n) <= 3) {
-        // console.log(i);
         surrounding.push(i);
       }
     }
-
     if (isWall(n)) {
       board[n][0].destroy();
-
       for (var i = 0; i < surrounding.length; i++) {
-        if (isEnemy(surrounding[i])) {
-          board[surrounding[i]][0].die();
+        if (tileIncludes(surrounding[i], "enemy")) {
+          tileIncludes(surrounding[i], "enemy").die();
         }
       }
       return true;
@@ -120,8 +124,7 @@ function Hero() {
   this.shoot = function(direction, n) {
 
     if (direction === "up") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
         if (isAdjacent(n, upFrom(n))) {
           n = upFrom(n);
         }
@@ -131,8 +134,7 @@ function Hero() {
       }
     }
     if (direction === "down") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
         }
@@ -142,8 +144,7 @@ function Hero() {
       }
     }
     if (direction === "left") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
         }
@@ -153,8 +154,7 @@ function Hero() {
       }
     }
     if (direction === "right") {
-      console.log(n);
-      while (!isWall(n) && !isEnemy(n)) {
+      while (!tileIncludes(n, "wall") && !tileIncludes(n, "enemy") && !tileIncludes(n, "heroA") && !tileIncludes(n, "heroB") && !tileIncludes(n, "ship")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
         }
@@ -163,8 +163,8 @@ function Hero() {
         }
       }
     }
-    if (isEnemy(n)) {
-      board[n][0].die();
+    if (tileIncludes(n, "enemy")) {
+      tileIncludes(n, "enemy").die();
       return true;
     }
     else {
@@ -250,5 +250,7 @@ function Hero() {
 
 var heroA = new Hero();
 var heroB = new Hero();
-heroA.char = 'a';
-heroB.char = 'b';
+heroA.char = "a";
+heroA.type = "heroA";
+heroB.char = "b";
+heroB.type = "heroB";
