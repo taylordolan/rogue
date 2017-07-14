@@ -9,7 +9,6 @@ function Web() {
   }
 
   this.destroy = function() {
-    // board[this.tile()].splice(board[this.tile]);
     board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
   }
 }

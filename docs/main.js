@@ -467,7 +467,6 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    // if (n == this.target()) {
     if (n == heroA.tile() || n == heroB.tile() || n == ship.tile()) {
       health--;
     }
@@ -540,12 +539,6 @@ function Enemy (name) {
   }
 
   this.die = function() {
-    // board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
-    // var index = board[this.tile()].indexOf(this);
-    // console.log(index);
-    // if (index !== -1) {
-    //   board[this.tile()].splice(index, 1);
-    // }
     EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this), 1);
   }
 }
@@ -958,7 +951,6 @@ function Item() {
     var avoid = false;
     if (this.avoids) {
       for (var i = 0; i < this.avoids.length; i++) {
-        // if (board[n][0] && board[n][0].type === this.avoids[i]) {
         if (tileIncludes(n, this.avoids[i])) {
           avoid = true;
         }
@@ -1119,7 +1111,6 @@ function Web() {
   }
 
   this.destroy = function() {
-    // board[this.tile()].splice(board[this.tile]);
     board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
   }
 }

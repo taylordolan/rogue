@@ -98,7 +98,6 @@ function Item() {
     var avoid = false;
     if (this.avoids) {
       for (var i = 0; i < this.avoids.length; i++) {
-        // if (board[n][0] && board[n][0].type === this.avoids[i]) {
         if (tileIncludes(n, this.avoids[i])) {
           avoid = true;
         }

@@ -9,7 +9,6 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    // if (n == this.target()) {
     if (n == heroA.tile() || n == heroB.tile() || n == ship.tile()) {
       health--;
     }
@@ -82,12 +81,6 @@ function Enemy (name) {
   }
 
   this.die = function() {
-    // board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
-    // var index = board[this.tile()].indexOf(this);
-    // console.log(index);
-    // if (index !== -1) {
-    //   board[this.tile()].splice(index, 1);
-    // }
     EnemyFactory.allEnemies.splice(EnemyFactory.allEnemies.indexOf(this), 1);
   }
 }
