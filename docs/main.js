@@ -612,10 +612,6 @@ function Hero() {
       return;
     }
 
-    if (player.webs && !isInTile(this.tile(), "web")) {
-      this.web(this.tile());
-    }
-
     if (player.shoot) {
 
       if (n === upFrom(this.tile())) {
@@ -653,6 +649,9 @@ function Hero() {
       else if (n === rightFrom(this.tile())) {
         var d = "right";
       }
+      if (player.webs && !isInTile(this.tile(), "web")) {
+        this.web(this.tile());
+      }
       this.setTile(this.moveThroughWalls(d, n));
     }
 
@@ -662,11 +661,17 @@ function Hero() {
 
     else if (isInTile(n, "fuel")) {
       isInTile(n, "fuel").destroy();
+      if (player.webs && !isInTile(this.tile(), "web")) {
+        this.web(this.tile());
+      }
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
 
     else if (!this.shouldAvoid(n)) {
+      if (player.webs && !isInTile(this.tile(), "web")) {
+        this.web(this.tile());
+      }
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
