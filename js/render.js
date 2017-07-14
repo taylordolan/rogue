@@ -1,7 +1,4 @@
-var tileElements = [];
-var healthElement;
-
-function newRender() {
+function setUpBoard() {
   for (var i = 0; i < board.length; i++) {
     boardElement.innerHTML += "<span class='tile' data-id='" + i + "'></span>"
     if ((i + 1) % boardSize === 0) {

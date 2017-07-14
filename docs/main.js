@@ -2,6 +2,8 @@ var board = [];
 var boardElement = document.getElementsByClassName("board")[0];
 var boardSize = 11;
 var health = 3;
+var healthElement;
+var tileElements = [];
 var turn = 0;
 
 for (var i = 0; i < boardSize * boardSize; i++) {
@@ -131,10 +133,7 @@ function isInTile(tile, type) {
   return false;
 }
 
-var tileElements = [];
-var healthElement;
-
-function newRender() {
+function setUpBoard() {
   for (var i = 0; i < board.length; i++) {
     boardElement.innerHTML += "<span class='tile' data-id='" + i + "'></span>"
     if ((i + 1) % boardSize === 0) {
@@ -1107,7 +1106,7 @@ function Web() {
 
 window.addEventListener("load", function() {
 
-  newRender();
+  setUpBoard();
   ship.deployToCenterTile();
   heroA.deployNearShip();
   heroB.deployNearShip();
