@@ -3,7 +3,7 @@ var healthElement;
 
 function newRender() {
   for (var i = 0; i < board.length; i++) {
-    boardElement.innerHTML += "<span data-id='" + i + "'></span>"
+    boardElement.innerHTML += "<span class='tile' data-id='" + i + "'></span>"
     if ((i + 1) % boardSize === 0) {
       boardElement.innerHTML += "<br>";
     }
@@ -63,7 +63,6 @@ function render() {
     }
     if (tileIncludes(i, "web")) {
       var span = document.createElement("span");
-      span.classList.add("web");
       span.innerHTML = tileIncludes(i, "web").char;
       tileElements[i].appendChild(span);
     }

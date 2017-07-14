@@ -9,23 +9,19 @@ body {
   width: 100vw;
 }
 
-.health.health {
-  text-align: left;
-  display: inline;
+.tile {
+  display: inline-flex;
+  height: 30px;
+  width: 30px;
+}
+
+.tile * {
+  position: absolute;
+}
+
+.health {
   font-size: .8em;
   letter-spacing: .15em;
-}
-
-.board > span {
-  display: inline-flex;
-  width: 30px;
-  height: 30px;
-  position: relative;
-}
-
-.vertical,
-.horizontal {
-  position: relative;
 }
 
 .up::before {
@@ -59,23 +55,4 @@ body {
   left: 30px;
   z-index: 1;
   color: red;
-}
-
-/*.board > span * + * {
-  position: absolute;
-  top: 0;
-  right: 0;
-  font-size: 15px;
-}*/
-
-.dim {
-  color: green;
-}
-
-.web {
-  position: absolute;
-}
-
-.board > span * {
-  position: absolute;
 }

@@ -138,7 +138,7 @@ var healthElement;
 
 function newRender() {
   for (var i = 0; i < board.length; i++) {
-    boardElement.innerHTML += "<span data-id='" + i + "'></span>"
+    boardElement.innerHTML += "<span class='tile' data-id='" + i + "'></span>"
     if ((i + 1) % boardSize === 0) {
       boardElement.innerHTML += "<br>";
     }
@@ -198,7 +198,6 @@ function render() {
     }
     if (tileIncludes(i, "web")) {
       var span = document.createElement("span");
-      span.classList.add("web");
       span.innerHTML = tileIncludes(i, "web").char;
       tileElements[i].appendChild(span);
     }
@@ -244,6 +243,217 @@ function render() {
       heroAElement.classList.add("right");
     }
   }
+}
+
+function HeroHunter (name) {
+
+  Enemy.call(this);
+  this.char = "h";
+  this.avoids = ["wall", "ship", "enemy"];
+  this.target = function() {
+    var distA = (this.distanceFromTo(this.tile(), heroA.tile()));
+    var distB = (this.distanceFromTo(this.tile(), heroB.tile()));
+    if (distA < distB) {
+      return heroA.tile();
+    }
+    else {
+      return heroB.tile();
+    }
+  }
+
+  this.die = function() {
+    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
+    HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
+  }
+}
+
+HeroHunterFactory = {
+
+  createHeroHunter: function () {
+    var newHeroHunter = {};
+    HeroHunter.apply(newHeroHunter, arguments);
+    this.allHeroHunters.push(newHeroHunter);
+    return newHeroHunter;
+  },
+
+  allHeroHunters: [],
+
+  forEachHeroHunter: function (action) {
+    for (var i = 0; i < this.allHeroHunters.length; i++){
+      action.call(this.allHeroHunters[i]);
+    }
+  }
+};
+
+function ShipHunter (name) {
+
+  Enemy.call(this);
+  this.char = "s";
+  this.avoids = ["wall", "enemy", "heroA", "heroB"];
+  this.target = function() {
+    return ship.tile();
+  }
+
+  this.die = function() {
+    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
+    ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
+  }
+}
+
+ShipHunterFactory = {
+
+  createShipHunter: function () {
+    var newShipHunter = {};
+    ShipHunter.apply(newShipHunter, arguments);
+    this.allShipHunters.push(newShipHunter);
+    return newShipHunter;
+  },
+
+  allShipHunters: [],
+
+  forEachShipHunter: function (action) {
+    for (var i = 0; i < this.allShipHunters.length; i++){
+      action.call(this.allShipHunters[i]);
+    }
+  }
+};
+
+function Wall() {
+
+  Item.call(this);
+  this.char = "#";
+  this.type = "wall";
+
+  this.destroy = function() {
+    board[this.tile()].splice(board[this.tile])
+  }
+}
+
+function generateWalls() {
+
+  for (var i = 0; i < board.length; i++) {
+    if (board[i][0] && board[i][0].char === '#') {
+      board[i] = [];
+    }
+  }
+
+  function isCorner(n) {
+    var a = 0;
+    var b = boardSize - 1;
+    var c = boardSize * boardSize - boardSize;
+    var d = boardSize * boardSize - 1;
+    var corners = [a, b, c, d];
+
+    for (var i = 0; i < corners.length; i++) {
+      if (n === corners[i]) {
+        return true;
+      }
+    }
+  }
+
+  function clearNearShip() {
+
+    var here = ship.tile();
+    var up = here - boardSize;
+    var down = here + boardSize;
+    var left = here - 1;
+    var right = here + 1;
+    var upLeft = up - 1;
+    var upRight = up + 1;
+    var downLeft = down - 1;
+    var downRight = down + 1;
+    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
+
+    for (var i = 0; i < nearShip.length; i++) {
+      if (isWall(nearShip[i])) {
+        board[nearShip[i]][0].destroy();
+      }
+    }
+  }
+
+  for (var i = 0; i < board.length; i++) {
+    var flip = Math.floor(Math.random() * 4);
+    if (flip < 1 && board[i].length === 0 && !isCorner(i)) {
+      board[i][0] = new Wall();
+    }
+  }
+
+  if (!isMapOpen()) {
+    generateWalls();
+  }
+
+  clearNearShip();
+  render();
+}
+
+function isMapOpen() {
+  var notWalls = [];
+
+  for (var i = 0; i < board.length; i++) {
+    if (!board[i].length || board[i][0].char !== '#') {
+      notWalls.push(i);
+    }
+  }
+
+  var numberOfWalls = board.length - notWalls.length;
+
+  function isConnected(startTile) {
+    lookedTiles = [];
+    lookedTiles.push(startTile);
+
+    function isInLookedTiles(n) {
+      for (var i=0; i<lookedTiles.length; i++) {
+        if (lookedTiles[i] === n) {
+          return true;
+        }
+      }
+    }
+
+    function lookAdjacentTiles(n) {
+
+      if (colFromTile(n) > 0 && !isWall(n-1)) {
+        var l = n - 1;
+      }
+      if (colFromTile(n) < boardSize - 1 && !isWall(n+1)) {
+        var r = n + 1;
+      }
+      if (rowFromTile(n) > 0 && !isWall(n-boardSize)) {
+        var t = n - boardSize;
+      }
+      if (rowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
+        var b = n + boardSize;
+      }
+      if (!isInLookedTiles(l)) {
+        lookedTiles.push(l);
+      }
+      if (!isInLookedTiles(r)) {
+        lookedTiles.push(r);
+      }
+      if (!isInLookedTiles(t)) {
+        lookedTiles.push(t);
+      }
+      if (!isInLookedTiles(b)) {
+        lookedTiles.push(b);
+      }
+    }
+
+    for (var i = 0; i < board.length; i++) {
+      var temp = lookedTiles.length;
+      for (var j = 0; j < temp; j++) {
+        lookAdjacentTiles(lookedTiles[j]);
+      }
+    }
+
+    return lookedTiles.length + numberOfWalls === board.length + 1;
+  }
+
+  var good = true;
+
+  if (!isConnected(notWalls[0])) {
+    good = false;
+  }
+
+  return good;
 }
 
 function Enemy (name) {
@@ -648,46 +858,6 @@ heroA.type = "heroA";
 heroB.char = "b";
 heroB.type = "heroB";
 
-function HeroHunter (name) {
-
-  Enemy.call(this);
-  this.char = "h";
-  this.avoids = ["wall", "ship", "enemy"];
-  this.target = function() {
-    var distA = (this.distanceFromTo(this.tile(), heroA.tile()));
-    var distB = (this.distanceFromTo(this.tile(), heroB.tile()));
-    if (distA < distB) {
-      return heroA.tile();
-    }
-    else {
-      return heroB.tile();
-    }
-  }
-
-  this.die = function() {
-    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
-    HeroHunterFactory.allHeroHunters.splice(HeroHunterFactory.allHeroHunters.indexOf(this),1);
-  }
-}
-
-HeroHunterFactory = {
-
-  createHeroHunter: function () {
-    var newHeroHunter = {};
-    HeroHunter.apply(newHeroHunter, arguments);
-    this.allHeroHunters.push(newHeroHunter);
-    return newHeroHunter;
-  },
-
-  allHeroHunters: [],
-
-  forEachHeroHunter: function (action) {
-    for (var i = 0; i < this.allHeroHunters.length; i++){
-      action.call(this.allHeroHunters[i]);
-    }
-  }
-};
-
 function Item() {
 
   this.deployToRandomEmptyTile = function() {
@@ -937,177 +1107,6 @@ function Ship() {
 }
 
 var ship = new Ship();
-
-function ShipHunter (name) {
-
-  Enemy.call(this);
-  this.char = "s";
-  this.avoids = ["wall", "enemy", "heroA", "heroB"];
-  this.target = function() {
-    return ship.tile();
-  }
-
-  this.die = function() {
-    board[this.tile()].splice(board[this.tile()].indexOf(this), 1);
-    ShipHunterFactory.allShipHunters.splice(ShipHunterFactory.allShipHunters.indexOf(this),1);
-  }
-}
-
-ShipHunterFactory = {
-
-  createShipHunter: function () {
-    var newShipHunter = {};
-    ShipHunter.apply(newShipHunter, arguments);
-    this.allShipHunters.push(newShipHunter);
-    return newShipHunter;
-  },
-
-  allShipHunters: [],
-
-  forEachShipHunter: function (action) {
-    for (var i = 0; i < this.allShipHunters.length; i++){
-      action.call(this.allShipHunters[i]);
-    }
-  }
-};
-
-function Wall() {
-
-  Item.call(this);
-  this.char = "#";
-  this.type = "wall";
-
-  this.destroy = function() {
-    board[this.tile()].splice(board[this.tile])
-  }
-}
-
-function generateWalls() {
-
-  for (var i = 0; i < board.length; i++) {
-    if (board[i][0] && board[i][0].char === '#') {
-      board[i] = [];
-    }
-  }
-
-  function isCorner(n) {
-    var a = 0;
-    var b = boardSize - 1;
-    var c = boardSize * boardSize - boardSize;
-    var d = boardSize * boardSize - 1;
-    var corners = [a, b, c, d];
-
-    for (var i = 0; i < corners.length; i++) {
-      if (n === corners[i]) {
-        return true;
-      }
-    }
-  }
-
-  function clearNearShip() {
-
-    var here = ship.tile();
-    var up = here - boardSize;
-    var down = here + boardSize;
-    var left = here - 1;
-    var right = here + 1;
-    var upLeft = up - 1;
-    var upRight = up + 1;
-    var downLeft = down - 1;
-    var downRight = down + 1;
-    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
-
-    for (var i = 0; i < nearShip.length; i++) {
-      if (isWall(nearShip[i])) {
-        board[nearShip[i]][0].destroy();
-      }
-    }
-  }
-
-  for (var i = 0; i < board.length; i++) {
-    var flip = Math.floor(Math.random() * 4);
-    if (flip < 1 && board[i].length === 0 && !isCorner(i)) {
-      board[i][0] = new Wall();
-    }
-  }
-
-  if (!isMapOpen()) {
-    generateWalls();
-  }
-
-  clearNearShip();
-  render();
-}
-
-function isMapOpen() {
-  var notWalls = [];
-
-  for (var i = 0; i < board.length; i++) {
-    if (!board[i].length || board[i][0].char !== '#') {
-      notWalls.push(i);
-    }
-  }
-
-  var numberOfWalls = board.length - notWalls.length;
-
-  function isConnected(startTile) {
-    lookedTiles = [];
-    lookedTiles.push(startTile);
-
-    function isInLookedTiles(n) {
-      for (var i=0; i<lookedTiles.length; i++) {
-        if (lookedTiles[i] === n) {
-          return true;
-        }
-      }
-    }
-
-    function lookAdjacentTiles(n) {
-
-      if (colFromTile(n) > 0 && !isWall(n-1)) {
-        var l = n - 1;
-      }
-      if (colFromTile(n) < boardSize - 1 && !isWall(n+1)) {
-        var r = n + 1;
-      }
-      if (rowFromTile(n) > 0 && !isWall(n-boardSize)) {
-        var t = n - boardSize;
-      }
-      if (rowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
-        var b = n + boardSize;
-      }
-      if (!isInLookedTiles(l)) {
-        lookedTiles.push(l);
-      }
-      if (!isInLookedTiles(r)) {
-        lookedTiles.push(r);
-      }
-      if (!isInLookedTiles(t)) {
-        lookedTiles.push(t);
-      }
-      if (!isInLookedTiles(b)) {
-        lookedTiles.push(b);
-      }
-    }
-
-    for (var i = 0; i < board.length; i++) {
-      var temp = lookedTiles.length;
-      for (var j = 0; j < temp; j++) {
-        lookAdjacentTiles(lookedTiles[j]);
-      }
-    }
-
-    return lookedTiles.length + numberOfWalls === board.length + 1;
-  }
-
-  var good = true;
-
-  if (!isConnected(notWalls[0])) {
-    good = false;
-  }
-
-  return good;
-}
 
 function Web() {
 
