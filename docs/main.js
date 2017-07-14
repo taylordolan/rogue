@@ -169,22 +169,21 @@ function renderHealth() {
 }
 
 function render() {
-  renderHealth();
   for (var i = 0; i < tileElements.length; i++) {
     tileElements[i].innerHTML = "";
-    if (isInTile(i, "heroA")) {
+    if (i === heroA.tile()) {
       var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "heroA").char;
+      span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-a");
       tileElements[i].appendChild(span);
     }
-    else if (isInTile(i, "heroB")) {
+    if (i === heroB.tile()) {
       var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "heroB").char;
+      span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-b");
       tileElements[i].appendChild(span);
     }
-    else if (isInTile(i, "ship")) {
+    else if (i === ship.tile()) {
       var span = document.createElement("span");
       span.innerHTML = isInTile(i, "ship").char;
       tileElements[i].appendChild(span);
@@ -246,6 +245,8 @@ function render() {
       heroAElement.classList.add("right");
     }
   }
+
+  renderHealth();
 }
 
 function HeroHunter (name) {
@@ -292,7 +293,7 @@ function ShipHunter (name) {
 
   Enemy.call(this);
   this.char = "s";
-  this.avoids = ["wall", "enemy", "heroA", "heroB"];
+  this.avoids = ["wall", "enemy", "hero"];
   this.target = function() {
     return ship.tile();
   }
@@ -596,7 +597,7 @@ function Hero() {
 
   Item.call(this);
   this.hasHealth = true;
-  this.avoids = ["wall", "ship", "heroA", "heroB"];
+  this.avoids = ["wall", "ship", "hero"];
   this.type = "hero";
 
   this.setTile = function(n) {
@@ -699,7 +700,7 @@ function Hero() {
   this.shoot = function(direction, n) {
 
     if (direction === "up") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, upFrom(n))) {
           n = upFrom(n);
         }
@@ -709,7 +710,7 @@ function Hero() {
       }
     }
     if (direction === "down") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
         }
@@ -719,7 +720,7 @@ function Hero() {
       }
     }
     if (direction === "left") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
         }
@@ -729,7 +730,7 @@ function Hero() {
       }
     }
     if (direction === "right") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
         }
@@ -826,9 +827,7 @@ function Hero() {
 var heroA = new Hero();
 var heroB = new Hero();
 heroA.char = "a";
-heroA.type = "heroA";
 heroB.char = "b";
-heroB.type = "heroB";
 
 function Item() {
 

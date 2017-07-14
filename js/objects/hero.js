@@ -2,7 +2,7 @@ function Hero() {
 
   Item.call(this);
   this.hasHealth = true;
-  this.avoids = ["wall", "ship", "heroA", "heroB"];
+  this.avoids = ["wall", "ship", "hero"];
   this.type = "hero";
 
   this.setTile = function(n) {
@@ -105,7 +105,7 @@ function Hero() {
   this.shoot = function(direction, n) {
 
     if (direction === "up") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, upFrom(n))) {
           n = upFrom(n);
         }
@@ -115,7 +115,7 @@ function Hero() {
       }
     }
     if (direction === "down") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
         }
@@ -125,7 +125,7 @@ function Hero() {
       }
     }
     if (direction === "left") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
         }
@@ -135,7 +135,7 @@ function Hero() {
       }
     }
     if (direction === "right") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "heroA") && !isInTile(n, "heroB") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
         }
@@ -232,6 +232,4 @@ function Hero() {
 var heroA = new Hero();
 var heroB = new Hero();
 heroA.char = "a";
-heroA.type = "heroA";
 heroB.char = "b";
-heroB.type = "heroB";

@@ -28,22 +28,21 @@ function renderHealth() {
 }
 
 function render() {
-  renderHealth();
   for (var i = 0; i < tileElements.length; i++) {
     tileElements[i].innerHTML = "";
-    if (isInTile(i, "heroA")) {
+    if (i === heroA.tile()) {
       var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "heroA").char;
+      span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-a");
       tileElements[i].appendChild(span);
     }
-    else if (isInTile(i, "heroB")) {
+    if (i === heroB.tile()) {
       var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "heroB").char;
+      span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-b");
       tileElements[i].appendChild(span);
     }
-    else if (isInTile(i, "ship")) {
+    else if (i === ship.tile()) {
       var span = document.createElement("span");
       span.innerHTML = isInTile(i, "ship").char;
       tileElements[i].appendChild(span);
@@ -105,4 +104,6 @@ function render() {
       heroAElement.classList.add("right");
     }
   }
+
+  renderHealth();
 }
