@@ -38,6 +38,9 @@ function Hero() {
 
     if (isInTile(n, "enemy")) {
       isInTile(n, "enemy").die();
+      if (isInTile(n, "web")) {
+        isInTile(n, "web").destroy();
+      }
     }
 
     else if (isWall(n) && player.moveThroughWalls) {

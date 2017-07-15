@@ -2,9 +2,9 @@ window.addEventListener("load", function() {
 
   setUpBoard();
   ship.deployToCenterTile();
+  generateWalls();
   heroA.deployNearShip();
   heroB.deployNearShip();
-  generateWalls();
   fuelA.deploy();
   fuelB.deploy();
   createRandomEnemy();
