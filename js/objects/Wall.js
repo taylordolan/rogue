@@ -5,29 +5,17 @@ function Wall() {
   this.type = "wall";
 
   this.destroy = function() {
-    board[this.tile()].splice(board[this.tile])
+    removeFromArray(board[this.tile()], this);
   }
 }
 
 function generateWalls() {
 
+  var allWalls = [];
+
   for (var i = 0; i < board.length; i++) {
-    if (board[i][0] && board[i][0].char === '#') {
+    if (isInTile(i, "wall")) {
       board[i] = [];
-    }
-  }
-
-  function isCorner(n) {
-    var a = 0;
-    var b = boardSize - 1;
-    var c = boardSize * boardSize - boardSize;
-    var d = boardSize * boardSize - 1;
-    var corners = [a, b, c, d];
-
-    for (var i = 0; i < corners.length; i++) {
-      if (n === corners[i]) {
-        return true;
-      }
     }
   }
 
@@ -42,28 +30,103 @@ function generateWalls() {
     var upRight = up + 1;
     var downLeft = down - 1;
     var downRight = down + 1;
-    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
+    var upLeftCorner = 0;
+    var upRightCorner = boardSize - 1;
+    var downLeftCorner = boardSize * boardSize - boardSize;
+    var downRightCorner = boardSize * boardSize - 1;
+    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight, upLeftCorner, upRightCorner, downLeftCorner, downRightCorner];
 
     for (var i = 0; i < nearShip.length; i++) {
-      if (isWall(nearShip[i])) {
-        board[nearShip[i]][0].destroy();
+      if (isInTile(nearShip[i], "wall")) {
+        isInTile(nearShip[i], "wall").destroy();
       }
     }
   }
 
+  function maybePutWallInTile(tile, chance) {
+    var flip = Math.floor(Math.random() * 100);
+    if (flip < chance) {
+      board[tile][0] = new Wall();
+      allWalls.push(tile);
+    }
+  }
+
+  function generateInitalWalls() {
+    for (var i = 0; i < board.length; i++) {
+      if (board[i].length === 0) {
+        maybePutWallInTile(i, 40);
+      }
+    }
+  }
+
+  // generate walls adjacent to existing walls
+  function generateAdjacentWalls(i) {
+    var adjacent = [];
+    var emptyAdjacent = [];
+    if (isAdjacent(i, upFrom(i))) {
+      adjacent.push(upFrom(i));
+    }
+    if (isAdjacent(i, downFrom(i))) {
+      adjacent.push(downFrom(i));
+    }
+    if (isAdjacent(i, leftFrom(i))) {
+      adjacent.push(leftFrom(i));
+    }
+    if (isAdjacent(i, rightFrom(i))) {
+      adjacent.push(rightFrom(i));
+    }
+    for (var i = 0; i < adjacent.length; i++) {
+      if (board[adjacent[i]].length === 0) {
+        emptyAdjacent.push(adjacent[i]);
+      }
+    }
+    for (var i = 0; i < emptyAdjacent.length; i++) {
+      maybePutWallInTile(emptyAdjacent[i], 40);
+    }
+  }
+
+  // for spaces that are adjacent to more than two walls, remove walls until they're only adjacent to two walls
+  function removeTunnels(i) {
+    var vertical = [];
+
+    if (isAdjacent(i, upFrom(i)) && isInTile(upFrom(i), "wall")) {
+      vertical.push(upFrom(i));
+    }
+    if (isAdjacent(i, downFrom(i)) && isInTile(downFrom(i), "wall")) {
+      vertical.push(downFrom(i));
+    }
+    if (isAdjacent(i, leftFrom(i)) && isInTile(leftFrom(i), "wall")) {
+      vertical.push(leftFrom(i));
+    }
+    if (isAdjacent(i, rightFrom(i)) && isInTile(rightFrom(i), "wall")) {
+      vertical.push(rightFrom(i));
+    }
+
+    while (vertical.length > 1) {
+      var index = Math.floor(Math.random() * vertical.length);
+      isInTile(vertical[index], "wall").destroy();
+      vertical.splice(index, 1);
+    }
+  }
+
+  generateInitalWalls();
+
+  var allWallsClone = allWalls.slice();
+  for (var i = 0; i < allWallsClone.length; i++) {
+    generateAdjacentWalls(allWallsClone[i]);
+  }
+
+  clearNearShip();
+
   for (var i = 0; i < board.length; i++) {
-    var flip = Math.floor(Math.random() * 4);
-    if (flip < 1 && board[i].length === 0 && !isCorner(i)) {
-      board[i][0] = new Wall();
+    if (!isInTile(i, "wall")) {
+      removeTunnels(i);
     }
   }
 
   if (!isMapOpen()) {
     generateWalls();
   }
-
-  clearNearShip();
-  render();
 }
 
 function isMapOpen() {

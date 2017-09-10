@@ -6,22 +6,21 @@ function Hero() {
   this.type = "hero";
 
   this.setTile = function(n) {
+    var destroyWalls = player.abilities.destroyWalls.enabled;
+    var shoot = player.abilities.shoot.enabled;
+    var webs = player.abilities.webs.enabled;
 
-    if (player.moveThroughWalls || player.destroyWalls) {
+    if (destroyWalls) {
       removeFromArray(this.avoids, "wall");
     }
 
-    if (player.destroyWalls && this.destroyWalls(n)) {
+    if (destroyWalls && this.destroyWalls(n)) {
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
       return;
     }
 
-    if (player.webs && !isInTile(this.tile(), "web")) {
-      this.web(this.tile());
-    }
-
-    if (player.shoot) {
+    if (shoot) {
 
       if (n === upFrom(this.tile())) {
         var d = "up";
@@ -42,36 +41,24 @@ function Hero() {
 
     if (isInTile(n, "enemy")) {
       isInTile(n, "enemy").die();
-    }
-
-    else if (isWall(n) && player.moveThroughWalls) {
-
-      if (n === upFrom(this.tile())) {
-        var d = "up";
+      if (isInTile(n, "web")) {
+        isInTile(n, "web").destroy();
       }
-      else if (n === downFrom(this.tile())) {
-        var d = "down";
-      }
-      else if (n === leftFrom(this.tile())) {
-        var d = "left";
-      }
-      else if (n === rightFrom(this.tile())) {
-        var d = "right";
-      }
-      this.setTile(this.moveThroughWalls(d, n));
-    }
-
-    else if (player.lunge && this.lunge(n)) {
-      return;
     }
 
     else if (isInTile(n, "fuel")) {
       isInTile(n, "fuel").destroy();
+      if (webs && !isInTile(this.tile(), "web")) {
+        this.web(this.tile());
+      }
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
 
     else if (!this.shouldAvoid(n)) {
+      if (webs && !isInTile(this.tile(), "web")) {
+        this.web(this.tile());
+      }
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
@@ -153,60 +140,10 @@ function Hero() {
     }
   }
 
-  this.lunge = function(n) {
-
-    var here = this.tile();
-
-    if (n === upFrom(here) && isAdjacent(n, upFrom(n))) {
-      var target = upFrom(n);
-    }
-    else if (n === downFrom(here) && isAdjacent(n, downFrom(n))) {
-      var target = downFrom(n);
-    }
-    else if (n === rightFrom(here) && isAdjacent(n, rightFrom(n))) {
-      var target = rightFrom(n);
-    }
-    else if (n === leftFrom(here) && isAdjacent(n, leftFrom(n))) {
-      var target = leftFrom(n);
-    }
-
-    if (target) {
-      if (board[target][0] && board[target][0].type === "enemy") {
-        board[target][0].die();
-        board[this.tile()].pop(this);
-        board[n].push(this);
-        return true;
-      }
-    }
-    else return false;
-  }
-
-  this.moveThroughWalls = function(direction, n) {
-
-    if (direction === "up") {
-      while (isWall(n)) {
-        n = upFrom(n);
-      }
-    }
-    else if (direction === "down") {
-      while (isWall(n)) {
-        n = downFrom(n);
-      }
-    }
-    else if (direction === "left") {
-      while (isWall(n)) {
-        n = leftFrom(n);
-      }
-    }
-    else if (direction === "right") {
-      while (isWall(n)) {
-        n = rightFrom(n);
-      }
-    }
-    return n;
-  }
-
   this.deployNearShip = function() {
+    if (this.tile()) {
+      removeFromArray(board[this.tile()], this);
+    }
     var here = ship.tile();
     var up = upFrom(here);
     var down = downFrom(here);

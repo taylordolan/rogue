@@ -41,6 +41,7 @@ function Fuel() {
   }
 
   this.destroy = function() {
+    collectedFuel++;
     removeFromArray(board[this.tile()], this);
   }
 }

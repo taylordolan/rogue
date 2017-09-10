@@ -98,6 +98,23 @@ function isAdjacent(a, b) {
   return adjacent;
 }
 
+function getAdvanceRate() {
+  switch (level) {
+    case 1:
+    return 5;
+    break;
+    case 2:
+    return 4;
+    break;
+    case 3:
+    return 3;
+    break;
+    case 4:
+    return 2;
+    break;
+  }
+}
+
 function advanceTurn() {
   turn++;
   ShipHunterFactory.forEachShipHunter (function () {
@@ -106,9 +123,53 @@ function advanceTurn() {
   HeroHunterFactory.forEachHeroHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % 4 === 0) {
+  if (turn && turn % getAdvanceRate() === 0) {
     createRandomEnemy();
   }
+  render();
+  if (collectedFuel > 1) {
+    removeFromArray(heroA.avoids, "ship");
+    removeFromArray(heroA.avoids, "hero");
+    removeFromArray(heroB.avoids, "ship");
+    removeFromArray(heroB.avoids, "hero");
+  }
+  if (heroA.tile() === ship.tile() && heroB.tile() === ship.tile()) {
+    advanceLevel();
+  }
+}
+
+function advanceLevel() {
+  level++;
+  health = maxHealth;
+  player.gainRandomAbility();
+  for (var i = 0; i < board.length; i++) {
+    if (isInTile(i, "web")) {
+      isInTile(i, "web").destroy();
+    }
+  }
+  for (var i = 0; i < board.length; i++) {
+    if (isInTile(i, "fuel")) {
+      isInTile(i, "fuel").destroy();
+    }
+  }
+  heroA.deployNearShip();
+  heroB.deployNearShip();
+  ShipHunterFactory.forEachShipHunter(function() {
+    this.die();
+  });
+  HeroHunterFactory.forEachHeroHunter(function() {
+    this.die();
+  });
+  generateWalls();
+  new Fuel().deploy();
+  new Fuel().deploy();
+  collectedFuel = 0;
+  heroA.avoids.push("ship");
+  heroB.avoids.push("ship");
+  heroA.avoids.push("hero");
+  heroB.avoids.push("hero");
+  turn = 0;
+  createRandomEnemy();
   render();
 }
 
