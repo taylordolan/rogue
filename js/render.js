@@ -13,7 +13,7 @@ function setUpBoard() {
 
 function getElement(tile) {
   for (var i = 0; i < tileElements.length; i++) {
-    if (tileElements[i].getAttribute("data-id") == tile.toString()) {
+    if (tileElements[i].getAttribute("data-id") == tile) {
       return tileElements[i];
     }
   }
@@ -30,21 +30,21 @@ function renderHealth() {
 function render() {
   for (var i = 0; i < tileElements.length; i++) {
     tileElements[i].innerHTML = "";
-    if (i === heroA.tile()) {
+    if (i === ship.tile()) {
+      var span = document.createElement("span");
+      span.innerHTML = isInTile(i, "ship").char;
+      tileElements[i].appendChild(span);
+    }
+    else if (i === heroA.tile()) {
       var span = document.createElement("span");
       span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-a");
       tileElements[i].appendChild(span);
     }
-    if (i === heroB.tile()) {
+    else if (i === heroB.tile()) {
       var span = document.createElement("span");
       span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-b");
-      tileElements[i].appendChild(span);
-    }
-    else if (i === ship.tile()) {
-      var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "ship").char;
       tileElements[i].appendChild(span);
     }
     else if (isInTile(i, "wall")) {
@@ -74,8 +74,11 @@ function render() {
     }
   }
 
-  var heroAElement = document.getElementsByClassName("hero-a")[0];
-  var heroBElement = document.getElementsByClassName("hero-b")[0];
+  var heroATile = getElement(heroA.tile());
+  var heroBTile = getElement(heroB.tile());
+  var heroAElement = heroATile.children[0];
+  var heroBElement = heroBTile.children[0];
+
   if (turn % 2 === 0) {
     if (heroA.canMove("up", heroA.tile())) {
       heroAElement.classList.add("up");

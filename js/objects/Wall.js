@@ -21,7 +21,6 @@ function generateWalls() {
 
   function clearNearShip() {
 
-    console.log("wall " + ship.tile());
     var here = ship.tile();
     var up = here - boardSize;
     var down = here + boardSize;
@@ -107,7 +106,6 @@ function generateWalls() {
       var index = Math.floor(Math.random() * vertical.length);
       isInTile(vertical[index], "wall").destroy();
       vertical.splice(index, 1);
-      render();
     }
   }
 
@@ -129,8 +127,6 @@ function generateWalls() {
   if (!isMapOpen()) {
     generateWalls();
   }
-
-  render();
 }
 
 function isMapOpen() {
