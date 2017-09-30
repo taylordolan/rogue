@@ -71,17 +71,63 @@ function Hero() {
   this.destroyWalls = function(n) {
     var surrounding = [];
     for (var i = 0; i < board.length; i++) {
-      if (this.distanceFromTo(i, n) <= 3) {
+      if (this.distanceFromTo(i, n) <= 4) {
         surrounding.push(i);
       }
+      // xxxxx
+      // xxxxx
+      // xxaxx
+      // xxxxx
+      // xxxxx
+      // if (this.col() >= 2 && this.row() >= 2) {
+      //   surrounding.push(this.tile() - boardSize * 2 - 2);
+      // }
+      // if (this.col() >= 1 && this.row() >= 2) {
+      //   surrounding.push(this.tile() - boardSize * 2 - 1);
+      // }
+      // if (this.col() <= boardSize - 2 && this.row() >= 2) {
+      //   surrounding.push(this.tile() - boardSize * 2 + 1);
+      // }
+      // if (this.col() <= boardSize - 3 && this.row() >= 2) {
+      //   surrounding.push(this.tile() - boardSize * 2 + 2);
+      // }
+      // if (this.col() >= 2 && this.row() >= 1) {
+      //   surrounding.push(this.tile() - boardSize - 2);
+      // }
+      // if (this.col() <= boardSize - 3 && this.row() >= 1) {
+      //   surrounding.push(this.tile() - boardSize + 2);
+      // }
+      // if (this.col() >= 2 && this.row() <= boardSize - 2) {
+      //   surrounding.push(this.tile() + boardSize - 2);
+      // }
+      // if (this.col() <= boardSize - 3 && this.row() <=  boardSize - 2) {
+      //   surrounding.push(this.tile() + boardSize + 2);
+      // }
+      // if (this.col >= 2 && this.row <= boardSize - 3) {
+      //   surrounding.push(this.tile() + boardSize * 2 - 2);
+      // }
+      // if (this.col >= 1 && this.row <= boardSize - 3) {
+      //   surrounding.push(this.tile() + boardSize * 2 - 1);
+      // }
+      // if (this.col <= boardSize - 2 && this.row <= boardSize - 3) {
+      //   surrounding.push(this.tile() + boardSize * 2 + 1);
+      // }
+      // if (this.col <= boardSize - 3 && this.row <= boardSize - 3) {
+      //   surrounding.push(this.tile() + boardSize * 2 + 2);
+      // }
     }
     if (isWall(n)) {
       board[n][0].destroy();
+      for (var i = 0; i < surrounding.length; i++) {
+        surrounding[i]
+      }
       for (var i = 0; i < surrounding.length; i++) {
         if (isInTile(surrounding[i], "enemy")) {
           isInTile(surrounding[i], "enemy").die();
         }
       }
+      // HeroHunterFactory.forEachHeroHunter(function() {this.die()});
+      // ShipHunterFactory.forEachShipHunter(function() {this.die()});
       return true;
     }
     else {

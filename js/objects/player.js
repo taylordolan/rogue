@@ -11,7 +11,7 @@ function Player() {
     },
     destroyWalls: {
       name: "destroyWalls",
-      enabled: false
+      enabled: true,
     }
   };
 

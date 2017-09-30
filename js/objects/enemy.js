@@ -12,6 +12,10 @@ function Enemy (name) {
     if (n == heroA.tile() || n == heroB.tile() || n == ship.tile()) {
       health--;
     }
+    else if (isInTile(n, "web")) {
+      this.die();
+      isInTile(n, "web").destroy();
+    }
     else {
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
