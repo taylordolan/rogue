@@ -30,7 +30,7 @@ function renderHealth() {
 function render() {
   for (var i = 0; i < tileElements.length; i++) {
     tileElements[i].innerHTML = "";
-    if (i === ship.tile()) {
+    if (isInTile(i, "ship")) {
       var span = document.createElement("span");
       span.innerHTML = isInTile(i, "ship").char;
       tileElements[i].appendChild(span);

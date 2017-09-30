@@ -47,19 +47,14 @@ function rightFrom(n) {
 }
 
 function createRandomEnemy() {
-  var flip = Math.floor(Math.random() * 2);
-  if (flip) {
-    ShipHunterFactory.createShipHunter();
-  }
-  else {
-    HeroHunterFactory.createHeroHunter();
-  }
-  ShipHunterFactory.forEachShipHunter (function () {
-    if(!this.tile()) {
-      this.deployToRandomEmptyEdge();
-    }
-  });
-  HeroHunterFactory.forEachHeroHunter (function () {
+  // var flip = Math.floor(Math.random() * 2);
+  // if (flip) {
+  // }
+  // else {
+  //   HunterFactory.createHunter();
+  // }
+  HunterFactory.createHunter();
+  HunterFactory.forEachHunter (function () {
     if(!this.tile()) {
       this.deployToRandomEmptyEdge();
     }
@@ -117,23 +112,20 @@ function getAdvanceRate() {
 
 function advanceTurn() {
   turn++;
-  ShipHunterFactory.forEachShipHunter (function () {
-    this.pathfind();
-  });
-  HeroHunterFactory.forEachHeroHunter (function () {
+  HunterFactory.forEachHunter (function () {
     this.pathfind();
   });
   if (turn && turn % getAdvanceRate() === 0) {
     createRandomEnemy();
   }
   render();
-  if (collectedFuel > 1) {
-    removeFromArray(heroA.avoids, "ship");
-    removeFromArray(heroA.avoids, "hero");
-    removeFromArray(heroB.avoids, "ship");
-    removeFromArray(heroB.avoids, "hero");
-  }
-  if (heroA.tile() === ship.tile() && heroB.tile() === ship.tile()) {
+  // if (collectedFuel > 1) {
+  //   removeFromArray(heroA.avoids, "ship");
+  //   removeFromArray(heroA.avoids, "hero");
+  //   removeFromArray(heroB.avoids, "ship");
+  //   removeFromArray(heroB.avoids, "hero");
+  // }
+  if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
     advanceLevel();
   }
 }
@@ -141,7 +133,9 @@ function advanceTurn() {
 function advanceLevel() {
   level++;
   health = maxHealth;
-  player.gainRandomAbility();
+  if (level > 1) {
+    player.gainRandomAbility();
+  }
   for (var i = 0; i < board.length; i++) {
     if (isInTile(i, "web")) {
       isInTile(i, "web").destroy();
@@ -152,22 +146,19 @@ function advanceLevel() {
       isInTile(i, "fuel").destroy();
     }
   }
-  heroA.deployNearShip();
-  heroB.deployNearShip();
-  ShipHunterFactory.forEachShipHunter(function() {
+  HunterFactory.forEachHunter(function() {
     this.die();
   });
-  HeroHunterFactory.forEachHeroHunter(function() {
-    this.die();
-  });
+
+  shipA.deployToTile(startA);
+  shipB.deployToTile(startB);
+  new Fuel().deployToTile(boardSize - 1);
+  new Fuel().deployToTile(boardSize * boardSize - boardSize);
   generateWalls();
-  new Fuel().deploy();
-  new Fuel().deploy();
+  heroA.deployToTile(shipA.tile());
+  heroB.deployToTile(shipB.tile());
+  generateWalls();
   collectedFuel = 0;
-  heroA.avoids.push("ship");
-  heroB.avoids.push("ship");
-  heroA.avoids.push("hero");
-  heroB.avoids.push("hero");
   turn = 0;
   createRandomEnemy();
   render();

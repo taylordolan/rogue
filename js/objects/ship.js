@@ -5,10 +5,10 @@ function Ship() {
   this.hasHealth = true;
   this.type = "ship";
 
-  this.deployToCenterTile = function() {
-    destination = Math.floor(boardSize * boardSize / 2);
-    board[destination].push(this);
+  this.deployToTile = function(tile) {
+    board[tile].push(this);
   }
 }
 
-var ship = new Ship();
+var shipA = new Ship();
+var shipB = new Ship();

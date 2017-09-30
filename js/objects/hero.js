@@ -2,7 +2,7 @@ function Hero() {
 
   Item.call(this);
   this.hasHealth = true;
-  this.avoids = ["wall", "ship", "hero"];
+  this.avoids = ["wall", "hero"];
   this.type = "hero";
 
   this.setTile = function(n) {
@@ -74,47 +74,6 @@ function Hero() {
       if (this.distanceFromTo(i, n) <= 4) {
         surrounding.push(i);
       }
-      // xxxxx
-      // xxxxx
-      // xxaxx
-      // xxxxx
-      // xxxxx
-      // if (this.col() >= 2 && this.row() >= 2) {
-      //   surrounding.push(this.tile() - boardSize * 2 - 2);
-      // }
-      // if (this.col() >= 1 && this.row() >= 2) {
-      //   surrounding.push(this.tile() - boardSize * 2 - 1);
-      // }
-      // if (this.col() <= boardSize - 2 && this.row() >= 2) {
-      //   surrounding.push(this.tile() - boardSize * 2 + 1);
-      // }
-      // if (this.col() <= boardSize - 3 && this.row() >= 2) {
-      //   surrounding.push(this.tile() - boardSize * 2 + 2);
-      // }
-      // if (this.col() >= 2 && this.row() >= 1) {
-      //   surrounding.push(this.tile() - boardSize - 2);
-      // }
-      // if (this.col() <= boardSize - 3 && this.row() >= 1) {
-      //   surrounding.push(this.tile() - boardSize + 2);
-      // }
-      // if (this.col() >= 2 && this.row() <= boardSize - 2) {
-      //   surrounding.push(this.tile() + boardSize - 2);
-      // }
-      // if (this.col() <= boardSize - 3 && this.row() <=  boardSize - 2) {
-      //   surrounding.push(this.tile() + boardSize + 2);
-      // }
-      // if (this.col >= 2 && this.row <= boardSize - 3) {
-      //   surrounding.push(this.tile() + boardSize * 2 - 2);
-      // }
-      // if (this.col >= 1 && this.row <= boardSize - 3) {
-      //   surrounding.push(this.tile() + boardSize * 2 - 1);
-      // }
-      // if (this.col <= boardSize - 2 && this.row <= boardSize - 3) {
-      //   surrounding.push(this.tile() + boardSize * 2 + 1);
-      // }
-      // if (this.col <= boardSize - 3 && this.row <= boardSize - 3) {
-      //   surrounding.push(this.tile() + boardSize * 2 + 2);
-      // }
     }
     if (isWall(n)) {
       board[n][0].destroy();
@@ -126,8 +85,6 @@ function Hero() {
           isInTile(surrounding[i], "enemy").die();
         }
       }
-      // HeroHunterFactory.forEachHeroHunter(function() {this.die()});
-      // ShipHunterFactory.forEachShipHunter(function() {this.die()});
       return true;
     }
     else {
@@ -186,29 +143,8 @@ function Hero() {
     }
   }
 
-  this.deployNearShip = function() {
-    if (this.tile()) {
-      removeFromArray(board[this.tile()], this);
-    }
-    var here = ship.tile();
-    var up = upFrom(here);
-    var down = downFrom(here);
-    var left = leftFrom(here);
-    var right = rightFrom(here);
-    var upLeft = upFrom(here) - 1;
-    var upRight = upFrom(here) + 1;
-    var downLeft = downFrom(here) - 1;
-    var downRight = downFrom(here) + 1;
-    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight];
-    var nearShipAndEmpty = [];
-
-    for (var i = 0; i < nearShip.length; i++) {
-      if (!board[nearShip[i]].length) {
-        nearShipAndEmpty.push(nearShip[i]);
-      }
-    }
-
-    board[nearShipAndEmpty[Math.floor(Math.random()*nearShipAndEmpty.length)]].push(this);
+  this.deployToTile = function(tile) {
+    board[tile].push(this);
   }
 }
 

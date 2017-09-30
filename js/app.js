@@ -1,14 +1,20 @@
 window.addEventListener("load", function() {
 
   setUpBoard();
-  ship.deployToCenterTile();
-  generateWalls();
-  heroA.deployNearShip();
-  heroB.deployNearShip();
-  fuelA.deploy();
-  fuelB.deploy();
-  createRandomEnemy();
-  render();
+  var startA = boardSize * boardSize / 2 - (boardSize / 2);
+  var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
+
+  // shipA.deployToTile(startA);
+  // shipB.deployToTile(startB);
+  // fuelA.deployToTile(boardSize - 1);
+  // fuelB.deployToTile(boardSize * boardSize - boardSize);
+  // generateWalls();
+  // heroA.deployToTile(shipA.tile());
+  // heroB.deployToTile(shipB.tile());
+  // createRandomEnemy();
+  // render();
+
+  advanceLevel();
 
   document.onkeydown = checkKey;
   function checkKey(e) {

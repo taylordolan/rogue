@@ -19,30 +19,6 @@ function generateWalls() {
     }
   }
 
-  function clearNearShip() {
-
-    var here = ship.tile();
-    var up = here - boardSize;
-    var down = here + boardSize;
-    var left = here - 1;
-    var right = here + 1;
-    var upLeft = up - 1;
-    var upRight = up + 1;
-    var downLeft = down - 1;
-    var downRight = down + 1;
-    var upLeftCorner = 0;
-    var upRightCorner = boardSize - 1;
-    var downLeftCorner = boardSize * boardSize - boardSize;
-    var downRightCorner = boardSize * boardSize - 1;
-    var nearShip = [up, down, left, right, upLeft, upRight, downLeft, downRight, upLeftCorner, upRightCorner, downLeftCorner, downRightCorner];
-
-    for (var i = 0; i < nearShip.length; i++) {
-      if (isInTile(nearShip[i], "wall")) {
-        isInTile(nearShip[i], "wall").destroy();
-      }
-    }
-  }
-
   function maybePutWallInTile(tile, chance) {
     var flip = Math.floor(Math.random() * 100);
     if (flip < chance) {
@@ -115,8 +91,6 @@ function generateWalls() {
   for (var i = 0; i < allWallsClone.length; i++) {
     generateAdjacentWalls(allWallsClone[i]);
   }
-
-  clearNearShip();
 
   for (var i = 0; i < board.length; i++) {
     if (!isInTile(i, "wall")) {
