@@ -1,13 +1,13 @@
 var board = [];
 var boardElement = document.getElementsByClassName("board")[0];
-var boardSize = 6;
+var boardSize = 7;
 var collectedFuel = 0;
 var health = maxHealth;
 var healthElement;
 var level = 0;
 var maxHealth = 4;
-var startA = boardSize * boardSize / 2 - (boardSize / 2);
-var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
+var start = boardSize * boardSize / 2 - 0.5;
+// var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
 var tileElements = [];
 var turn = 0;
 
@@ -136,12 +136,6 @@ function advanceTurn() {
     createRandomEnemy();
   }
   render();
-  // if (collectedFuel > 1) {
-  //   removeFromArray(heroA.avoids, "ship");
-  //   removeFromArray(heroA.avoids, "hero");
-  //   removeFromArray(heroB.avoids, "ship");
-  //   removeFromArray(heroB.avoids, "hero");
-  // }
   if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
     advanceLevel();
   }
@@ -167,13 +161,12 @@ function advanceLevel() {
     this.die();
   });
 
-  shipA.deployToTile(startA);
-  shipB.deployToTile(startB);
+  ship.deployToTile(start);
   new Fuel().deployToTile(boardSize - 1);
   new Fuel().deployToTile(boardSize * boardSize - boardSize);
   generateWalls();
-  heroA.deployToTile(shipA.tile());
-  heroB.deployToTile(shipB.tile());
+  heroA.deployToTile(ship.tile() - boardSize + 1);
+  heroB.deployToTile(ship.tile() + boardSize - 1);
   generateWalls();
   collectedFuel = 0;
   turn = 0;
@@ -755,16 +748,9 @@ function Hunter (name) {
   this.target = function() {
     var distHeroA = (this.distanceFromTo(this.tile(), heroA.tile()));
     var distHeroB = (this.distanceFromTo(this.tile(), heroB.tile()));
-    var distShipA = (this.distanceFromTo(this.tile(), shipA.tile()));
-    var distShipB = (this.distanceFromTo(this.tile(), shipB.tile()));
-    var distances = [distHeroA, distHeroB, distShipA, distShipB];
-
-    // console.log(distances);
-
+    var distShip = (this.distanceFromTo(this.tile(), ship.tile()));
+    var distances = [distHeroA, distHeroB, distShip, distShip];
     var shortest = Array.min(distances);
-
-    // console.log(shortest);
-
     var closest = [];
 
     if (distHeroA === shortest) {
@@ -773,14 +759,9 @@ function Hunter (name) {
     if (distHeroB === shortest) {
       closest.push(heroB.tile());
     }
-    if (distShipA === shortest) {
-      closest.push(shipA.tile());
+    if (distShip === shortest) {
+      closest.push(ship.tile());
     }
-    if (distShipB === shortest) {
-      closest.push(shipB.tile());
-    }
-
-    // console.log(closest);
 
     return closest[Math.floor(Math.random() * closest.length)];
   }
@@ -1081,8 +1062,7 @@ function Ship() {
   }
 }
 
-var shipA = new Ship();
-var shipB = new Ship();
+var ship = new Ship();
 
 function Web() {
 
@@ -1105,12 +1085,12 @@ window.addEventListener("load", function() {
   var startA = boardSize * boardSize / 2 - (boardSize / 2);
   var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
 
-  // shipA.deployToTile(startA);
+  // ship.deployToTile(startA);
   // shipB.deployToTile(startB);
   // fuelA.deployToTile(boardSize - 1);
   // fuelB.deployToTile(boardSize * boardSize - boardSize);
   // generateWalls();
-  // heroA.deployToTile(shipA.tile());
+  // heroA.deployToTile(ship.tile());
   // heroB.deployToTile(shipB.tile());
   // createRandomEnemy();
   // render();

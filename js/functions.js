@@ -119,12 +119,6 @@ function advanceTurn() {
     createRandomEnemy();
   }
   render();
-  // if (collectedFuel > 1) {
-  //   removeFromArray(heroA.avoids, "ship");
-  //   removeFromArray(heroA.avoids, "hero");
-  //   removeFromArray(heroB.avoids, "ship");
-  //   removeFromArray(heroB.avoids, "hero");
-  // }
   if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
     advanceLevel();
   }
@@ -150,13 +144,12 @@ function advanceLevel() {
     this.die();
   });
 
-  shipA.deployToTile(startA);
-  shipB.deployToTile(startB);
+  ship.deployToTile(start);
   new Fuel().deployToTile(boardSize - 1);
   new Fuel().deployToTile(boardSize * boardSize - boardSize);
   generateWalls();
-  heroA.deployToTile(shipA.tile());
-  heroB.deployToTile(shipB.tile());
+  heroA.deployToTile(ship.tile() - boardSize + 1);
+  heroB.deployToTile(ship.tile() + boardSize - 1);
   generateWalls();
   collectedFuel = 0;
   turn = 0;

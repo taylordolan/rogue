@@ -10,5 +10,4 @@ function Ship() {
   }
 }
 
-var shipA = new Ship();
-var shipB = new Ship();
+var ship = new Ship();
