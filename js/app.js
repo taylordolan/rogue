@@ -3,17 +3,6 @@ window.addEventListener("load", function() {
   setUpBoard();
   var startA = boardSize * boardSize / 2 - (boardSize / 2);
   var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
-
-  // ship.deployToTile(startA);
-  // shipB.deployToTile(startB);
-  // fuelA.deployToTile(boardSize - 1);
-  // fuelB.deployToTile(boardSize * boardSize - boardSize);
-  // generateWalls();
-  // heroA.deployToTile(ship.tile());
-  // heroB.deployToTile(shipB.tile());
-  // createRandomEnemy();
-  // render();
-
   advanceLevel();
 
   document.onkeydown = checkKey;

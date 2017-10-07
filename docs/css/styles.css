@@ -56,3 +56,11 @@ body {
   position: absolute;
   z-index: 1;
 }
+
+.blue {
+  color: #3d99f5;
+}
+
+.red {
+  color: red;
+}

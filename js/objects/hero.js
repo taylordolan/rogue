@@ -6,21 +6,21 @@ function Hero() {
   this.type = "hero";
 
   this.setTile = function(n) {
-    var destroyWalls = player.abilities.destroyWalls.enabled;
-    var shoot = player.abilities.shoot.enabled;
-    var webs = player.abilities.webs.enabled;
+    // var destroyWalls = player.abilities.destroyWalls.enabled;
+    // var shoot = player.abilities.shoot.enabled;
+    // var webs = player.abilities.webs.enabled;
 
-    if (destroyWalls) {
-      removeFromArray(this.avoids, "wall");
-    }
+    // if (destroyWalls) {
+    //   removeFromArray(this.avoids, "wall");
+    // }
 
-    if (destroyWalls && this.destroyWalls(n)) {
-      removeFromArray(board[this.tile()], this);
-      board[n].push(this);
-      return;
-    }
+    // if (destroyWalls && this.destroyWalls(n)) {
+    //   removeFromArray(board[this.tile()], this);
+    //   board[n].push(this);
+    //   return;
+    // }
 
-    if (shoot) {
+    if (isInTile(this.friend.tile(), "blue")) {
 
       if (n === upFrom(this.tile())) {
         var d = "up";
@@ -48,7 +48,7 @@ function Hero() {
 
     else if (isInTile(n, "fuel")) {
       isInTile(n, "fuel").destroy();
-      if (webs && !isInTile(this.tile(), "web")) {
+      if (isInTile(this.friend.tile(), "red") && !isInTile(this.tile(), "web")) {
         this.web(this.tile());
       }
       removeFromArray(board[this.tile()], this);
@@ -56,7 +56,7 @@ function Hero() {
     }
 
     else if (!this.shouldAvoid(n)) {
-      if (webs && !isInTile(this.tile(), "web")) {
+      if (isInTile(this.friend.tile(), "red") && !isInTile(this.tile(), "web")) {
         this.web(this.tile());
       }
       removeFromArray(board[this.tile()], this);
@@ -68,29 +68,29 @@ function Hero() {
     new Web().deploy(tile);
   }
 
-  this.destroyWalls = function(n) {
-    var surrounding = [];
-    for (var i = 0; i < board.length; i++) {
-      if (this.distanceFromTo(i, n) <= 4) {
-        surrounding.push(i);
-      }
-    }
-    if (isWall(n)) {
-      board[n][0].destroy();
-      for (var i = 0; i < surrounding.length; i++) {
-        surrounding[i]
-      }
-      for (var i = 0; i < surrounding.length; i++) {
-        if (isInTile(surrounding[i], "enemy")) {
-          isInTile(surrounding[i], "enemy").die();
-        }
-      }
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
+  // this.destroyWalls = function(n) {
+  //   var surrounding = [];
+  //   for (var i = 0; i < board.length; i++) {
+  //     if (this.distanceFromTo(i, n) <= 4) {
+  //       surrounding.push(i);
+  //     }
+  //   }
+  //   if (isWall(n)) {
+  //     board[n][0].destroy();
+  //     for (var i = 0; i < surrounding.length; i++) {
+  //       surrounding[i]
+  //     }
+  //     for (var i = 0; i < surrounding.length; i++) {
+  //       if (isInTile(surrounding[i], "enemy")) {
+  //         isInTile(surrounding[i], "enemy").die();
+  //       }
+  //     }
+  //     return true;
+  //   }
+  //   else {
+  //     return false;
+  //   }
+  // }
 
   this.shoot = function(direction, n) {
 
@@ -151,4 +151,6 @@ function Hero() {
 var heroA = new Hero();
 var heroB = new Hero();
 heroA.char = "a";
+heroA.friend = heroB;
 heroB.char = "b";
+heroB.friend = heroA;

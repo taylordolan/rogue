@@ -57,19 +57,25 @@ function render() {
       span.innerHTML = isInTile(i, "enemy").char;
       tileElements[i].appendChild(span);
     }
-    if (isInTile(i, "web")) {
-      var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "web").char;
-      tileElements[i].appendChild(span);
-    }
-    if (isInTile(i, "fuel")) {
+    else if (isInTile(i, "fuel")) {
       var span = document.createElement("span");
       span.innerHTML = isInTile(i, "fuel").char;
       tileElements[i].appendChild(span);
     }
-    if (!board[i].length)  {
+    else {
       var span = document.createElement("span");
       span.innerHTML = "·";
+      tileElements[i].appendChild(span);
+    }
+    if (isInTile(i, "blue")) {
+      tileElements[i].classList.add("blue");
+    }
+    if (isInTile(i, "red")) {
+      tileElements[i].classList.add("red");
+    }
+    if (isInTile(i, "web")) {
+      var span = document.createElement("span");
+      span.innerHTML = isInTile(i, "web").char;
       tileElements[i].appendChild(span);
     }
   }

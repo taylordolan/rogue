@@ -96,16 +96,16 @@ function isAdjacent(a, b) {
 function getAdvanceRate() {
   switch (level) {
     case 1:
-    return 5;
+    return 6;
     break;
     case 2:
-    return 4;
+    return 5;
     break;
     case 3:
-    return 3;
+    return 4;
     break;
     case 4:
-    return 2;
+    return 3;
     break;
   }
 }
@@ -150,7 +150,8 @@ function advanceLevel() {
   generateWalls();
   heroA.deployToTile(ship.tile() - boardSize + 1);
   heroB.deployToTile(ship.tile() + boardSize - 1);
-  generateWalls();
+  // new Blue().deployToTile(15);
+  // new Red().deployToTile(16);
   collectedFuel = 0;
   turn = 0;
   createRandomEnemy();
