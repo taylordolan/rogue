@@ -10,8 +10,7 @@ function Hunter (name) {
   this.target = function() {
     var distHeroA = (this.distanceFromTo(this.tile(), heroA.tile()));
     var distHeroB = (this.distanceFromTo(this.tile(), heroB.tile()));
-    var distShip = (this.distanceFromTo(this.tile(), ship.tile()));
-    var distances = [distHeroA, distHeroB, distShip, distShip];
+    var distances = [distHeroA, distHeroB];
     var shortest = Array.min(distances);
     var closest = [];
 
@@ -20,9 +19,6 @@ function Hunter (name) {
     }
     if (distHeroB === shortest) {
       closest.push(heroB.tile());
-    }
-    if (distShip === shortest) {
-      closest.push(ship.tile());
     }
 
     return closest[Math.floor(Math.random() * closest.length)];

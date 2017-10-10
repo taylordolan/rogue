@@ -1,12 +1,9 @@
 window.addEventListener("load", function() {
 
   setUpBoard();
-  // var startA = boardSize * boardSize / 2 - (boardSize / 2);
-  // var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
   health = maxHealth;
-  ship.deployToTile(start);
-  heroA.deployToTile(ship.tile() - boardSize + 1);
-  heroB.deployToTile(ship.tile() + boardSize - 1);
+  heroA.deployToTile(center - boardSize + 1);
+  heroB.deployToTile(center + boardSize - 1);
   createRandomEnemy();
   advanceLevel();
 

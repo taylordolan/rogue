@@ -89,7 +89,7 @@ function Hero() {
   this.shoot = function(direction, n) {
 
     if (direction === "up") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, upFrom(n))) {
           n = upFrom(n);
         }
@@ -99,7 +99,7 @@ function Hero() {
       }
     }
     if (direction === "down") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
         }
@@ -109,7 +109,7 @@ function Hero() {
       }
     }
     if (direction === "left") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
         }
@@ -119,7 +119,7 @@ function Hero() {
       }
     }
     if (direction === "right") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
         }

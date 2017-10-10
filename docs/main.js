@@ -6,7 +6,7 @@ var health = maxHealth;
 var healthElement;
 var level = 0;
 var maxHealth = 4;
-var start = boardSize * boardSize / 2 - 0.5;
+var center = boardSize * boardSize / 2 - 0.5;
 var tileElements = [];
 var turn = 0;
 var corners = [0, boardSize - 1, boardSize * boardSize - boardSize, boardSize * boardSize - 1]
@@ -127,20 +127,6 @@ function getAdvanceRate() {
   }
 }
 
-// function shift() {
-//   turn++;
-//   // HunterFactory.forEachHunter (function () {
-//   //   this.pathfind();
-//   // });
-//   // if (turn && turn % getAdvanceRate() === 0) {
-//   //   createRandomEnemy();
-//   // }
-//   render();
-//   // if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
-//   //   advanceLevel();
-//   // }
-// }
-
 function advanceTurn() {
   turn++;
   HunterFactory.forEachHunter (function () {
@@ -150,42 +136,12 @@ function advanceTurn() {
     createRandomEnemy();
   }
   render();
-  // if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
-  //   advanceLevel();
-  // }
 }
 
 function advanceLevel() {
   level++;
-  // health = maxHealth;
-  // if (level > 1) {
-  //   player.gainRandomAbility();
-  // }
-  // for (var i = 0; i < board.length; i++) {
-  //   if (isInTile(i, "web")) {
-  //     isInTile(i, "web").destroy();
-  //   }
-  // }
-  // for (var i = 0; i < board.length; i++) {
-  //   if (isInTile(i, "fuel")) {
-  //     isInTile(i, "fuel").destroy();
-  //   }
-  // }
-  // HunterFactory.forEachHunter(function() {
-  //   this.die();
-  // });
-  // ship.deployToTile(start);
-  // new Fuel().deployToTile(boardSize - 1);
-  // new Fuel().deployToTile(boardSize * boardSize - boardSize);
   generateWalls();
   new Fuel().deployToEmptyCorner();
-  // heroA.deployToTile(ship.tile() - boardSize + 1);
-  // heroB.deployToTile(ship.tile() + boardSize - 1);
-  // new Blue().deployToTile(15);
-  // new Red().deployToTile(16);
-  // collectedFuel = 0;
-  // turn = 0;
-  // createRandomEnemy();
   render();
 }
 
@@ -358,7 +314,7 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (n == heroA.tile() && !isInTile(heroB.tile(), "red") || n == heroB.tile() && !isInTile(heroA.tile(), "red") || isInTile(n, "ship")) {
+    if (n == heroA.tile() || n == heroB.tile()) {
       health--;
     }
     else if (isInTile(n, "web")) {
@@ -558,7 +514,7 @@ function Hero() {
   this.shoot = function(direction, n) {
 
     if (direction === "up") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, upFrom(n))) {
           n = upFrom(n);
         }
@@ -568,7 +524,7 @@ function Hero() {
       }
     }
     if (direction === "down") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
         }
@@ -578,7 +534,7 @@ function Hero() {
       }
     }
     if (direction === "left") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
         }
@@ -588,7 +544,7 @@ function Hero() {
       }
     }
     if (direction === "right") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero") && !isInTile(n, "ship")) {
+      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
         }
@@ -630,8 +586,7 @@ function Hunter (name) {
   this.target = function() {
     var distHeroA = (this.distanceFromTo(this.tile(), heroA.tile()));
     var distHeroB = (this.distanceFromTo(this.tile(), heroB.tile()));
-    var distShip = (this.distanceFromTo(this.tile(), ship.tile()));
-    var distances = [distHeroA, distHeroB, distShip, distShip];
+    var distances = [distHeroA, distHeroB];
     var shortest = Array.min(distances);
     var closest = [];
 
@@ -640,9 +595,6 @@ function Hunter (name) {
     }
     if (distHeroB === shortest) {
       closest.push(heroB.tile());
-    }
-    if (distShip === shortest) {
-      closest.push(ship.tile());
     }
 
     return closest[Math.floor(Math.random() * closest.length)];
@@ -900,20 +852,6 @@ function Item() {
   }
 }
 
-function Ship() {
-
-  Item.call(this);
-  this.char = "∆";
-  this.hasHealth = true;
-  this.type = "ship";
-
-  this.deployToTile = function(tile) {
-    board[tile].push(this);
-  }
-}
-
-var ship = new Ship();
-
 function Wall() {
 
   Item.call(this);
@@ -1011,23 +949,6 @@ function generateWalls() {
   for (var i = 0; i < board.length; i++) {
     if (!isInTile(i, "wall")) {
       removeTunnels(i);
-    }
-  }
-
-  var nearShip = [
-    ship.tile() - 1,
-    ship.tile() + 1,
-    ship.tile() - boardSize,
-    ship.tile() + boardSize,
-    ship.tile() - boardSize - 1,
-    ship.tile() - boardSize + 1,
-    ship.tile() + boardSize - 1,
-    ship.tile() + boardSize + 1,
-  ];
-
-  for (var i = 0; i < nearShip.length; i++) {
-    if (isInTile(nearShip[i], "wall")) {
-      isInTile(nearShip[i], "wall").destroy();
     }
   }
 
@@ -1130,12 +1051,9 @@ function Web() {
 window.addEventListener("load", function() {
 
   setUpBoard();
-  // var startA = boardSize * boardSize / 2 - (boardSize / 2);
-  // var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
   health = maxHealth;
-  ship.deployToTile(start);
-  heroA.deployToTile(ship.tile() - boardSize + 1);
-  heroB.deployToTile(ship.tile() + boardSize - 1);
+  heroA.deployToTile(center - boardSize + 1);
+  heroB.deployToTile(center + boardSize - 1);
   createRandomEnemy();
   advanceLevel();
 
