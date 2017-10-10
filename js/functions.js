@@ -110,6 +110,20 @@ function getAdvanceRate() {
   }
 }
 
+// function shift() {
+//   turn++;
+//   // HunterFactory.forEachHunter (function () {
+//   //   this.pathfind();
+//   // });
+//   // if (turn && turn % getAdvanceRate() === 0) {
+//   //   createRandomEnemy();
+//   // }
+//   render();
+//   // if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
+//   //   advanceLevel();
+//   // }
+// }
+
 function advanceTurn() {
   turn++;
   HunterFactory.forEachHunter (function () {
@@ -119,42 +133,42 @@ function advanceTurn() {
     createRandomEnemy();
   }
   render();
-  if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
-    advanceLevel();
-  }
+  // if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
+  //   advanceLevel();
+  // }
 }
 
 function advanceLevel() {
   level++;
-  health = maxHealth;
-  if (level > 1) {
-    player.gainRandomAbility();
-  }
-  for (var i = 0; i < board.length; i++) {
-    if (isInTile(i, "web")) {
-      isInTile(i, "web").destroy();
-    }
-  }
-  for (var i = 0; i < board.length; i++) {
-    if (isInTile(i, "fuel")) {
-      isInTile(i, "fuel").destroy();
-    }
-  }
-  HunterFactory.forEachHunter(function() {
-    this.die();
-  });
-
-  ship.deployToTile(start);
-  new Fuel().deployToTile(boardSize - 1);
-  new Fuel().deployToTile(boardSize * boardSize - boardSize);
+  // health = maxHealth;
+  // if (level > 1) {
+  //   player.gainRandomAbility();
+  // }
+  // for (var i = 0; i < board.length; i++) {
+  //   if (isInTile(i, "web")) {
+  //     isInTile(i, "web").destroy();
+  //   }
+  // }
+  // for (var i = 0; i < board.length; i++) {
+  //   if (isInTile(i, "fuel")) {
+  //     isInTile(i, "fuel").destroy();
+  //   }
+  // }
+  // HunterFactory.forEachHunter(function() {
+  //   this.die();
+  // });
+  // ship.deployToTile(start);
+  // new Fuel().deployToTile(boardSize - 1);
+  // new Fuel().deployToTile(boardSize * boardSize - boardSize);
   generateWalls();
-  heroA.deployToTile(ship.tile() - boardSize + 1);
-  heroB.deployToTile(ship.tile() + boardSize - 1);
+  new Fuel().deployToEmptyCorner();
+  // heroA.deployToTile(ship.tile() - boardSize + 1);
+  // heroB.deployToTile(ship.tile() + boardSize - 1);
   // new Blue().deployToTile(15);
   // new Red().deployToTile(16);
-  collectedFuel = 0;
-  turn = 0;
-  createRandomEnemy();
+  // collectedFuel = 0;
+  // turn = 0;
+  // createRandomEnemy();
   render();
 }
 

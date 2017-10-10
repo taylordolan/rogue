@@ -20,6 +20,10 @@ function Hero() {
     //   return;
     // }
 
+    // if (collectedFuel > 1) {
+    //   removeFromArray(this.avoids, "hero");
+    // }
+
     if (isInTile(this.friend.tile(), "blue")) {
 
       if (n === upFrom(this.tile())) {
@@ -47,25 +51,15 @@ function Hero() {
     }
 
     else if (isInTile(n, "fuel")) {
-      isInTile(n, "fuel").destroy();
-      if (isInTile(this.friend.tile(), "red") && !isInTile(this.tile(), "web")) {
-        this.web(this.tile());
-      }
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
+      isInTile(n, "fuel").destroy();
     }
 
     else if (!this.shouldAvoid(n)) {
-      if (isInTile(this.friend.tile(), "red") && !isInTile(this.tile(), "web")) {
-        this.web(this.tile());
-      }
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
-  }
-
-  this.web = function(tile) {
-    new Web().deploy(tile);
   }
 
   // this.destroyWalls = function(n) {

@@ -1,8 +1,13 @@
 window.addEventListener("load", function() {
 
   setUpBoard();
-  var startA = boardSize * boardSize / 2 - (boardSize / 2);
-  var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
+  // var startA = boardSize * boardSize / 2 - (boardSize / 2);
+  // var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
+  health = maxHealth;
+  ship.deployToTile(start);
+  heroA.deployToTile(ship.tile() - boardSize + 1);
+  heroB.deployToTile(ship.tile() + boardSize - 1);
+  createRandomEnemy();
   advanceLevel();
 
   document.onkeydown = checkKey;
@@ -14,6 +19,16 @@ window.addEventListener("load", function() {
     var up = "38";
     var right = "39";
     var down = "40";
+    var rest = "32";
+    var shif = "16";
+
+    // if (key = shift) {
+    //   shift();
+    // }
+
+    if (key == rest) {
+      advanceTurn();
+    }
 
     // even turns
     if (turn % 2 === 0) {

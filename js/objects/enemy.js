@@ -9,7 +9,7 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (n == heroA.tile() || n == heroB.tile() || isInTile(n, "ship")) {
+    if (n == heroA.tile() && !isInTile(heroB.tile(), "red") || n == heroB.tile() && !isInTile(heroA.tile(), "red") || isInTile(n, "ship")) {
       health--;
     }
     else if (isInTile(n, "web")) {

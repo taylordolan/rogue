@@ -98,6 +98,29 @@ function generateWalls() {
     }
   }
 
+  var nearShip = [
+    ship.tile() - 1,
+    ship.tile() + 1,
+    ship.tile() - boardSize,
+    ship.tile() + boardSize,
+    ship.tile() - boardSize - 1,
+    ship.tile() - boardSize + 1,
+    ship.tile() + boardSize - 1,
+    ship.tile() + boardSize + 1,
+  ];
+
+  for (var i = 0; i < nearShip.length; i++) {
+    if (isInTile(nearShip[i], "wall")) {
+      isInTile(nearShip[i], "wall").destroy();
+    }
+  }
+
+  for (var i = 0; i < corners.length; i++) {
+    if (isInTile(corners[i], "wall")) {
+      isInTile(corners[i], "wall").destroy();
+    }
+  }
+
   if (!isMapOpen()) {
     generateWalls();
   }

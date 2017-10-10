@@ -1,6 +1,6 @@
 var board = [];
 var boardElement = document.getElementsByClassName("board")[0];
-var boardSize = 7;
+var boardSize = 9;
 var collectedFuel = 0;
 var health = maxHealth;
 var healthElement;
@@ -9,6 +9,7 @@ var maxHealth = 4;
 var start = boardSize * boardSize / 2 - 0.5;
 var tileElements = [];
 var turn = 0;
+var corners = [0, boardSize - 1, boardSize * boardSize - boardSize, boardSize * boardSize - 1]
 
 for (var i = 0; i < boardSize * boardSize; i++) {
   board[i] = [];
@@ -126,6 +127,20 @@ function getAdvanceRate() {
   }
 }
 
+// function shift() {
+//   turn++;
+//   // HunterFactory.forEachHunter (function () {
+//   //   this.pathfind();
+//   // });
+//   // if (turn && turn % getAdvanceRate() === 0) {
+//   //   createRandomEnemy();
+//   // }
+//   render();
+//   // if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
+//   //   advanceLevel();
+//   // }
+// }
+
 function advanceTurn() {
   turn++;
   HunterFactory.forEachHunter (function () {
@@ -135,42 +150,42 @@ function advanceTurn() {
     createRandomEnemy();
   }
   render();
-  if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
-    advanceLevel();
-  }
+  // if (isInTile(heroA.tile(), "ship") && isInTile(heroB.tile(), "ship") && collectedFuel === 2) {
+  //   advanceLevel();
+  // }
 }
 
 function advanceLevel() {
   level++;
-  health = maxHealth;
-  if (level > 1) {
-    player.gainRandomAbility();
-  }
-  for (var i = 0; i < board.length; i++) {
-    if (isInTile(i, "web")) {
-      isInTile(i, "web").destroy();
-    }
-  }
-  for (var i = 0; i < board.length; i++) {
-    if (isInTile(i, "fuel")) {
-      isInTile(i, "fuel").destroy();
-    }
-  }
-  HunterFactory.forEachHunter(function() {
-    this.die();
-  });
-
-  ship.deployToTile(start);
-  new Fuel().deployToTile(boardSize - 1);
-  new Fuel().deployToTile(boardSize * boardSize - boardSize);
+  // health = maxHealth;
+  // if (level > 1) {
+  //   player.gainRandomAbility();
+  // }
+  // for (var i = 0; i < board.length; i++) {
+  //   if (isInTile(i, "web")) {
+  //     isInTile(i, "web").destroy();
+  //   }
+  // }
+  // for (var i = 0; i < board.length; i++) {
+  //   if (isInTile(i, "fuel")) {
+  //     isInTile(i, "fuel").destroy();
+  //   }
+  // }
+  // HunterFactory.forEachHunter(function() {
+  //   this.die();
+  // });
+  // ship.deployToTile(start);
+  // new Fuel().deployToTile(boardSize - 1);
+  // new Fuel().deployToTile(boardSize * boardSize - boardSize);
   generateWalls();
-  heroA.deployToTile(ship.tile() - boardSize + 1);
-  heroB.deployToTile(ship.tile() + boardSize - 1);
+  new Fuel().deployToEmptyCorner();
+  // heroA.deployToTile(ship.tile() - boardSize + 1);
+  // heroB.deployToTile(ship.tile() + boardSize - 1);
   // new Blue().deployToTile(15);
   // new Red().deployToTile(16);
-  collectedFuel = 0;
-  turn = 0;
-  createRandomEnemy();
+  // collectedFuel = 0;
+  // turn = 0;
+  // createRandomEnemy();
   render();
 }
 
@@ -308,181 +323,6 @@ function render() {
   renderHealth();
 }
 
-function Wall() {
-
-  Item.call(this);
-  this.char = "#";
-  this.type = "wall";
-
-  this.destroy = function() {
-    removeFromArray(board[this.tile()], this);
-  }
-}
-
-function generateWalls() {
-
-  var allWalls = [];
-
-  for (var i = 0; i < board.length; i++) {
-    if (isInTile(i, "wall")) {
-      board[i] = [];
-    }
-  }
-
-  function maybePutWallInTile(tile, chance) {
-    var flip = Math.floor(Math.random() * 100);
-    if (flip < chance) {
-      board[tile][0] = new Wall();
-      allWalls.push(tile);
-    }
-  }
-
-  function generateInitalWalls() {
-    for (var i = 0; i < board.length; i++) {
-      if (board[i].length === 0) {
-        maybePutWallInTile(i, 40);
-      }
-    }
-  }
-
-  // generate walls adjacent to existing walls
-  function generateAdjacentWalls(i) {
-    var adjacent = [];
-    var emptyAdjacent = [];
-    if (isAdjacent(i, upFrom(i))) {
-      adjacent.push(upFrom(i));
-    }
-    if (isAdjacent(i, downFrom(i))) {
-      adjacent.push(downFrom(i));
-    }
-    if (isAdjacent(i, leftFrom(i))) {
-      adjacent.push(leftFrom(i));
-    }
-    if (isAdjacent(i, rightFrom(i))) {
-      adjacent.push(rightFrom(i));
-    }
-    for (var i = 0; i < adjacent.length; i++) {
-      if (board[adjacent[i]].length === 0) {
-        emptyAdjacent.push(adjacent[i]);
-      }
-    }
-    for (var i = 0; i < emptyAdjacent.length; i++) {
-      maybePutWallInTile(emptyAdjacent[i], 40);
-    }
-  }
-
-  // for spaces that are adjacent to more than two walls, remove walls until they're only adjacent to two walls
-  function removeTunnels(i) {
-    var vertical = [];
-
-    if (isAdjacent(i, upFrom(i)) && isInTile(upFrom(i), "wall")) {
-      vertical.push(upFrom(i));
-    }
-    if (isAdjacent(i, downFrom(i)) && isInTile(downFrom(i), "wall")) {
-      vertical.push(downFrom(i));
-    }
-    if (isAdjacent(i, leftFrom(i)) && isInTile(leftFrom(i), "wall")) {
-      vertical.push(leftFrom(i));
-    }
-    if (isAdjacent(i, rightFrom(i)) && isInTile(rightFrom(i), "wall")) {
-      vertical.push(rightFrom(i));
-    }
-
-    while (vertical.length > 1) {
-      var index = Math.floor(Math.random() * vertical.length);
-      isInTile(vertical[index], "wall").destroy();
-      vertical.splice(index, 1);
-    }
-  }
-
-  generateInitalWalls();
-
-  var allWallsClone = allWalls.slice();
-  for (var i = 0; i < allWallsClone.length; i++) {
-    generateAdjacentWalls(allWallsClone[i]);
-  }
-
-  for (var i = 0; i < board.length; i++) {
-    if (!isInTile(i, "wall")) {
-      removeTunnels(i);
-    }
-  }
-
-  if (!isMapOpen()) {
-    generateWalls();
-  }
-}
-
-function isMapOpen() {
-  var notWalls = [];
-
-  for (var i = 0; i < board.length; i++) {
-    if (!board[i].length || board[i][0].char !== '#') {
-      notWalls.push(i);
-    }
-  }
-
-  var numberOfWalls = board.length - notWalls.length;
-
-  function isConnected(startTile) {
-    lookedTiles = [];
-    lookedTiles.push(startTile);
-
-    function isInLookedTiles(n) {
-      for (var i=0; i<lookedTiles.length; i++) {
-        if (lookedTiles[i] === n) {
-          return true;
-        }
-      }
-    }
-
-    function lookAdjacentTiles(n) {
-
-      if (colFromTile(n) > 0 && !isWall(n-1)) {
-        var l = n - 1;
-      }
-      if (colFromTile(n) < boardSize - 1 && !isWall(n+1)) {
-        var r = n + 1;
-      }
-      if (rowFromTile(n) > 0 && !isWall(n-boardSize)) {
-        var t = n - boardSize;
-      }
-      if (rowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
-        var b = n + boardSize;
-      }
-      if (!isInLookedTiles(l)) {
-        lookedTiles.push(l);
-      }
-      if (!isInLookedTiles(r)) {
-        lookedTiles.push(r);
-      }
-      if (!isInLookedTiles(t)) {
-        lookedTiles.push(t);
-      }
-      if (!isInLookedTiles(b)) {
-        lookedTiles.push(b);
-      }
-    }
-
-    for (var i = 0; i < board.length; i++) {
-      var temp = lookedTiles.length;
-      for (var j = 0; j < temp; j++) {
-        lookAdjacentTiles(lookedTiles[j]);
-      }
-    }
-
-    return lookedTiles.length + numberOfWalls === board.length + 1;
-  }
-
-  var good = true;
-
-  if (!isConnected(notWalls[0])) {
-    good = false;
-  }
-
-  return good;
-}
-
 function Blue() {
 
   Item.call(this);
@@ -518,7 +358,7 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (n == heroA.tile() || n == heroB.tile() || isInTile(n, "ship")) {
+    if (n == heroA.tile() && !isInTile(heroB.tile(), "red") || n == heroB.tile() && !isInTile(heroA.tile(), "red") || isInTile(n, "ship")) {
       health--;
     }
     else if (isInTile(n, "web")) {
@@ -605,9 +445,25 @@ function Fuel() {
     board[tile].push(this);
   }
 
+  this.deployToEmptyCorner = function() {
+    var emptyCorners = [];
+    console.log(corners);
+    for (var i = 0; i < corners.length; i++) {
+      if (!board[corners[i]].length) {
+        emptyCorners.push(corners[i]);
+        console.log(emptyCorners);
+      }
+    }
+    var destination = emptyCorners[Math.floor(Math.random() * emptyCorners.length)];
+    console.log(destination);
+    this.deployToTile(destination);
+  }
+
   this.destroy = function() {
     collectedFuel++;
     removeFromArray(board[this.tile()], this);
+    advanceTurn();
+    advanceLevel();
   }
 }
 
@@ -631,6 +487,10 @@ function Hero() {
     //   removeFromArray(board[this.tile()], this);
     //   board[n].push(this);
     //   return;
+    // }
+
+    // if (collectedFuel > 1) {
+    //   removeFromArray(this.avoids, "hero");
     // }
 
     if (isInTile(this.friend.tile(), "blue")) {
@@ -660,25 +520,15 @@ function Hero() {
     }
 
     else if (isInTile(n, "fuel")) {
-      isInTile(n, "fuel").destroy();
-      if (isInTile(this.friend.tile(), "red") && !isInTile(this.tile(), "web")) {
-        this.web(this.tile());
-      }
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
+      isInTile(n, "fuel").destroy();
     }
 
     else if (!this.shouldAvoid(n)) {
-      if (isInTile(this.friend.tile(), "red") && !isInTile(this.tile(), "web")) {
-        this.web(this.tile());
-      }
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
-  }
-
-  this.web = function(tile) {
-    new Web().deploy(tile);
   }
 
   // this.destroyWalls = function(n) {
@@ -799,12 +649,12 @@ function Hunter (name) {
   }
 
   this.die = function() {
-    if (Math.floor(Math.random() * 2)) {
+    // if (Math.floor(Math.random() * 2)) {
       new Blue().deployToTile(this.tile());
-    }
-    else {
-      new Red().deployToTile(this.tile());
-    }
+    // }
+    // else {
+      // new Red().deployToTile(this.tile());
+    // }
     removeFromArray(board[this.tile()], this);
     removeFromArray(HunterFactory.allHunters, this);
   }
@@ -1064,6 +914,204 @@ function Ship() {
 
 var ship = new Ship();
 
+function Wall() {
+
+  Item.call(this);
+  this.char = "#";
+  this.type = "wall";
+
+  this.destroy = function() {
+    removeFromArray(board[this.tile()], this);
+  }
+}
+
+function generateWalls() {
+
+  var allWalls = [];
+
+  for (var i = 0; i < board.length; i++) {
+    if (isInTile(i, "wall")) {
+      board[i] = [];
+    }
+  }
+
+  function maybePutWallInTile(tile, chance) {
+    var flip = Math.floor(Math.random() * 100);
+    if (flip < chance) {
+      board[tile][0] = new Wall();
+      allWalls.push(tile);
+    }
+  }
+
+  function generateInitalWalls() {
+    for (var i = 0; i < board.length; i++) {
+      if (board[i].length === 0) {
+        maybePutWallInTile(i, 40);
+      }
+    }
+  }
+
+  // generate walls adjacent to existing walls
+  function generateAdjacentWalls(i) {
+    var adjacent = [];
+    var emptyAdjacent = [];
+    if (isAdjacent(i, upFrom(i))) {
+      adjacent.push(upFrom(i));
+    }
+    if (isAdjacent(i, downFrom(i))) {
+      adjacent.push(downFrom(i));
+    }
+    if (isAdjacent(i, leftFrom(i))) {
+      adjacent.push(leftFrom(i));
+    }
+    if (isAdjacent(i, rightFrom(i))) {
+      adjacent.push(rightFrom(i));
+    }
+    for (var i = 0; i < adjacent.length; i++) {
+      if (board[adjacent[i]].length === 0) {
+        emptyAdjacent.push(adjacent[i]);
+      }
+    }
+    for (var i = 0; i < emptyAdjacent.length; i++) {
+      maybePutWallInTile(emptyAdjacent[i], 40);
+    }
+  }
+
+  // for spaces that are adjacent to more than two walls, remove walls until they're only adjacent to two walls
+  function removeTunnels(i) {
+    var vertical = [];
+
+    if (isAdjacent(i, upFrom(i)) && isInTile(upFrom(i), "wall")) {
+      vertical.push(upFrom(i));
+    }
+    if (isAdjacent(i, downFrom(i)) && isInTile(downFrom(i), "wall")) {
+      vertical.push(downFrom(i));
+    }
+    if (isAdjacent(i, leftFrom(i)) && isInTile(leftFrom(i), "wall")) {
+      vertical.push(leftFrom(i));
+    }
+    if (isAdjacent(i, rightFrom(i)) && isInTile(rightFrom(i), "wall")) {
+      vertical.push(rightFrom(i));
+    }
+
+    while (vertical.length > 1) {
+      var index = Math.floor(Math.random() * vertical.length);
+      isInTile(vertical[index], "wall").destroy();
+      vertical.splice(index, 1);
+    }
+  }
+
+  generateInitalWalls();
+
+  var allWallsClone = allWalls.slice();
+  for (var i = 0; i < allWallsClone.length; i++) {
+    generateAdjacentWalls(allWallsClone[i]);
+  }
+
+  for (var i = 0; i < board.length; i++) {
+    if (!isInTile(i, "wall")) {
+      removeTunnels(i);
+    }
+  }
+
+  var nearShip = [
+    ship.tile() - 1,
+    ship.tile() + 1,
+    ship.tile() - boardSize,
+    ship.tile() + boardSize,
+    ship.tile() - boardSize - 1,
+    ship.tile() - boardSize + 1,
+    ship.tile() + boardSize - 1,
+    ship.tile() + boardSize + 1,
+  ];
+
+  for (var i = 0; i < nearShip.length; i++) {
+    if (isInTile(nearShip[i], "wall")) {
+      isInTile(nearShip[i], "wall").destroy();
+    }
+  }
+
+  for (var i = 0; i < corners.length; i++) {
+    if (isInTile(corners[i], "wall")) {
+      isInTile(corners[i], "wall").destroy();
+    }
+  }
+
+  if (!isMapOpen()) {
+    generateWalls();
+  }
+}
+
+function isMapOpen() {
+  var notWalls = [];
+
+  for (var i = 0; i < board.length; i++) {
+    if (!board[i].length || board[i][0].char !== '#') {
+      notWalls.push(i);
+    }
+  }
+
+  var numberOfWalls = board.length - notWalls.length;
+
+  function isConnected(startTile) {
+    lookedTiles = [];
+    lookedTiles.push(startTile);
+
+    function isInLookedTiles(n) {
+      for (var i=0; i<lookedTiles.length; i++) {
+        if (lookedTiles[i] === n) {
+          return true;
+        }
+      }
+    }
+
+    function lookAdjacentTiles(n) {
+
+      if (colFromTile(n) > 0 && !isWall(n-1)) {
+        var l = n - 1;
+      }
+      if (colFromTile(n) < boardSize - 1 && !isWall(n+1)) {
+        var r = n + 1;
+      }
+      if (rowFromTile(n) > 0 && !isWall(n-boardSize)) {
+        var t = n - boardSize;
+      }
+      if (rowFromTile(n) < boardSize - 1 && !isWall(n+boardSize)) {
+        var b = n + boardSize;
+      }
+      if (!isInLookedTiles(l)) {
+        lookedTiles.push(l);
+      }
+      if (!isInLookedTiles(r)) {
+        lookedTiles.push(r);
+      }
+      if (!isInLookedTiles(t)) {
+        lookedTiles.push(t);
+      }
+      if (!isInLookedTiles(b)) {
+        lookedTiles.push(b);
+      }
+    }
+
+    for (var i = 0; i < board.length; i++) {
+      var temp = lookedTiles.length;
+      for (var j = 0; j < temp; j++) {
+        lookAdjacentTiles(lookedTiles[j]);
+      }
+    }
+
+    return lookedTiles.length + numberOfWalls === board.length + 1;
+  }
+
+  var good = true;
+
+  if (!isConnected(notWalls[0])) {
+    good = false;
+  }
+
+  return good;
+}
+
 function Web() {
 
   Item.call(this);
@@ -1082,8 +1130,13 @@ function Web() {
 window.addEventListener("load", function() {
 
   setUpBoard();
-  var startA = boardSize * boardSize / 2 - (boardSize / 2);
-  var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
+  // var startA = boardSize * boardSize / 2 - (boardSize / 2);
+  // var startB = boardSize * boardSize / 2 + (boardSize / 2) - 1;
+  health = maxHealth;
+  ship.deployToTile(start);
+  heroA.deployToTile(ship.tile() - boardSize + 1);
+  heroB.deployToTile(ship.tile() + boardSize - 1);
+  createRandomEnemy();
   advanceLevel();
 
   document.onkeydown = checkKey;
@@ -1095,6 +1148,16 @@ window.addEventListener("load", function() {
     var up = "38";
     var right = "39";
     var down = "40";
+    var rest = "32";
+    var shif = "16";
+
+    // if (key = shift) {
+    //   shift();
+    // }
+
+    if (key == rest) {
+      advanceTurn();
+    }
 
     // even turns
     if (turn % 2 === 0) {

@@ -29,12 +29,12 @@ function Hunter (name) {
   }
 
   this.die = function() {
-    if (Math.floor(Math.random() * 2)) {
+    // if (Math.floor(Math.random() * 2)) {
       new Blue().deployToTile(this.tile());
-    }
-    else {
-      new Red().deployToTile(this.tile());
-    }
+    // }
+    // else {
+      // new Red().deployToTile(this.tile());
+    // }
     removeFromArray(board[this.tile()], this);
     removeFromArray(HunterFactory.allHunters, this);
   }
