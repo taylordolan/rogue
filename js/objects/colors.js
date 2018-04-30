@@ -1,7 +1,6 @@
 function Blue() {
 
   Item.call(this);
-  this.char = "!";
   this.avoids = ["wall"];
   this.type = "blue";
 
@@ -13,7 +12,6 @@ function Blue() {
 function Red() {
 
   Item.call(this);
-  this.char = "?";
   this.avoids = ["wall"];
   this.type = "red";
 
@@ -21,3 +19,14 @@ function Red() {
     board[tile].push(this);
   }
 }
+
+function Green() {
+
+    Item.call(this);
+    this.avoids = ["wall"];
+    this.type = "green";
+
+    this.deployToTile = function(tile) {
+      board[tile].push(this);
+    }
+  }

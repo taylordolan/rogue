@@ -1,28 +1,10 @@
 function Hero() {
 
   Item.call(this);
-  this.hasHealth = true;
   this.avoids = ["wall", "hero"];
   this.type = "hero";
 
   this.setTile = function(n) {
-    // var destroyWalls = player.abilities.destroyWalls.enabled;
-    // var shoot = player.abilities.shoot.enabled;
-    // var webs = player.abilities.webs.enabled;
-
-    // if (destroyWalls) {
-    //   removeFromArray(this.avoids, "wall");
-    // }
-
-    // if (destroyWalls && this.destroyWalls(n)) {
-    //   removeFromArray(board[this.tile()], this);
-    //   board[n].push(this);
-    //   return;
-    // }
-
-    // if (collectedFuel > 1) {
-    //   removeFromArray(this.avoids, "hero");
-    // }
 
     if (isInTile(this.friend.tile(), "blue")) {
 
@@ -43,6 +25,10 @@ function Hero() {
       }
     }
 
+    if (isInTile(this.friend.tile(), "red") && !isInTile(this.tile(), "web")) {
+      new Web().deploy(this.tile());
+    }
+
     if (isInTile(n, "enemy")) {
       isInTile(n, "enemy").die();
       if (isInTile(n, "web")) {
@@ -60,31 +46,13 @@ function Hero() {
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
-  }
 
-  // this.destroyWalls = function(n) {
-  //   var surrounding = [];
-  //   for (var i = 0; i < board.length; i++) {
-  //     if (this.distanceFromTo(i, n) <= 4) {
-  //       surrounding.push(i);
-  //     }
-  //   }
-  //   if (isWall(n)) {
-  //     board[n][0].destroy();
-  //     for (var i = 0; i < surrounding.length; i++) {
-  //       surrounding[i]
-  //     }
-  //     for (var i = 0; i < surrounding.length; i++) {
-  //       if (isInTile(surrounding[i], "enemy")) {
-  //         isInTile(surrounding[i], "enemy").die();
-  //       }
-  //     }
-  //     return true;
-  //   }
-  //   else {
-  //     return false;
-  //   }
-  // }
+    if (isInTile(heroA.tile(), "advanceTile") && isInTile(heroB.tile(), "advanceTile")) {
+      isInTile(heroA.tile(), "advanceTile").destroy();
+      isInTile(heroB.tile(), "advanceTile").destroy();
+      advanceLevel();
+    }
+  }
 
   this.shoot = function(direction, n) {
 

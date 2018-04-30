@@ -9,7 +9,7 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (n == heroA.tile() || n == heroB.tile()) {
+    if (n == heroA.tile() && !isInTile(heroB.tile(), "green") || n == heroB.tile() && !isInTile(heroA.tile(), "green")) {
       health--;
     }
     else if (isInTile(n, "web")) {
@@ -48,6 +48,19 @@ function Enemy (name) {
 
   this.pathfind = function() {
 
+    if (this.shoots) {
+      var validTargets = [];
+      if (this.canShoot(heroA)) {
+        validTargets.push(heroA);
+      }
+      if (this.canShoot(heroB)) {
+        validTargets.push(heroB);
+      }
+      if (validTargets.length) {
+        health--;
+      }
+    }
+
     // the 5 relevant tiles
     var here = this.tile();
     var up = here - boardSize;
@@ -80,7 +93,28 @@ function Enemy (name) {
       this.moveWithOption(validMoves);
     }
     else {
-      this.moveRandomly();
+      // this.moveRandomly();
+      return;
     }
+  }
+
+  this.canShoot = function() {
+
+    // if target is left of enemy
+    // if (target.col() === this.col() && target.tile() < this.tile()) {
+    var n = leftFrom(this.tile());
+    while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
+      if (isAdjacent(n, leftFrom(n))) {
+        n = leftFrom(n);
+      }
+      else {
+        break;
+      }
+    }
+    if (isInTile(n, "hero")) {
+      return isInTile(n, "hero").tile();
+    }
+    // }
+    return false;
   }
 }

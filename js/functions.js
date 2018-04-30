@@ -47,14 +47,18 @@ function rightFrom(n) {
 }
 
 function createRandomEnemy() {
-  // var flip = Math.floor(Math.random() * 2);
-  // if (flip) {
-  // }
-  // else {
-  //   HunterFactory.createHunter();
-  // }
-  HunterFactory.createHunter();
+  if (Math.floor(Math.random()) * 2) {
+    HunterFactory.createHunter();
+  }
+  else {
+    ShooterFactory.createShooter();
+  }
   HunterFactory.forEachHunter (function () {
+    if(!this.tile()) {
+      this.deployToRandomEmptyEdge();
+    }
+  });
+  ShooterFactory.forEachShooter (function () {
     if(!this.tile()) {
       this.deployToRandomEmptyEdge();
     }
@@ -96,23 +100,47 @@ function isAdjacent(a, b) {
 function getAdvanceRate() {
   switch (level) {
     case 1:
-    return 6;
-    break;
-    case 2:
     return 5;
     break;
-    case 3:
+    case 2:
     return 4;
     break;
-    case 4:
+    case 3:
     return 3;
     break;
+    case 4:
+    return 2;
+    case 4:
+    return 1;
+    break;
   }
+}
+
+function deployAdvanceTiles() {
+  for (var i = 0; i < board.length; i++) {
+    if (isInTile(i, "advanceTile")) {
+      isInTile(i, "advanceTile").destroy();
+    }
+  }
+
+  var tileA = new AdvanceTile();
+  var tileB = new AdvanceTile();
+
+  tileA.deployToRandomTile();
+  tileB.deployToRandomTile();
+
+  if (tileA.distanceFromTo(tileA.tile(), tileB.tile()) < tileA.minDistance) {
+    deployAdvanceTiles();
+  }
+  else return;
 }
 
 function advanceTurn() {
   turn++;
   HunterFactory.forEachHunter (function () {
+    this.pathfind();
+  });
+  ShooterFactory.forEachShooter (function () {
     this.pathfind();
   });
   if (turn && turn % getAdvanceRate() === 0) {
@@ -124,7 +152,10 @@ function advanceTurn() {
 function advanceLevel() {
   level++;
   generateWalls();
-  new Fuel().deployToEmptyCorner();
+  // new Fuel().deployToEmptyCorner();
+  // new AdvanceTile().deployToRandomTile();
+  // new AdvanceTile().deployToRandomTile();
+  deployAdvanceTiles();
   render();
 }
 

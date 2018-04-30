@@ -30,12 +30,7 @@ function renderHealth() {
 function render() {
   for (var i = 0; i < tileElements.length; i++) {
     tileElements[i].innerHTML = "";
-    if (isInTile(i, "ship")) {
-      var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "ship").char;
-      tileElements[i].appendChild(span);
-    }
-    else if (i === heroA.tile()) {
+    if (i === heroA.tile()) {
       var span = document.createElement("span");
       span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-a");
@@ -57,9 +52,9 @@ function render() {
       span.innerHTML = isInTile(i, "enemy").char;
       tileElements[i].appendChild(span);
     }
-    else if (isInTile(i, "fuel")) {
+    else if (isInTile(i, "advanceTile")) {
       var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "fuel").char;
+      span.innerHTML = isInTile(i, "advanceTile").char;
       tileElements[i].appendChild(span);
     }
     else {
@@ -72,6 +67,9 @@ function render() {
     }
     if (isInTile(i, "red")) {
       tileElements[i].classList.add("red");
+    }
+    if (isInTile(i, "green")) {
+      tileElements[i].classList.add("green");
     }
     if (isInTile(i, "web")) {
       var span = document.createElement("span");

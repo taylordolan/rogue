@@ -2,7 +2,7 @@ Array.min = function( array ){
   return Math.min.apply( Math, array );
 };
 
-function Hunter (name) {
+function Hunter() {
 
   Enemy.call(this);
   this.char = "h";
@@ -25,12 +25,18 @@ function Hunter (name) {
   }
 
   this.die = function() {
-    // if (Math.floor(Math.random() * 2)) {
-      new Blue().deployToTile(this.tile());
-    // }
-    // else {
-      // new Red().deployToTile(this.tile());
-    // }
+    switch (Math.floor(Math.random() * 3)) {
+      case 0:
+        new Blue().deployToTile(this.tile());
+        break;
+      case 1:
+        new Red().deployToTile(this.tile());
+        break;
+      case 2:
+        new Green().deployToTile(this.tile());
+        break;
+    }
+
     removeFromArray(board[this.tile()], this);
     removeFromArray(HunterFactory.allHunters, this);
   }

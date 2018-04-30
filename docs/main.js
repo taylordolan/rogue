@@ -64,14 +64,18 @@ function rightFrom(n) {
 }
 
 function createRandomEnemy() {
-  // var flip = Math.floor(Math.random() * 2);
-  // if (flip) {
-  // }
-  // else {
-  //   HunterFactory.createHunter();
-  // }
-  HunterFactory.createHunter();
+  if (Math.floor(Math.random()) * 2) {
+    HunterFactory.createHunter();
+  }
+  else {
+    ShooterFactory.createShooter();
+  }
   HunterFactory.forEachHunter (function () {
+    if(!this.tile()) {
+      this.deployToRandomEmptyEdge();
+    }
+  });
+  ShooterFactory.forEachShooter (function () {
     if(!this.tile()) {
       this.deployToRandomEmptyEdge();
     }
@@ -113,23 +117,47 @@ function isAdjacent(a, b) {
 function getAdvanceRate() {
   switch (level) {
     case 1:
-    return 6;
-    break;
-    case 2:
     return 5;
     break;
-    case 3:
+    case 2:
     return 4;
     break;
-    case 4:
+    case 3:
     return 3;
     break;
+    case 4:
+    return 2;
+    case 4:
+    return 1;
+    break;
   }
+}
+
+function deployAdvanceTiles() {
+  for (var i = 0; i < board.length; i++) {
+    if (isInTile(i, "advanceTile")) {
+      isInTile(i, "advanceTile").destroy();
+    }
+  }
+
+  var tileA = new AdvanceTile();
+  var tileB = new AdvanceTile();
+
+  tileA.deployToRandomTile();
+  tileB.deployToRandomTile();
+
+  if (tileA.distanceFromTo(tileA.tile(), tileB.tile()) < tileA.minDistance) {
+    deployAdvanceTiles();
+  }
+  else return;
 }
 
 function advanceTurn() {
   turn++;
   HunterFactory.forEachHunter (function () {
+    this.pathfind();
+  });
+  ShooterFactory.forEachShooter (function () {
     this.pathfind();
   });
   if (turn && turn % getAdvanceRate() === 0) {
@@ -141,7 +169,10 @@ function advanceTurn() {
 function advanceLevel() {
   level++;
   generateWalls();
-  new Fuel().deployToEmptyCorner();
+  // new Fuel().deployToEmptyCorner();
+  // new AdvanceTile().deployToRandomTile();
+  // new AdvanceTile().deployToRandomTile();
+  deployAdvanceTiles();
   render();
 }
 
@@ -192,12 +223,7 @@ function renderHealth() {
 function render() {
   for (var i = 0; i < tileElements.length; i++) {
     tileElements[i].innerHTML = "";
-    if (isInTile(i, "ship")) {
-      var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "ship").char;
-      tileElements[i].appendChild(span);
-    }
-    else if (i === heroA.tile()) {
+    if (i === heroA.tile()) {
       var span = document.createElement("span");
       span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-a");
@@ -219,9 +245,9 @@ function render() {
       span.innerHTML = isInTile(i, "enemy").char;
       tileElements[i].appendChild(span);
     }
-    else if (isInTile(i, "fuel")) {
+    else if (isInTile(i, "advanceTile")) {
       var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "fuel").char;
+      span.innerHTML = isInTile(i, "advanceTile").char;
       tileElements[i].appendChild(span);
     }
     else {
@@ -234,6 +260,9 @@ function render() {
     }
     if (isInTile(i, "red")) {
       tileElements[i].classList.add("red");
+    }
+    if (isInTile(i, "green")) {
+      tileElements[i].classList.add("green");
     }
     if (isInTile(i, "web")) {
       var span = document.createElement("span");
@@ -279,10 +308,51 @@ function render() {
   renderHealth();
 }
 
+function AdvanceTile() {
+
+  Item.call(this);
+  this.char = "O";
+  this.avoids = ["wall"];
+  this.type = "advanceTile";
+
+  this.minDistance = 4;
+
+  this.deployToTile = function(tile) {
+    board[tile].push(this);
+  }
+
+  this.deployToRandomTile = function() {
+    // var otherAdvanceTileExists = false;
+    // var validDestinations = [];
+
+    // for (var i = 0; i < board.length(); i++) {
+    //   if (!board[i].length) {
+    //     validDestinations.push(i);
+    //   }
+    //   if (isInTile(i, "advanceTile")) {
+    //     otherAdvanceTileExists = true;
+    //   }
+    // }
+
+    // if (otherAdvanceTileExists) {
+    //   for (validDestinations.length)
+    // }
+
+    var destination;
+    do {
+      destination = Math.floor(Math.random() * board.length);
+    } while (board[destination].length || heroA.distanceFromTo(heroA.tile(), destination) < this.minDistance || heroB.distanceFromTo(heroB.tile(), destination) < this.minDistance);
+    this.deployToTile(destination);
+  }
+
+  this.destroy = function() {
+    removeFromArray(board[this.tile()], this);
+  }
+}
+
 function Blue() {
 
   Item.call(this);
-  this.char = "!";
   this.avoids = ["wall"];
   this.type = "blue";
 
@@ -294,7 +364,6 @@ function Blue() {
 function Red() {
 
   Item.call(this);
-  this.char = "?";
   this.avoids = ["wall"];
   this.type = "red";
 
@@ -302,6 +371,17 @@ function Red() {
     board[tile].push(this);
   }
 }
+
+function Green() {
+
+    Item.call(this);
+    this.avoids = ["wall"];
+    this.type = "green";
+
+    this.deployToTile = function(tile) {
+      board[tile].push(this);
+    }
+  }
 
 function Enemy (name) {
 
@@ -314,7 +394,7 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (n == heroA.tile() || n == heroB.tile()) {
+    if (n == heroA.tile() && !isInTile(heroB.tile(), "green") || n == heroB.tile() && !isInTile(heroA.tile(), "green")) {
       health--;
     }
     else if (isInTile(n, "web")) {
@@ -353,6 +433,19 @@ function Enemy (name) {
 
   this.pathfind = function() {
 
+    if (this.shoots) {
+      var validTargets = [];
+      if (this.canShoot(heroA)) {
+        validTargets.push(heroA);
+      }
+      if (this.canShoot(heroB)) {
+        validTargets.push(heroB);
+      }
+      if (validTargets.length) {
+        health--;
+      }
+    }
+
     // the 5 relevant tiles
     var here = this.tile();
     var up = here - boardSize;
@@ -385,8 +478,29 @@ function Enemy (name) {
       this.moveWithOption(validMoves);
     }
     else {
-      this.moveRandomly();
+      // this.moveRandomly();
+      return;
     }
+  }
+
+  this.canShoot = function() {
+
+    // if target is left of enemy
+    // if (target.col() === this.col() && target.tile() < this.tile()) {
+    var n = leftFrom(this.tile());
+    while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
+      if (isAdjacent(n, leftFrom(n))) {
+        n = leftFrom(n);
+      }
+      else {
+        break;
+      }
+    }
+    if (isInTile(n, "hero")) {
+      return isInTile(n, "hero").tile();
+    }
+    // }
+    return false;
   }
 }
 
@@ -418,7 +532,6 @@ function Fuel() {
   this.destroy = function() {
     collectedFuel++;
     removeFromArray(board[this.tile()], this);
-    advanceTurn();
     advanceLevel();
   }
 }
@@ -426,28 +539,10 @@ function Fuel() {
 function Hero() {
 
   Item.call(this);
-  this.hasHealth = true;
   this.avoids = ["wall", "hero"];
   this.type = "hero";
 
   this.setTile = function(n) {
-    // var destroyWalls = player.abilities.destroyWalls.enabled;
-    // var shoot = player.abilities.shoot.enabled;
-    // var webs = player.abilities.webs.enabled;
-
-    // if (destroyWalls) {
-    //   removeFromArray(this.avoids, "wall");
-    // }
-
-    // if (destroyWalls && this.destroyWalls(n)) {
-    //   removeFromArray(board[this.tile()], this);
-    //   board[n].push(this);
-    //   return;
-    // }
-
-    // if (collectedFuel > 1) {
-    //   removeFromArray(this.avoids, "hero");
-    // }
 
     if (isInTile(this.friend.tile(), "blue")) {
 
@@ -468,6 +563,10 @@ function Hero() {
       }
     }
 
+    if (isInTile(this.friend.tile(), "red") && !isInTile(this.tile(), "web")) {
+      new Web().deploy(this.tile());
+    }
+
     if (isInTile(n, "enemy")) {
       isInTile(n, "enemy").die();
       if (isInTile(n, "web")) {
@@ -485,31 +584,13 @@ function Hero() {
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
     }
-  }
 
-  // this.destroyWalls = function(n) {
-  //   var surrounding = [];
-  //   for (var i = 0; i < board.length; i++) {
-  //     if (this.distanceFromTo(i, n) <= 4) {
-  //       surrounding.push(i);
-  //     }
-  //   }
-  //   if (isWall(n)) {
-  //     board[n][0].destroy();
-  //     for (var i = 0; i < surrounding.length; i++) {
-  //       surrounding[i]
-  //     }
-  //     for (var i = 0; i < surrounding.length; i++) {
-  //       if (isInTile(surrounding[i], "enemy")) {
-  //         isInTile(surrounding[i], "enemy").die();
-  //       }
-  //     }
-  //     return true;
-  //   }
-  //   else {
-  //     return false;
-  //   }
-  // }
+    if (isInTile(heroA.tile(), "advanceTile") && isInTile(heroB.tile(), "advanceTile")) {
+      isInTile(heroA.tile(), "advanceTile").destroy();
+      isInTile(heroB.tile(), "advanceTile").destroy();
+      advanceLevel();
+    }
+  }
 
   this.shoot = function(direction, n) {
 
@@ -578,7 +659,7 @@ Array.min = function( array ){
   return Math.min.apply( Math, array );
 };
 
-function Hunter (name) {
+function Hunter() {
 
   Enemy.call(this);
   this.char = "h";
@@ -601,12 +682,18 @@ function Hunter (name) {
   }
 
   this.die = function() {
-    // if (Math.floor(Math.random() * 2)) {
-      new Blue().deployToTile(this.tile());
-    // }
-    // else {
-      // new Red().deployToTile(this.tile());
-    // }
+    switch (Math.floor(Math.random() * 3)) {
+      case 0:
+        new Blue().deployToTile(this.tile());
+        break;
+      case 1:
+        new Red().deployToTile(this.tile());
+        break;
+      case 2:
+        new Green().deployToTile(this.tile());
+        break;
+    }
+
     removeFromArray(board[this.tile()], this);
     removeFromArray(HunterFactory.allHunters, this);
   }
@@ -852,6 +939,95 @@ function Item() {
   }
 }
 
+function Shooter() {
+
+    Enemy.call(this);
+    this.char = "s";
+    this.avoids = ["wall", "enemy"];
+    this.shoots = true;
+    this.target = function() {
+      // var validTargets = [];
+      // if (this.canShoot(heroA)) {
+      //   validTargets.push(heroA);
+      // }
+      // if (this.canShoot(heroB)) {
+      //   validTargets.push(heroB);
+      // }
+      // if (validTargets.length) {
+      //   health--;
+      // }
+
+      var distHeroA = (this.distanceFromTo(this.tile(), heroA.tile()));
+      var distHeroB = (this.distanceFromTo(this.tile(), heroB.tile()));
+      var distances = [distHeroA, distHeroB];
+      var shortest = Array.min(distances);
+      var closest = [];
+
+      if (distHeroA === shortest) {
+        closest.push(heroA.tile());
+      }
+      if (distHeroB === shortest) {
+        closest.push(heroB.tile());
+      }
+
+      return closest[Math.floor(Math.random() * closest.length)];
+    }
+
+    // this.canShoot = function() {
+
+    //   // if target is left of enemy
+    //   // if (target.col() === this.col() && target.tile() < this.tile()) {
+    //   var n = leftFrom(this.tile());
+    //   while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
+    //     if (isAdjacent(n, leftFrom(n))) {
+    //       n = leftFrom(n);
+    //     }
+    //     else {
+    //       break;
+    //     }
+    //   }
+    //   if (isInTile(n, "hero")) {
+    //     return isInTile(n, "hero").tile();
+    //   }
+    //   // }
+    //   return false;
+    // }
+
+    this.die = function() {
+      switch (Math.floor(Math.random() * 3)) {
+        case 0:
+          new Blue().deployToTile(this.tile());
+          break;
+        case 1:
+          new Red().deployToTile(this.tile());
+          break;
+        case 2:
+          new Green().deployToTile(this.tile());
+          break;
+      }
+
+      removeFromArray(board[this.tile()], this);
+      removeFromArray(ShooterFactory.allShooters, this);
+    }
+  }
+
+  ShooterFactory = {
+
+    createShooter: function () {
+      var newShooter = {};
+      Shooter.apply(newShooter, arguments);
+      this.allShooters.push(newShooter);
+      return newShooter;
+    },
+
+    allShooters: [],
+
+    forEachShooter: function (action) {
+      for (var i = this.allShooters.length; i > 0; i--){
+        action.call(this.allShooters[i - 1]);
+      }
+    }
+  };
 function Wall() {
 
   Item.call(this);
