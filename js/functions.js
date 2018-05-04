@@ -46,25 +46,6 @@ function rightFrom(n) {
   }
 }
 
-function createRandomEnemy() {
-  if (Math.floor(Math.random()) * 2) {
-    HunterFactory.createHunter();
-  }
-  else {
-    ShooterFactory.createShooter();
-  }
-  HunterFactory.forEachHunter (function () {
-    if(!this.tile()) {
-      this.deployToRandomEmptyEdge();
-    }
-  });
-  ShooterFactory.forEachShooter (function () {
-    if(!this.tile()) {
-      this.deployToRandomEmptyEdge();
-    }
-  });
-}
-
 function isAdjacent(a, b) {
 
   // is a tile in the first/last row/column?
@@ -116,35 +97,18 @@ function getAdvanceRate() {
   }
 }
 
-function deployAdvanceTiles() {
-  for (var i = 0; i < board.length; i++) {
-    if (isInTile(i, "advanceTile")) {
-      isInTile(i, "advanceTile").destroy();
-    }
-  }
-
-  var tileA = new AdvanceTile();
-  var tileB = new AdvanceTile();
-
-  tileA.deployToRandomTile();
-  tileB.deployToRandomTile();
-
-  if (tileA.distanceFromTo(tileA.tile(), tileB.tile()) < tileA.minDistance) {
-    deployAdvanceTiles();
-  }
-  else return;
-}
-
 function advanceTurn() {
   turn++;
   HunterFactory.forEachHunter (function () {
     this.pathfind();
   });
-  ShooterFactory.forEachShooter (function () {
-    this.pathfind();
-  });
   if (turn && turn % getAdvanceRate() === 0) {
-    createRandomEnemy();
+    HunterFactory.createHunter();
+    HunterFactory.forEachHunter (function () {
+      if(!this.tile()) {
+        this.deployToRandomEmptyEdge();
+      }
+    });
   }
   render();
 }
@@ -152,10 +116,6 @@ function advanceTurn() {
 function advanceLevel() {
   level++;
   generateWalls();
-  // new Fuel().deployToEmptyCorner();
-  // new AdvanceTile().deployToRandomTile();
-  // new AdvanceTile().deployToRandomTile();
-  deployAdvanceTiles();
   render();
 }
 

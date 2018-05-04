@@ -25,17 +25,6 @@ function Hunter() {
   }
 
   this.die = function() {
-    switch (Math.floor(Math.random() * 3)) {
-      case 0:
-        new Blue().deployToTile(this.tile());
-        break;
-      case 1:
-        new Red().deployToTile(this.tile());
-        break;
-      case 2:
-        new Green().deployToTile(this.tile());
-        break;
-    }
 
     removeFromArray(board[this.tile()], this);
     removeFromArray(HunterFactory.allHunters, this);

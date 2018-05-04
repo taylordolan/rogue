@@ -9,12 +9,8 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (n == heroA.tile() && !isInTile(heroB.tile(), "green") || n == heroB.tile() && !isInTile(heroA.tile(), "green")) {
+    if (n == heroA.tile() || n == heroB.tile()) {
       health--;
-    }
-    else if (isInTile(n, "web")) {
-      this.die();
-      isInTile(n, "web").destroy();
     }
     else {
       removeFromArray(board[this.tile()], this);
@@ -67,11 +63,6 @@ function Enemy (name) {
     var down = here + boardSize;
     var left = here - 1;
     var right = here + 1;
-
-    if (isInTile(here, "web")) {
-      isInTile(here, "web").destroy();
-      return;
-    }
 
     // this array will be populated with moves that will advance toward the target
     var validMoves = [];

@@ -6,51 +6,13 @@ function Hero() {
 
   this.setTile = function(n) {
 
-    if (isInTile(this.friend.tile(), "blue")) {
-
-      if (n === upFrom(this.tile())) {
-        var d = "up";
-      }
-      else if (n === downFrom(this.tile())) {
-        var d = "down";
-      }
-      else if (n === leftFrom(this.tile())) {
-        var d = "left";
-      }
-      else if (n === rightFrom(this.tile())) {
-        var d = "right";
-      }
-      if (this.shoot(d, n)) {
-        return;
-      }
-    }
-
-    if (isInTile(this.friend.tile(), "red") && !isInTile(this.tile(), "web")) {
-      new Web().deploy(this.tile());
-    }
-
     if (isInTile(n, "enemy")) {
       isInTile(n, "enemy").die();
-      if (isInTile(n, "web")) {
-        isInTile(n, "web").destroy();
-      }
-    }
-
-    else if (isInTile(n, "fuel")) {
-      removeFromArray(board[this.tile()], this);
-      board[n].push(this);
-      isInTile(n, "fuel").destroy();
     }
 
     else if (!this.shouldAvoid(n)) {
       removeFromArray(board[this.tile()], this);
       board[n].push(this);
-    }
-
-    if (isInTile(heroA.tile(), "advanceTile") && isInTile(heroB.tile(), "advanceTile")) {
-      isInTile(heroA.tile(), "advanceTile").destroy();
-      isInTile(heroB.tile(), "advanceTile").destroy();
-      advanceLevel();
     }
   }
 

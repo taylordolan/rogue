@@ -1,7 +1,6 @@
 var board = [];
 var boardElement = document.getElementsByClassName("board")[0];
 var boardSize = 9;
-var collectedFuel = 0;
 var health = maxHealth;
 var healthElement;
 var level = 0;

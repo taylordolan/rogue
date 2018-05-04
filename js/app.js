@@ -4,7 +4,12 @@ window.addEventListener("load", function() {
   health = maxHealth;
   heroA.deployToTile(center - boardSize + 1);
   heroB.deployToTile(center + boardSize - 1);
-  createRandomEnemy();
+  HunterFactory.createHunter();
+  HunterFactory.forEachHunter (function () {
+    if(!this.tile()) {
+      this.deployToRandomEmptyEdge();
+    }
+  });
   advanceLevel();
 
   document.onkeydown = checkKey;

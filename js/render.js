@@ -52,28 +52,9 @@ function render() {
       span.innerHTML = isInTile(i, "enemy").char;
       tileElements[i].appendChild(span);
     }
-    else if (isInTile(i, "advanceTile")) {
-      var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "advanceTile").char;
-      tileElements[i].appendChild(span);
-    }
     else {
       var span = document.createElement("span");
       span.innerHTML = "·";
-      tileElements[i].appendChild(span);
-    }
-    if (isInTile(i, "blue")) {
-      tileElements[i].classList.add("blue");
-    }
-    if (isInTile(i, "red")) {
-      tileElements[i].classList.add("red");
-    }
-    if (isInTile(i, "green")) {
-      tileElements[i].classList.add("green");
-    }
-    if (isInTile(i, "web")) {
-      var span = document.createElement("span");
-      span.innerHTML = isInTile(i, "web").char;
       tileElements[i].appendChild(span);
     }
   }
