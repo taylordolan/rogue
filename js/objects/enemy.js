@@ -9,7 +9,7 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (n == heroA.tile() || n == heroB.tile()) {
+    if (n === heroA.tile() || n === heroB.tile()) {
       health--;
     }
     else {
@@ -44,19 +44,6 @@ function Enemy (name) {
 
   this.pathfind = function() {
 
-    if (this.shoots) {
-      var validTargets = [];
-      if (this.canShoot(heroA)) {
-        validTargets.push(heroA);
-      }
-      if (this.canShoot(heroB)) {
-        validTargets.push(heroB);
-      }
-      if (validTargets.length) {
-        health--;
-      }
-    }
-
     // the 5 relevant tiles
     var here = this.tile();
     var up = here - boardSize;
@@ -67,15 +54,19 @@ function Enemy (name) {
     // this array will be populated with moves that will advance toward the target
     var validMoves = [];
 
+    // if enemy can move up, and up is closer than here, then "moveUp" is a valid move
     if (this.canMove("up", here) && this.distanceFromTo(up, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveUp");
     }
+    // if enemy can move down, and down is closer than here, then "moveDown" is a valid move
     if (this.canMove("down", here) && this.distanceFromTo(down, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveDown");
     }
+    // if enemy can move left, and left is closer than here, then "moveLeft" is a valid move
     if (this.canMove("left", here) && this.distanceFromTo(left, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveLeft");
     }
+    // if enemy can move right, and right is closer than here, then "moveRight" is a valid move
     if (this.canMove("right", here) && this.distanceFromTo(right, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveRight");
     }
@@ -84,28 +75,7 @@ function Enemy (name) {
       this.moveWithOption(validMoves);
     }
     else {
-      // this.moveRandomly();
-      return;
+      this.moveRandomly();
     }
-  }
-
-  this.canShoot = function() {
-
-    // if target is left of enemy
-    // if (target.col() === this.col() && target.tile() < this.tile()) {
-    var n = leftFrom(this.tile());
-    while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
-      if (isAdjacent(n, leftFrom(n))) {
-        n = leftFrom(n);
-      }
-      else {
-        break;
-      }
-    }
-    if (isInTile(n, "hero")) {
-      return isInTile(n, "hero").tile();
-    }
-    // }
-    return false;
   }
 }

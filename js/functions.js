@@ -26,24 +26,28 @@ function upFrom(n) {
   if (isAdjacent(n, n - boardSize)) {
     return n - boardSize;
   }
+  return false;
 }
 
 function downFrom(n) {
   if (isAdjacent(n, n + boardSize)) {
     return n + boardSize;
   }
+  return false;
 }
 
 function leftFrom(n) {
   if (isAdjacent(n, n - 1)) {
     return n - 1;
   }
+  return false;
 }
 
 function rightFrom(n) {
   if (isAdjacent(n, n + 1)) {
     return n + 1;
   }
+  return false;
 }
 
 function isAdjacent(a, b) {
@@ -81,7 +85,7 @@ function isAdjacent(a, b) {
 function getAdvanceRate() {
   switch (level) {
     case 1:
-    return 5;
+    return 1;
     break;
     case 2:
     return 4;

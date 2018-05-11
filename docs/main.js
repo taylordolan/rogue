@@ -42,24 +42,28 @@ function upFrom(n) {
   if (isAdjacent(n, n - boardSize)) {
     return n - boardSize;
   }
+  return false;
 }
 
 function downFrom(n) {
   if (isAdjacent(n, n + boardSize)) {
     return n + boardSize;
   }
+  return false;
 }
 
 function leftFrom(n) {
   if (isAdjacent(n, n - 1)) {
     return n - 1;
   }
+  return false;
 }
 
 function rightFrom(n) {
   if (isAdjacent(n, n + 1)) {
     return n + 1;
   }
+  return false;
 }
 
 function isAdjacent(a, b) {
@@ -97,7 +101,7 @@ function isAdjacent(a, b) {
 function getAdvanceRate() {
   switch (level) {
     case 1:
-    return 5;
+    return 1;
     break;
     case 2:
     return 4;
@@ -259,7 +263,7 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (n == heroA.tile() || n == heroB.tile()) {
+    if (n === heroA.tile() || n === heroB.tile()) {
       health--;
     }
     else {
@@ -294,19 +298,6 @@ function Enemy (name) {
 
   this.pathfind = function() {
 
-    if (this.shoots) {
-      var validTargets = [];
-      if (this.canShoot(heroA)) {
-        validTargets.push(heroA);
-      }
-      if (this.canShoot(heroB)) {
-        validTargets.push(heroB);
-      }
-      if (validTargets.length) {
-        health--;
-      }
-    }
-
     // the 5 relevant tiles
     var here = this.tile();
     var up = here - boardSize;
@@ -317,15 +308,19 @@ function Enemy (name) {
     // this array will be populated with moves that will advance toward the target
     var validMoves = [];
 
+    // if enemy can move up, and up is closer than here, then "moveUp" is a valid move
     if (this.canMove("up", here) && this.distanceFromTo(up, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveUp");
     }
+    // if enemy can move down, and down is closer than here, then "moveDown" is a valid move
     if (this.canMove("down", here) && this.distanceFromTo(down, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveDown");
     }
+    // if enemy can move left, and left is closer than here, then "moveLeft" is a valid move
     if (this.canMove("left", here) && this.distanceFromTo(left, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveLeft");
     }
+    // if enemy can move right, and right is closer than here, then "moveRight" is a valid move
     if (this.canMove("right", here) && this.distanceFromTo(right, this.target()) < this.distanceFromTo(here, this.target())) {
       validMoves.push("moveRight");
     }
@@ -334,29 +329,8 @@ function Enemy (name) {
       this.moveWithOption(validMoves);
     }
     else {
-      // this.moveRandomly();
-      return;
+      this.moveRandomly();
     }
-  }
-
-  this.canShoot = function() {
-
-    // if target is left of enemy
-    // if (target.col() === this.col() && target.tile() < this.tile()) {
-    var n = leftFrom(this.tile());
-    while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
-      if (isAdjacent(n, leftFrom(n))) {
-        n = leftFrom(n);
-      }
-      else {
-        break;
-      }
-    }
-    if (isInTile(n, "hero")) {
-      return isInTile(n, "hero").tile();
-    }
-    // }
-    return false;
   }
 }
 
@@ -366,20 +340,45 @@ function Hero() {
   this.avoids = ["wall", "hero"];
   this.type = "hero";
 
-  this.setTile = function(n) {
+  this.setTile = function(destination) {
 
-    if (isInTile(n, "enemy")) {
-      isInTile(n, "enemy").die();
+    let here = this.tile();
+    let direction = "";
+
+    // find out which direction the hero is moving
+    if (destination === leftFrom(here)) {
+      direction = "left";
+    }
+    else if (destination === rightFrom(here)) {
+      direction = "right";
+    }
+    else if (destination === upFrom(here)) {
+      direction = "up";
+    }
+    else if (destination === downFrom(here)) {
+      direction = "down";
     }
 
-    else if (!this.shouldAvoid(n)) {
+    if (true) {
       removeFromArray(board[this.tile()], this);
-      board[n].push(this);
+      board[destination].push(this);
+      this.hitSurroundingEnemies();
+    }
+
+    // if there's an enemy in line of sight, hit it
+    if (false && this.canShoot(direction, destination)) {
+      this.hitEnemyIn(this.canShoot(direction, destination));
+    }
+    // otherwise, move to destination
+    else if (!this.shouldAvoid(destination)) {
+      removeFromArray(board[this.tile()], this);
+      board[destination].push(this);
     }
   }
 
-  this.shoot = function(direction, n) {
-
+  // given a direction and the first tile in that direction, return (the tile of an enemy in line of sight) or (false)
+  // TODO: seems like I could
+  this.canShoot = function(direction, n) {
     if (direction === "up") {
       while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, upFrom(n))) {
@@ -390,7 +389,8 @@ function Hero() {
         }
       }
     }
-    if (direction === "down") {
+
+    else if (direction === "down") {
       while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
@@ -400,7 +400,8 @@ function Hero() {
         }
       }
     }
-    if (direction === "left") {
+
+    else if (direction === "left") {
       while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
@@ -410,7 +411,8 @@ function Hero() {
         }
       }
     }
-    if (direction === "right") {
+
+    else if (direction === "right") {
       while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
@@ -420,13 +422,66 @@ function Hero() {
         }
       }
     }
+
+    if (isInTile(n, "enemy")) {
+      return n;
+    }
+    return false;
+  }
+
+  this.hitSurroundingEnemies = function() {
+
+    const here = this.tile();
+    const up = upFrom(here);
+    const down = downFrom(here);
+    const left = leftFrom(here);
+    const right = rightFrom(here);
+    const upRight = rightFrom(up);
+    const upLeft = leftFrom(up);
+    const downRight = rightFrom(down);
+    const downLeft = leftFrom(down);
+
+    const surroundingTiles = [here];
+
+    if (up) {
+      surroundingTiles.push(up);
+    }
+    if (down) {
+      surroundingTiles.push(down);
+    }
+    if (left) {
+      surroundingTiles.push(left);
+    }
+    if (right) {
+      surroundingTiles.push(right);
+    }
+    if (upRight) {
+      surroundingTiles.push(upRight);
+    }
+    if (upLeft) {
+      surroundingTiles.push(upLeft);
+    }
+    if (downRight) {
+      surroundingTiles.push(downRight);
+    }
+    if (downLeft) {
+      surroundingTiles.push(downLeft);
+    }
+
+    for (tile in surroundingTiles) {
+      let enemyTile = isInTile(surroundingTiles[tile], "enemy");
+      if (enemyTile) {
+        // TODO: I wish this was just `this.hitEnemyIn(enemyTile.tile());`
+        this.hitEnemyIn(enemyTile.tile());
+      }
+    }
+  }
+
+  this.hitEnemyIn = function(n) {
     if (isInTile(n, "enemy")) {
       isInTile(n, "enemy").die();
-      return true;
     }
-    else {
-      return false;
-    }
+    else return false;
   }
 
   this.deployToTile = function(tile) {
@@ -495,43 +550,63 @@ HunterFactory = {
 function Item() {
 
   this.deployToRandomEmptyTile = function() {
-    var emptyTiles = [];
-    for (var i=0; i<board.length; i++) {
-      if (board[i].length === 0) {
-        emptyTiles.push(board[i]);
+
+    let emptyTiles = [];
+
+    // find all empty tiles
+    for (let tile in board) {
+      if (board[tile].length === 0) {
+        emptyTiles.push(tile);
       }
     }
-    emptyTiles[Math.floor(Math.random()*emptyTiles.length)].push(this);
+
+    // select a random empty tile
+    const randomEmptyTile = board[emptyTiles[Math.floor(Math.random() * emptyTiles.length)]];
+
+    // deploy item to selected empty tile
+    randomEmptyTile.push(this);
   }
 
   this.deployToRandomEmptyEdge = function() {
 
-    var edges = [];
-    for (var i = 0; i < board.length; i++) {
+    let edgeTiles = [];
+    let emptyEdgeTiles = [];
+
+    // find all edge tiles
+    for (let tile in board) {
       if (
-        colFromTile(i) === 0 ||
-        colFromTile(i) === boardSize - 1 ||
-        rowFromTile(i) === 0 ||
-        rowFromTile(i) === boardSize - 1
+        colFromTile(tile) === 0 ||
+        colFromTile(tile) === boardSize - 1 ||
+        rowFromTile(tile) === 0 ||
+        rowFromTile(tile) === boardSize - 1
       ) {
-        edges.push(i);
+        edgeTiles.push(tile);
       }
     }
 
-    var emptyEdges = [];
-    for (var i = 0; i < edges.length; i++) {
-      if (board[edges[i]].length === 0) {
-        emptyEdges.push(board[edges[i]]);
+    // find all empty edge tiles
+    for (let tile in edgeTiles) {
+      if (board[edgeTiles[tile]].length === 0) {
+        emptyEdgeTiles.push(edgeTiles[tile]);
       }
     }
 
-    emptyEdges[Math.floor(Math.random()*emptyEdges.length)].push(this);
+    // select a random empty edge tile
+    const randomEmptyEdgeTile = board[emptyEdgeTiles[Math.floor(Math.random()*emptyEdgeTiles.length)]];
+
+    // deploy item to selected empty edge tile
+    randomEmptyEdgeTile.push(this);
   }
 
   this.tile = function() {
+
+    // for each tile…
     for (var i = 0; i<board.length; i++) {
+      // look at each thing in the tile.
       for (var j = 0; j<board[i].length; j++) {
-        if (board[i][j] == this) {
+        // if the thing is *this*…
+        if (board[i][j] === this) {
+          // return the current tile.
           return i;
         }
       }
@@ -555,35 +630,34 @@ function Item() {
   }
 
   this.setTile = function(n) {
-    board[this.tile()].pop(this);
+    removeFromArray(board[this.tile()], this);
     board[n].push(this);
   }
 
   this.moveRight = function() {
-    if (this.col() < boardSize - 1) {
-      this.setTile(this.tile() + 1);
-      return true;
+    // if (this.col() < boardSize - 1) {
+    //   this.setTile(this.tile() + 1);
+    // }
+    if (this.canMove("right", this.tile())) {
+      this.setTile(rightFrom(this.tile()));
     }
   }
 
   this.moveLeft = function() {
     if (this.col() > 0) {
       this.setTile(this.tile() - 1);
-      return true;
     }
   }
 
   this.moveUp = function() {
     if (this.row() > 0) {
       this.setTile(this.tile() - boardSize);
-      return true;
     }
   }
 
   this.moveDown = function() {
     if (this.row() < boardSize - 1) {
       this.setTile(this.tile() + boardSize);
-      return true;
     }
   }
 
@@ -603,30 +677,30 @@ function Item() {
   // TODO: replace this with separate functions for canMoveUp(), etc.
   this.canMove = function(direction, start) {
 
-    var up = start - boardSize;
-    var down = start + boardSize;
-    var left = start - 1;
-    var right = start + 1;
 
     if (direction === "up") {
+      var up = start - boardSize;
       if (isAdjacent(start, up) && !this.shouldAvoid(up)) {
         return true;
       }
       else return false;
     }
     else if (direction === "down") {
+      var down = start + boardSize;
       if (isAdjacent(start, down) && !this.shouldAvoid(down)) {
         return true;
       }
       else return false;
     }
     else if (direction === "left") {
+      var left = start - 1;
       if (isAdjacent(start, left) && !this.shouldAvoid(left)) {
         return true;
       }
       else return false;
     }
     else if (direction === "right") {
+      var right = start + 1;
       if (isAdjacent(start, right) && !this.shouldAvoid(right)) {
         return true;
       }
@@ -914,78 +988,52 @@ window.addEventListener("load", function() {
 
     e = e || window.event;
     var key = e.keyCode;
-    var left = "37";
-    var up = "38";
-    var right = "39";
-    var down = "40";
-    var rest = "32";
-    var shif = "16";
-
-    // if (key = shift) {
-    //   shift();
-    // }
-
-    if (key == rest) {
-      advanceTurn();
-    }
+    var left = 37;
+    var up = 38;
+    var right = 39;
+    var down = 40;
 
     // even turns
     if (turn % 2 === 0) {
       // heroA
-      if (key == up) {
-        if (heroA.canMove("up", heroA.tile())) {
-          heroA.moveUp();
-          advanceTurn();
-        }
+      if (key === up) {
+        heroA.moveUp();
+        advanceTurn();
       }
-      else if (key == down) {
-        if (heroA.canMove("down", heroA.tile())) {
-          heroA.moveDown();
-          advanceTurn();
-        }
+      else if (key === down) {
+        heroA.moveDown();
+        advanceTurn();
       }
       // heroB
-      else if (key == left) {
-        if (heroB.canMove("left", heroB.tile())) {
-          heroB.moveLeft();
-          advanceTurn();
-        }
+      else if (key === left) {
+        heroB.moveLeft();
+        advanceTurn();
       }
-      else if (key == right) {
-        if (heroB.canMove("right", heroB.tile())) {
-          heroB.moveRight();
-          advanceTurn();
-        }
+      else if (key === right) {
+        heroB.moveRight();
+        advanceTurn();
       }
     }
 
     // odd turns
     else if (turn % 2 === 1) {
       // heroB
-      if (key == up) {
-        if (heroB.canMove("up", heroB.tile())) {
-          heroB.moveUp();
-          advanceTurn();
-        }
+      if (key === up) {
+        heroB.moveUp();
+        advanceTurn();
       }
-      else if (key == down) {
-        if (heroB.canMove("down", heroB.tile())) {
-          heroB.moveDown();
-          advanceTurn();
-        }
+      else if (key === down) {
+        heroB.moveDown();
+        advanceTurn();
       }
       // heroA
-      else if (key == left) {
-        if (heroA.canMove("left", heroA.tile())) {
-          heroA.moveLeft();
-          advanceTurn();
-        }
+      else if (key === left) {
+        heroA.moveLeft();
+        advanceTurn();
       }
-      else if (key == right) {
-        if (heroA.canMove("right", heroA.tile())) {
-          heroA.moveRight();
-          advanceTurn();
-        }
+      else if (key === right) {
+        heroA.moveRight();
+        advanceTurn();
       }
     }
   }

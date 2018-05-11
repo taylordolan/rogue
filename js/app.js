@@ -17,78 +17,52 @@ window.addEventListener("load", function() {
 
     e = e || window.event;
     var key = e.keyCode;
-    var left = "37";
-    var up = "38";
-    var right = "39";
-    var down = "40";
-    var rest = "32";
-    var shif = "16";
-
-    // if (key = shift) {
-    //   shift();
-    // }
-
-    if (key == rest) {
-      advanceTurn();
-    }
+    var left = 37;
+    var up = 38;
+    var right = 39;
+    var down = 40;
 
     // even turns
     if (turn % 2 === 0) {
       // heroA
-      if (key == up) {
-        if (heroA.canMove("up", heroA.tile())) {
-          heroA.moveUp();
-          advanceTurn();
-        }
+      if (key === up) {
+        heroA.moveUp();
+        advanceTurn();
       }
-      else if (key == down) {
-        if (heroA.canMove("down", heroA.tile())) {
-          heroA.moveDown();
-          advanceTurn();
-        }
+      else if (key === down) {
+        heroA.moveDown();
+        advanceTurn();
       }
       // heroB
-      else if (key == left) {
-        if (heroB.canMove("left", heroB.tile())) {
-          heroB.moveLeft();
-          advanceTurn();
-        }
+      else if (key === left) {
+        heroB.moveLeft();
+        advanceTurn();
       }
-      else if (key == right) {
-        if (heroB.canMove("right", heroB.tile())) {
-          heroB.moveRight();
-          advanceTurn();
-        }
+      else if (key === right) {
+        heroB.moveRight();
+        advanceTurn();
       }
     }
 
     // odd turns
     else if (turn % 2 === 1) {
       // heroB
-      if (key == up) {
-        if (heroB.canMove("up", heroB.tile())) {
-          heroB.moveUp();
-          advanceTurn();
-        }
+      if (key === up) {
+        heroB.moveUp();
+        advanceTurn();
       }
-      else if (key == down) {
-        if (heroB.canMove("down", heroB.tile())) {
-          heroB.moveDown();
-          advanceTurn();
-        }
+      else if (key === down) {
+        heroB.moveDown();
+        advanceTurn();
       }
       // heroA
-      else if (key == left) {
-        if (heroA.canMove("left", heroA.tile())) {
-          heroA.moveLeft();
-          advanceTurn();
-        }
+      else if (key === left) {
+        heroA.moveLeft();
+        advanceTurn();
       }
-      else if (key == right) {
-        if (heroA.canMove("right", heroA.tile())) {
-          heroA.moveRight();
-          advanceTurn();
-        }
+      else if (key === right) {
+        heroA.moveRight();
+        advanceTurn();
       }
     }
   }

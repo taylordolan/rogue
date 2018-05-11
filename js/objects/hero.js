@@ -4,20 +4,45 @@ function Hero() {
   this.avoids = ["wall", "hero"];
   this.type = "hero";
 
-  this.setTile = function(n) {
+  this.setTile = function(destination) {
 
-    if (isInTile(n, "enemy")) {
-      isInTile(n, "enemy").die();
+    let here = this.tile();
+    let direction = "";
+
+    // find out which direction the hero is moving
+    if (destination === leftFrom(here)) {
+      direction = "left";
+    }
+    else if (destination === rightFrom(here)) {
+      direction = "right";
+    }
+    else if (destination === upFrom(here)) {
+      direction = "up";
+    }
+    else if (destination === downFrom(here)) {
+      direction = "down";
     }
 
-    else if (!this.shouldAvoid(n)) {
+    if (true) {
       removeFromArray(board[this.tile()], this);
-      board[n].push(this);
+      board[destination].push(this);
+      this.hitSurroundingEnemies();
+    }
+
+    // if there's an enemy in line of sight, hit it
+    if (false && this.canShoot(direction, destination)) {
+      this.hitEnemyIn(this.canShoot(direction, destination));
+    }
+    // otherwise, move to destination
+    else if (!this.shouldAvoid(destination)) {
+      removeFromArray(board[this.tile()], this);
+      board[destination].push(this);
     }
   }
 
-  this.shoot = function(direction, n) {
-
+  // given a direction and the first tile in that direction, return (the tile of an enemy in line of sight) or (false)
+  // TODO: seems like I could
+  this.canShoot = function(direction, n) {
     if (direction === "up") {
       while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, upFrom(n))) {
@@ -28,7 +53,8 @@ function Hero() {
         }
       }
     }
-    if (direction === "down") {
+
+    else if (direction === "down") {
       while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, downFrom(n))) {
           n = downFrom(n);
@@ -38,7 +64,8 @@ function Hero() {
         }
       }
     }
-    if (direction === "left") {
+
+    else if (direction === "left") {
       while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, leftFrom(n))) {
           n = leftFrom(n);
@@ -48,7 +75,8 @@ function Hero() {
         }
       }
     }
-    if (direction === "right") {
+
+    else if (direction === "right") {
       while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
         if (isAdjacent(n, rightFrom(n))) {
           n = rightFrom(n);
@@ -58,13 +86,66 @@ function Hero() {
         }
       }
     }
+
+    if (isInTile(n, "enemy")) {
+      return n;
+    }
+    return false;
+  }
+
+  this.hitSurroundingEnemies = function() {
+
+    const here = this.tile();
+    const up = upFrom(here);
+    const down = downFrom(here);
+    const left = leftFrom(here);
+    const right = rightFrom(here);
+    const upRight = rightFrom(up);
+    const upLeft = leftFrom(up);
+    const downRight = rightFrom(down);
+    const downLeft = leftFrom(down);
+
+    const surroundingTiles = [here];
+
+    if (up) {
+      surroundingTiles.push(up);
+    }
+    if (down) {
+      surroundingTiles.push(down);
+    }
+    if (left) {
+      surroundingTiles.push(left);
+    }
+    if (right) {
+      surroundingTiles.push(right);
+    }
+    if (upRight) {
+      surroundingTiles.push(upRight);
+    }
+    if (upLeft) {
+      surroundingTiles.push(upLeft);
+    }
+    if (downRight) {
+      surroundingTiles.push(downRight);
+    }
+    if (downLeft) {
+      surroundingTiles.push(downLeft);
+    }
+
+    for (tile in surroundingTiles) {
+      let enemyTile = isInTile(surroundingTiles[tile], "enemy");
+      if (enemyTile) {
+        // TODO: I wish this was just `this.hitEnemyIn(enemyTile.tile());`
+        this.hitEnemyIn(enemyTile.tile());
+      }
+    }
+  }
+
+  this.hitEnemyIn = function(n) {
     if (isInTile(n, "enemy")) {
       isInTile(n, "enemy").die();
-      return true;
     }
-    else {
-      return false;
-    }
+    else return false;
   }
 
   this.deployToTile = function(tile) {

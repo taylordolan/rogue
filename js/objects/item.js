@@ -1,43 +1,63 @@
 function Item() {
 
   this.deployToRandomEmptyTile = function() {
-    var emptyTiles = [];
-    for (var i=0; i<board.length; i++) {
-      if (board[i].length === 0) {
-        emptyTiles.push(board[i]);
+
+    let emptyTiles = [];
+
+    // find all empty tiles
+    for (let tile in board) {
+      if (board[tile].length === 0) {
+        emptyTiles.push(tile);
       }
     }
-    emptyTiles[Math.floor(Math.random()*emptyTiles.length)].push(this);
+
+    // select a random empty tile
+    const randomEmptyTile = board[emptyTiles[Math.floor(Math.random() * emptyTiles.length)]];
+
+    // deploy item to selected empty tile
+    randomEmptyTile.push(this);
   }
 
   this.deployToRandomEmptyEdge = function() {
 
-    var edges = [];
-    for (var i = 0; i < board.length; i++) {
+    let edgeTiles = [];
+    let emptyEdgeTiles = [];
+
+    // find all edge tiles
+    for (let tile in board) {
       if (
-        colFromTile(i) === 0 ||
-        colFromTile(i) === boardSize - 1 ||
-        rowFromTile(i) === 0 ||
-        rowFromTile(i) === boardSize - 1
+        colFromTile(tile) === 0 ||
+        colFromTile(tile) === boardSize - 1 ||
+        rowFromTile(tile) === 0 ||
+        rowFromTile(tile) === boardSize - 1
       ) {
-        edges.push(i);
+        edgeTiles.push(tile);
       }
     }
 
-    var emptyEdges = [];
-    for (var i = 0; i < edges.length; i++) {
-      if (board[edges[i]].length === 0) {
-        emptyEdges.push(board[edges[i]]);
+    // find all empty edge tiles
+    for (let tile in edgeTiles) {
+      if (board[edgeTiles[tile]].length === 0) {
+        emptyEdgeTiles.push(edgeTiles[tile]);
       }
     }
 
-    emptyEdges[Math.floor(Math.random()*emptyEdges.length)].push(this);
+    // select a random empty edge tile
+    const randomEmptyEdgeTile = board[emptyEdgeTiles[Math.floor(Math.random()*emptyEdgeTiles.length)]];
+
+    // deploy item to selected empty edge tile
+    randomEmptyEdgeTile.push(this);
   }
 
   this.tile = function() {
+
+    // for each tile…
     for (var i = 0; i<board.length; i++) {
+      // look at each thing in the tile.
       for (var j = 0; j<board[i].length; j++) {
-        if (board[i][j] == this) {
+        // if the thing is *this*…
+        if (board[i][j] === this) {
+          // return the current tile.
           return i;
         }
       }
@@ -61,35 +81,34 @@ function Item() {
   }
 
   this.setTile = function(n) {
-    board[this.tile()].pop(this);
+    removeFromArray(board[this.tile()], this);
     board[n].push(this);
   }
 
   this.moveRight = function() {
-    if (this.col() < boardSize - 1) {
-      this.setTile(this.tile() + 1);
-      return true;
+    // if (this.col() < boardSize - 1) {
+    //   this.setTile(this.tile() + 1);
+    // }
+    if (this.canMove("right", this.tile())) {
+      this.setTile(rightFrom(this.tile()));
     }
   }
 
   this.moveLeft = function() {
     if (this.col() > 0) {
       this.setTile(this.tile() - 1);
-      return true;
     }
   }
 
   this.moveUp = function() {
     if (this.row() > 0) {
       this.setTile(this.tile() - boardSize);
-      return true;
     }
   }
 
   this.moveDown = function() {
     if (this.row() < boardSize - 1) {
       this.setTile(this.tile() + boardSize);
-      return true;
     }
   }
 
@@ -109,30 +128,30 @@ function Item() {
   // TODO: replace this with separate functions for canMoveUp(), etc.
   this.canMove = function(direction, start) {
 
-    var up = start - boardSize;
-    var down = start + boardSize;
-    var left = start - 1;
-    var right = start + 1;
 
     if (direction === "up") {
+      var up = start - boardSize;
       if (isAdjacent(start, up) && !this.shouldAvoid(up)) {
         return true;
       }
       else return false;
     }
     else if (direction === "down") {
+      var down = start + boardSize;
       if (isAdjacent(start, down) && !this.shouldAvoid(down)) {
         return true;
       }
       else return false;
     }
     else if (direction === "left") {
+      var left = start - 1;
       if (isAdjacent(start, left) && !this.shouldAvoid(left)) {
         return true;
       }
       else return false;
     }
     else if (direction === "right") {
+      var right = start + 1;
       if (isAdjacent(start, right) && !this.shouldAvoid(right)) {
         return true;
       }
