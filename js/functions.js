@@ -85,7 +85,7 @@ function isAdjacent(a, b) {
 function getAdvanceRate() {
   switch (level) {
     case 1:
-    return 1;
+    return 10;
     break;
     case 2:
     return 4;

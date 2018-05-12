@@ -30,33 +30,39 @@ function renderHealth() {
 function render() {
   for (var i = 0; i < tileElements.length; i++) {
     tileElements[i].innerHTML = "";
+    var span = document.createElement("span");
     if (i === heroA.tile()) {
-      var span = document.createElement("span");
       span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-a");
-      tileElements[i].appendChild(span);
     }
     else if (i === heroB.tile()) {
-      var span = document.createElement("span");
       span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-b");
-      tileElements[i].appendChild(span);
     }
     else if (isInTile(i, "wall")) {
-      var span = document.createElement("span");
       span.innerHTML = isInTile(i, "wall").char;
-      tileElements[i].appendChild(span);
     }
     else if (isInTile(i, "enemy")) {
-      var span = document.createElement("span");
       span.innerHTML = isInTile(i, "enemy").char;
-      tileElements[i].appendChild(span);
+    }
+    else if (isInTile(i, "potentialTile")) {
+      span.innerHTML = isInTile(i, "potentialTile").char;
+    }
+    else if (isInTile(i, "powerTile")) {
+      span.innerHTML = isInTile(i, "powerTile").char;
     }
     else {
       var span = document.createElement("span");
       span.innerHTML = "·";
-      tileElements[i].appendChild(span);
     }
+    // color classes
+    if (isInTile(i, "potentialTile")) {
+      span.classList.add(isInTile(i, "potentialTile").color)
+    }
+    if (isInTile(i, "powerTile")) {
+      span.classList.add(isInTile(i, "powerTile").color)
+    }
+    tileElements[i].appendChild(span);
   }
 
   var heroATile = getElement(heroA.tile());

@@ -33,7 +33,7 @@ function Hunter() {
 
 HunterFactory = {
 
-  createHunter: function () {
+  createHunter: function() {
     var newHunter = {};
     Hunter.apply(newHunter, arguments);
     this.allHunters.push(newHunter);
@@ -42,9 +42,9 @@ HunterFactory = {
 
   allHunters: [],
 
-  forEachHunter: function (action) {
+  forEachHunter: function(action) {
     for (var i = this.allHunters.length; i > 0; i--){
       action.call(this.allHunters[i - 1]);
     }
-  }
+  },
 };

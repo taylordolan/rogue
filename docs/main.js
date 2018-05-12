@@ -101,7 +101,7 @@ function isAdjacent(a, b) {
 function getAdvanceRate() {
   switch (level) {
     case 1:
-    return 1;
+    return 10;
     break;
     case 2:
     return 4;
@@ -186,33 +186,39 @@ function renderHealth() {
 function render() {
   for (var i = 0; i < tileElements.length; i++) {
     tileElements[i].innerHTML = "";
+    var span = document.createElement("span");
     if (i === heroA.tile()) {
-      var span = document.createElement("span");
       span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-a");
-      tileElements[i].appendChild(span);
     }
     else if (i === heroB.tile()) {
-      var span = document.createElement("span");
       span.innerHTML = isInTile(i, "hero").char;
       span.classList.add("hero-b");
-      tileElements[i].appendChild(span);
     }
     else if (isInTile(i, "wall")) {
-      var span = document.createElement("span");
       span.innerHTML = isInTile(i, "wall").char;
-      tileElements[i].appendChild(span);
     }
     else if (isInTile(i, "enemy")) {
-      var span = document.createElement("span");
       span.innerHTML = isInTile(i, "enemy").char;
-      tileElements[i].appendChild(span);
+    }
+    else if (isInTile(i, "potentialTile")) {
+      span.innerHTML = isInTile(i, "potentialTile").char;
+    }
+    else if (isInTile(i, "powerTile")) {
+      span.innerHTML = isInTile(i, "powerTile").char;
     }
     else {
       var span = document.createElement("span");
       span.innerHTML = "·";
-      tileElements[i].appendChild(span);
     }
+    // color classes
+    if (isInTile(i, "potentialTile")) {
+      span.classList.add(isInTile(i, "potentialTile").color)
+    }
+    if (isInTile(i, "powerTile")) {
+      span.classList.add(isInTile(i, "powerTile").color)
+    }
+    tileElements[i].appendChild(span);
   }
 
   var heroATile = getElement(heroA.tile());
@@ -359,18 +365,48 @@ function Hero() {
       direction = "down";
     }
 
-    if (true) {
+    // if meelee is enabled, hit surrounding enemies
+    if (
+      isInTile(this.getFriendTile(), "powerTile") &&
+      isInTile(this.getFriendTile(), "powerTile").color === "blue"
+    ) {
       removeFromArray(board[this.tile()], this);
       board[destination].push(this);
       this.hitSurroundingEnemies();
     }
 
-    // if there's an enemy in line of sight, hit it
-    if (false && this.canShoot(direction, destination)) {
+    // if shooting is enabled and there's an enemy in line of sight, hit it
+    if (
+      isInTile(this.getFriendTile(), "powerTile") &&
+      isInTile(this.getFriendTile(), "powerTile").color === "green" &&
+      this.canShoot(direction, destination)
+    ) {
       this.hitEnemyIn(this.canShoot(direction, destination));
     }
+
     // otherwise, move to destination
     else if (!this.shouldAvoid(destination)) {
+      // if there's a potential tile in the destination…
+      if (isInTile(destination, "potentialTile")) {
+        // get its color
+        const color = isInTile(destination, "potentialTile").color;
+        // destroy all potential tiles
+        PotentialTileFactory.forEachPotentialTile (function() {
+          removeFromArray(board[this.tile()], this);
+          removeFromArray(PotentialTileFactory.allPotentialTiles, this);
+        });
+        // deploy a power tile to destination
+        board[destination].push(new PowerTile());
+        // and set its color
+        isInTile(destination, "powerTile").color = color;
+        // create two new potential tiles and deploy them
+        PotentialTileFactory.createPotentialTile();
+        PotentialTileFactory.createPotentialTile();
+        PotentialTileFactory.forEachPotentialTile (function() {
+          this.setRandomColor();
+          this.deployToRandomEmptyTile();
+        });
+      }
       removeFromArray(board[this.tile()], this);
       board[destination].push(this);
     }
@@ -484,8 +520,13 @@ function Hero() {
     else return false;
   }
 
-  this.deployToTile = function(tile) {
-    board[tile].push(this);
+  this.getFriendTile = function() {
+    for (tile in board) {
+      if (isInTile(tile, "hero") && tile != this.tile()) {
+        console.log(tile);
+        return tile;
+      }
+    }
   }
 }
 
@@ -531,7 +572,7 @@ function Hunter() {
 
 HunterFactory = {
 
-  createHunter: function () {
+  createHunter: function() {
     var newHunter = {};
     Hunter.apply(newHunter, arguments);
     this.allHunters.push(newHunter);
@@ -540,14 +581,18 @@ HunterFactory = {
 
   allHunters: [],
 
-  forEachHunter: function (action) {
+  forEachHunter: function(action) {
     for (var i = this.allHunters.length; i > 0; i--){
       action.call(this.allHunters[i - 1]);
     }
-  }
+  },
 };
 
 function Item() {
+
+  this.deployToTile = function(tile) {
+    board[tile].push(this);
+  }
 
   this.deployToRandomEmptyTile = function() {
 
@@ -788,6 +833,46 @@ function Item() {
   }
 }
 
+function PotentialTile() {
+
+  Item.call(this);
+  this.char = "•";
+  this.type = "potentialTile";
+  this.color = "";
+
+  this.setRandomColor = function() {
+    var possibleColors = ["green", "blue"];
+    var randomColor = possibleColors[Math.floor(Math.random()*possibleColors.length)];
+    this.color = randomColor;
+  }
+}
+
+PotentialTileFactory = {
+
+  createPotentialTile: function() {
+    var newPotentialTile = {};
+    PotentialTile.apply(newPotentialTile, arguments);
+    this.allPotentialTiles.push(newPotentialTile);
+    return newPotentialTile;
+  },
+
+  allPotentialTiles: [],
+
+  forEachPotentialTile: function(action) {
+    for (var i = this.allPotentialTiles.length; i > 0; i--){
+      action.call(this.allPotentialTiles[i - 1]);
+    }
+  },
+};
+
+function PowerTile() {
+
+  Item.call(this);
+  this.char = "+";
+  this.type = "powerTile";
+  this.color = "";
+}
+
 function Wall() {
 
   Item.call(this);
@@ -976,10 +1061,16 @@ window.addEventListener("load", function() {
   heroA.deployToTile(center - boardSize + 1);
   heroB.deployToTile(center + boardSize - 1);
   HunterFactory.createHunter();
-  HunterFactory.forEachHunter (function () {
+  HunterFactory.forEachHunter (function() {
     if(!this.tile()) {
       this.deployToRandomEmptyEdge();
     }
+  });
+  PotentialTileFactory.createPotentialTile();
+  PotentialTileFactory.createPotentialTile();
+  PotentialTileFactory.forEachPotentialTile (function() {
+    this.setRandomColor();
+    this.deployToRandomEmptyTile();
   });
   advanceLevel();
 

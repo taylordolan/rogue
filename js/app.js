@@ -5,10 +5,16 @@ window.addEventListener("load", function() {
   heroA.deployToTile(center - boardSize + 1);
   heroB.deployToTile(center + boardSize - 1);
   HunterFactory.createHunter();
-  HunterFactory.forEachHunter (function () {
+  HunterFactory.forEachHunter (function() {
     if(!this.tile()) {
       this.deployToRandomEmptyEdge();
     }
+  });
+  PotentialTileFactory.createPotentialTile();
+  PotentialTileFactory.createPotentialTile();
+  PotentialTileFactory.forEachPotentialTile (function() {
+    this.setRandomColor();
+    this.deployToRandomEmptyTile();
   });
   advanceLevel();
 

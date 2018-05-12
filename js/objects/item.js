@@ -1,5 +1,9 @@
 function Item() {
 
+  this.deployToTile = function(tile) {
+    board[tile].push(this);
+  }
+
   this.deployToRandomEmptyTile = function() {
 
     let emptyTiles = [];

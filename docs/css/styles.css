@@ -42,7 +42,7 @@ body {
 }
 
 .left::before {
-  color: red;
+  color: #f00;
   content: "×";
   left: -30px;
   position: absolute;
@@ -50,9 +50,17 @@ body {
 }
 
 .right::after {
-  color: red;
+  color: #f00;
   content: "×";
   left: 30px;
   position: absolute;
   z-index: 1;
+}
+
+.blue {
+  color: #00f;
+}
+
+.green {
+  color: #0f0;
 }

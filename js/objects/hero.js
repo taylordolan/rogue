@@ -23,18 +23,48 @@ function Hero() {
       direction = "down";
     }
 
-    if (true) {
+    // if meelee is enabled, hit surrounding enemies
+    if (
+      isInTile(this.getFriendTile(), "powerTile") &&
+      isInTile(this.getFriendTile(), "powerTile").color === "blue"
+    ) {
       removeFromArray(board[this.tile()], this);
       board[destination].push(this);
       this.hitSurroundingEnemies();
     }
 
-    // if there's an enemy in line of sight, hit it
-    if (false && this.canShoot(direction, destination)) {
+    // if shooting is enabled and there's an enemy in line of sight, hit it
+    if (
+      isInTile(this.getFriendTile(), "powerTile") &&
+      isInTile(this.getFriendTile(), "powerTile").color === "green" &&
+      this.canShoot(direction, destination)
+    ) {
       this.hitEnemyIn(this.canShoot(direction, destination));
     }
+
     // otherwise, move to destination
     else if (!this.shouldAvoid(destination)) {
+      // if there's a potential tile in the destination…
+      if (isInTile(destination, "potentialTile")) {
+        // get its color
+        const color = isInTile(destination, "potentialTile").color;
+        // destroy all potential tiles
+        PotentialTileFactory.forEachPotentialTile (function() {
+          removeFromArray(board[this.tile()], this);
+          removeFromArray(PotentialTileFactory.allPotentialTiles, this);
+        });
+        // deploy a power tile to destination
+        board[destination].push(new PowerTile());
+        // and set its color
+        isInTile(destination, "powerTile").color = color;
+        // create two new potential tiles and deploy them
+        PotentialTileFactory.createPotentialTile();
+        PotentialTileFactory.createPotentialTile();
+        PotentialTileFactory.forEachPotentialTile (function() {
+          this.setRandomColor();
+          this.deployToRandomEmptyTile();
+        });
+      }
       removeFromArray(board[this.tile()], this);
       board[destination].push(this);
     }
@@ -148,8 +178,13 @@ function Hero() {
     else return false;
   }
 
-  this.deployToTile = function(tile) {
-    board[tile].push(this);
+  this.getFriendTile = function() {
+    for (tile in board) {
+      if (isInTile(tile, "hero") && tile != this.tile()) {
+        console.log(tile);
+        return tile;
+      }
+    }
   }
 }
 
