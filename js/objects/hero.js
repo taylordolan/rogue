@@ -182,7 +182,6 @@ function Hero() {
   this.getFriendTile = function() {
     for (tile in board) {
       if (isInTile(tile, "hero") && tile != this.tile()) {
-        console.log(tile);
         return tile;
       }
     }
