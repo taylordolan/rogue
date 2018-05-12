@@ -3,6 +3,7 @@ function Hero() {
   Item.call(this);
   this.avoids = ["wall", "hero"];
   this.type = "hero";
+  this.health = maxHealth;
 
   this.setTile = function(destination) {
 

@@ -1,7 +1,6 @@
 var board = [];
 var boardElement = document.getElementsByClassName("board")[0];
 var boardSize = 9;
-var health = maxHealth;
 var healthElement;
 var level = 0;
 var maxHealth = 4;
@@ -177,9 +176,11 @@ function getElement(tile) {
 
 function renderHealth() {
   healthElement.innerHTML = "";
-  for (var i = 0; i < health; i++) {
-    healthElement.innerHTML += "❤️";
-  }
+  healthElement.innerHTML += "a";
+  healthElement.innerHTML += heroA.health;
+  healthElement.innerHTML += " ";
+  healthElement.innerHTML += "b";
+  healthElement.innerHTML += heroB.health;
   healthElement.innerHTML += "<br>";
 }
 
@@ -269,8 +270,8 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (n === heroA.tile() || n === heroB.tile()) {
-      health--;
+    if (isInTile(n, "hero")) {
+      isInTile(n, "hero").health--;
     }
     else {
       removeFromArray(board[this.tile()], this);
@@ -345,6 +346,7 @@ function Hero() {
   Item.call(this);
   this.avoids = ["wall", "hero"];
   this.type = "hero";
+  this.health = maxHealth;
 
   this.setTile = function(destination) {
 

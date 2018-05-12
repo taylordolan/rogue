@@ -19,11 +19,6 @@ body {
   position: absolute;
 }
 
-.health {
-  font-size: .8em;
-  letter-spacing: .15em;
-}
-
 .up::before {
   color: red;
   content: "×";

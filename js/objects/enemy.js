@@ -9,8 +9,8 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
-    if (n === heroA.tile() || n === heroB.tile()) {
-      health--;
+    if (isInTile(n, "hero")) {
+      isInTile(n, "hero").health--;
     }
     else {
       removeFromArray(board[this.tile()], this);

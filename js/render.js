@@ -21,9 +21,11 @@ function getElement(tile) {
 
 function renderHealth() {
   healthElement.innerHTML = "";
-  for (var i = 0; i < health; i++) {
-    healthElement.innerHTML += "❤️";
-  }
+  healthElement.innerHTML += "a";
+  healthElement.innerHTML += heroA.health;
+  healthElement.innerHTML += " ";
+  healthElement.innerHTML += "b";
+  healthElement.innerHTML += heroB.health;
   healthElement.innerHTML += "<br>";
 }
 
