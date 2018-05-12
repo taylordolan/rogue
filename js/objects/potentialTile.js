@@ -6,7 +6,7 @@ function PotentialTile() {
   this.color = "";
 
   this.setRandomColor = function() {
-    var possibleColors = ["green", "blue"];
+    var possibleColors = ["green", "blue", "red"];
     var randomColor = possibleColors[Math.floor(Math.random()*possibleColors.length)];
     this.color = randomColor;
   }

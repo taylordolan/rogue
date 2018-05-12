@@ -270,6 +270,14 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
+    if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "red") {
+      if (this.distanceFromTo(this.tile(), heroA.tile()) < this.distanceFromTo(this.tile(), heroB.tile())) {
+        heroA.health++;
+      }
+      else {
+        heroB.health++;
+      }
+    }
     if (isInTile(n, "hero")) {
       isInTile(n, "hero").health--;
     }
@@ -843,7 +851,7 @@ function PotentialTile() {
   this.color = "";
 
   this.setRandomColor = function() {
-    var possibleColors = ["green", "blue"];
+    var possibleColors = ["green", "blue", "red"];
     var randomColor = possibleColors[Math.floor(Math.random()*possibleColors.length)];
     this.color = randomColor;
   }
