@@ -26,6 +26,9 @@ function renderHealth() {
   healthElement.innerHTML += " ";
   healthElement.innerHTML += "b";
   healthElement.innerHTML += heroB.health;
+  healthElement.innerHTML += " ";
+  healthElement.innerHTML += "s";
+  healthElement.innerHTML += score;
   healthElement.innerHTML += "<br>";
 }
 

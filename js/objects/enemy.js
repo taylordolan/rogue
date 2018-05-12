@@ -9,6 +9,9 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
+    if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "purple") {
+      score++;
+    }
     if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "red") {
       if (this.distanceFromTo(this.tile(), heroA.tile()) < this.distanceFromTo(this.tile(), heroB.tile())) {
         heroA.health++;

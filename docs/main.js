@@ -7,7 +7,8 @@ var maxHealth = 4;
 var center = boardSize * boardSize / 2 - 0.5;
 var tileElements = [];
 var turn = 0;
-var corners = [0, boardSize - 1, boardSize * boardSize - boardSize, boardSize * boardSize - 1]
+var corners = [0, boardSize - 1, boardSize * boardSize - boardSize, boardSize * boardSize - 1];
+var score = 0;
 
 for (var i = 0; i < boardSize * boardSize; i++) {
   board[i] = [];
@@ -181,6 +182,9 @@ function renderHealth() {
   healthElement.innerHTML += " ";
   healthElement.innerHTML += "b";
   healthElement.innerHTML += heroB.health;
+  healthElement.innerHTML += " ";
+  healthElement.innerHTML += "s";
+  healthElement.innerHTML += score;
   healthElement.innerHTML += "<br>";
 }
 
@@ -270,6 +274,9 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
+    if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "purple") {
+      score++;
+    }
     if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "red") {
       if (this.distanceFromTo(this.tile(), heroA.tile()) < this.distanceFromTo(this.tile(), heroB.tile())) {
         heroA.health++;
@@ -851,7 +858,7 @@ function PotentialTile() {
   this.color = "";
 
   this.setRandomColor = function() {
-    var possibleColors = ["green", "blue", "red"];
+    var possibleColors = ["green", "blue", "red", "purple"];
     var randomColor = possibleColors[Math.floor(Math.random()*possibleColors.length)];
     this.color = randomColor;
   }

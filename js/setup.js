@@ -7,7 +7,8 @@ var maxHealth = 4;
 var center = boardSize * boardSize / 2 - 0.5;
 var tileElements = [];
 var turn = 0;
-var corners = [0, boardSize - 1, boardSize * boardSize - boardSize, boardSize * boardSize - 1]
+var corners = [0, boardSize - 1, boardSize * boardSize - boardSize, boardSize * boardSize - 1];
+var score = 0;
 
 for (var i = 0; i < boardSize * boardSize; i++) {
   board[i] = [];
