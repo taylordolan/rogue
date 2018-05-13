@@ -12,19 +12,33 @@ window.addEventListener("load", function() {
   });
   advanceLevel();
 
-  document.onkeydown = checkKey;
-  function checkKey(e) {
+  document.onkeyup = checkKeyUp;
+  function checkKeyUp(e) {
+    e = e || window.event;
+    if (e.keyCode === 16) {
+      shiftKeyDown = false;
+      render();
+    }
+  }
+
+  document.onkeydown = checkKeyDown;
+  function checkKeyDown(e) {
 
     e = e || window.event;
     var key = e.keyCode;
+    var shift = e.shiftKey;
     var left = 37;
     var up = 38;
     var right = 39;
     var down = 40;
 
-    // even turns
-    if (turn % 2 === 0) {
-      // heroA
+    if (key === 16) {
+      shiftKeyDown = true;
+      render();
+    }
+
+    // heroA
+    if (!shift) {
       if (key === up) {
         heroA.moveUp();
         advanceTurn();
@@ -33,20 +47,17 @@ window.addEventListener("load", function() {
         heroA.moveDown();
         advanceTurn();
       }
-      // heroB
       else if (key === left) {
-        heroB.moveLeft();
+        heroA.moveLeft();
         advanceTurn();
       }
       else if (key === right) {
-        heroB.moveRight();
+        heroA.moveRight();
         advanceTurn();
       }
     }
-
-    // odd turns
-    else if (turn % 2 === 1) {
-      // heroB
+    // heroB
+    else {
       if (key === up) {
         heroB.moveUp();
         advanceTurn();
@@ -55,13 +66,12 @@ window.addEventListener("load", function() {
         heroB.moveDown();
         advanceTurn();
       }
-      // heroA
       else if (key === left) {
-        heroA.moveLeft();
+        heroB.moveLeft();
         advanceTurn();
       }
       else if (key === right) {
-        heroA.moveRight();
+        heroB.moveRight();
         advanceTurn();
       }
     }

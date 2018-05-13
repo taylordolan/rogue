@@ -10,6 +10,7 @@ let maxHealth = 4;
 let score = 0;
 let tileElements = [];
 let turn = 0;
+let shiftKeyDown = false;
 
 // if boardSize is odd
 if (boardSize % 2) {
@@ -169,16 +170,16 @@ let increaseDiscard = [];
 let drawRate = 4;
 
 // populate enemy deck
-for (let i = 0; i < 40; i++) {
+for (let i = 0; i < 48; i++) {
   enemyDeck.push(0);
 }
 
-for (let i = 0; i < 1; i++) {
+for (let i = 0; i < 4; i++) {
   enemyDeck.push(1);
 }
 
 // populate increase deck
-for (let i = 0; i < 15; i++) {
+for (let i = 0; i < 16; i++) {
   increaseDeck.push(0);
 }
 
@@ -229,8 +230,6 @@ let maybeSpawnEnemies = () => {
       enemyDiscard.length = 0;
     }
   }
-  console.log("enemyDeck   ", enemyDeck.length);
-  console.log("enemyDiscard", enemyDiscard.length);
 }
 
 function setUpBoard() {
@@ -310,33 +309,14 @@ function render() {
   var heroAElement = heroATile.children[0];
   var heroBElement = heroBTile.children[0];
 
-  if (turn % 2 === 0) {
-    if (heroA.canMove("up", heroA.tile())) {
-      heroAElement.classList.add("up");
-    }
-    if (heroA.canMove("down", heroA.tile())) {
-      heroAElement.classList.add("down");
-    }
-    if (heroB.canMove("left", heroB.tile())) {
-      heroBElement.classList.add("left");
-    }
-    if (heroB.canMove("right", heroB.tile())) {
-      heroBElement.classList.add("right");
-    }
+  heroAElement.classList.remove("active");
+  heroBElement.classList.remove("active");
+
+  if (!shiftKeyDown) {
+    heroAElement.classList.add("active");
   }
-  if ((turn + 1) % 2 === 0) {
-    if (heroB.canMove("up", heroB.tile())) {
-      heroBElement.classList.add("up");
-    }
-    if (heroB.canMove("down", heroB.tile())) {
-      heroBElement.classList.add("down");
-    }
-    if (heroA.canMove("left", heroA.tile())) {
-      heroAElement.classList.add("left");
-    }
-    if (heroA.canMove("right", heroA.tile())) {
-      heroAElement.classList.add("right");
-    }
+  else {
+    heroBElement.classList.add("active");
   }
 
   renderHealth();
@@ -484,6 +464,7 @@ function Hero() {
     else if (!this.shouldAvoid(destination)) {
       // if there's a potential tile in the destination…
       if (isInTile(destination, "potentialTile")) {
+        // debugger;
         // get its color
         const color = isInTile(destination, "potentialTile").color;
         // destroy all potential tiles
@@ -1163,19 +1144,33 @@ window.addEventListener("load", function() {
   });
   advanceLevel();
 
-  document.onkeydown = checkKey;
-  function checkKey(e) {
+  document.onkeyup = checkKeyUp;
+  function checkKeyUp(e) {
+    e = e || window.event;
+    if (e.keyCode === 16) {
+      shiftKeyDown = false;
+      render();
+    }
+  }
+
+  document.onkeydown = checkKeyDown;
+  function checkKeyDown(e) {
 
     e = e || window.event;
     var key = e.keyCode;
+    var shift = e.shiftKey;
     var left = 37;
     var up = 38;
     var right = 39;
     var down = 40;
 
-    // even turns
-    if (turn % 2 === 0) {
-      // heroA
+    if (key === 16) {
+      shiftKeyDown = true;
+      render();
+    }
+
+    // heroA
+    if (!shift) {
       if (key === up) {
         heroA.moveUp();
         advanceTurn();
@@ -1184,20 +1179,17 @@ window.addEventListener("load", function() {
         heroA.moveDown();
         advanceTurn();
       }
-      // heroB
       else if (key === left) {
-        heroB.moveLeft();
+        heroA.moveLeft();
         advanceTurn();
       }
       else if (key === right) {
-        heroB.moveRight();
+        heroA.moveRight();
         advanceTurn();
       }
     }
-
-    // odd turns
-    else if (turn % 2 === 1) {
-      // heroB
+    // heroB
+    else {
       if (key === up) {
         heroB.moveUp();
         advanceTurn();
@@ -1206,13 +1198,12 @@ window.addEventListener("load", function() {
         heroB.moveDown();
         advanceTurn();
       }
-      // heroA
       else if (key === left) {
-        heroA.moveLeft();
+        heroB.moveLeft();
         advanceTurn();
       }
       else if (key === right) {
-        heroA.moveRight();
+        heroB.moveRight();
         advanceTurn();
       }
     }

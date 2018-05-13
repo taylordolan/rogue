@@ -47,6 +47,7 @@ function Hero() {
     else if (!this.shouldAvoid(destination)) {
       // if there's a potential tile in the destination…
       if (isInTile(destination, "potentialTile")) {
+        // debugger;
         // get its color
         const color = isInTile(destination, "potentialTile").color;
         // destroy all potential tiles

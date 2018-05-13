@@ -75,33 +75,14 @@ function render() {
   var heroAElement = heroATile.children[0];
   var heroBElement = heroBTile.children[0];
 
-  if (turn % 2 === 0) {
-    if (heroA.canMove("up", heroA.tile())) {
-      heroAElement.classList.add("up");
-    }
-    if (heroA.canMove("down", heroA.tile())) {
-      heroAElement.classList.add("down");
-    }
-    if (heroB.canMove("left", heroB.tile())) {
-      heroBElement.classList.add("left");
-    }
-    if (heroB.canMove("right", heroB.tile())) {
-      heroBElement.classList.add("right");
-    }
+  heroAElement.classList.remove("active");
+  heroBElement.classList.remove("active");
+
+  if (!shiftKeyDown) {
+    heroAElement.classList.add("active");
   }
-  if ((turn + 1) % 2 === 0) {
-    if (heroB.canMove("up", heroB.tile())) {
-      heroBElement.classList.add("up");
-    }
-    if (heroB.canMove("down", heroB.tile())) {
-      heroBElement.classList.add("down");
-    }
-    if (heroA.canMove("left", heroA.tile())) {
-      heroAElement.classList.add("left");
-    }
-    if (heroA.canMove("right", heroA.tile())) {
-      heroAElement.classList.add("right");
-    }
+  else {
+    heroBElement.classList.add("active");
   }
 
   renderHealth();

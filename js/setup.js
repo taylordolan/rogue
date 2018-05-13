@@ -10,6 +10,7 @@ let maxHealth = 4;
 let score = 0;
 let tileElements = [];
 let turn = 0;
+let shiftKeyDown = false;
 
 // if boardSize is odd
 if (boardSize % 2) {

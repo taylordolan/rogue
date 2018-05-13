@@ -19,7 +19,12 @@ body {
   position: absolute;
 }
 
-.up::before {
+.active {
+  /* text-transform: uppercase; */
+  text-decoration: underline;
+}
+
+/* .up::before {
   color: red;
   content: "×";
   position: absolute;
@@ -50,7 +55,7 @@ body {
   left: 30px;
   position: absolute;
   z-index: 1;
-}
+} */
 
 .blue {
   color: #00f;
