@@ -40,7 +40,9 @@ function Hero() {
       isInTile(this.getFriendTile(), "powerTile").color === "green" &&
       this.canShoot(direction, destination)
     ) {
-      this.hitEnemyIn(this.canShoot(direction, destination));
+      removeFromArray(board[this.tile()], this);
+      board[this.canShoot(direction, destination)].push(this);
+      this.hitEnemyIn(this.tile());
     }
 
     // otherwise, move to destination
