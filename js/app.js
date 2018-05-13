@@ -2,8 +2,8 @@ window.addEventListener("load", function() {
 
   setUpBoard();
   health = maxHealth;
-  heroA.deployToTile(center - boardSize + 1);
-  heroB.deployToTile(center + boardSize - 1);
+  heroA.deployToTile(heroAStart);
+  heroB.deployToTile(heroBStart);
   PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.forEachPotentialTile (function() {
