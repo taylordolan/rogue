@@ -1,6 +1,6 @@
 var board = [];
 var boardElement = document.getElementsByClassName("board")[0];
-var boardSize = 6;
+var boardSize = 8;
 var healthElement;
 var level = 0;
 var maxHealth = 4;

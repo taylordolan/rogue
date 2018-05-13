@@ -106,14 +106,7 @@ function advanceTurn() {
   HunterFactory.forEachHunter (function () {
     this.pathfind();
   });
-  if (turn && turn % getAdvanceRate() === 0) {
-    HunterFactory.createHunter();
-    HunterFactory.forEachHunter (function () {
-      if(!this.tile()) {
-        this.deployToRandomEmptyEdge();
-      }
-    });
-  }
+  maybeSpawnEnemies();
   render();
 }
 
