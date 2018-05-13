@@ -29,8 +29,7 @@ function Hero() {
       isInTile(this.getFriendTile(), "powerTile") &&
       isInTile(this.getFriendTile(), "powerTile").color === "blue"
     ) {
-      removeFromArray(board[this.tile()], this);
-      board[destination].push(this);
+      this.actuallySetTile(destination);
       this.hitSurroundingEnemies();
     }
 
@@ -40,42 +39,44 @@ function Hero() {
       isInTile(this.getFriendTile(), "powerTile").color === "green" &&
       this.canShoot(direction, destination)
     ) {
-      removeFromArray(board[this.tile()], this);
-      board[this.canShoot(direction, destination)].push(this);
+      this.actuallySetTile(this.canShoot(direction, destination));
       this.hitEnemyIn(this.tile());
     }
 
     // otherwise, move to destination
     else if (!this.shouldAvoid(destination)) {
-      // if there's a potential tile in the destination…
-      if (isInTile(destination, "potentialTile")) {
-        // debugger;
-        // get its color
-        const color = isInTile(destination, "potentialTile").color;
-        // destroy all potential tiles
-        PotentialTileFactory.forEachPotentialTile (function() {
-          removeFromArray(board[this.tile()], this);
-          removeFromArray(PotentialTileFactory.allPotentialTiles, this);
-        });
-        // deploy a power tile to destination
-        board[destination].push(new PowerTile());
-        // and set its color
-        isInTile(destination, "powerTile").color = color;
-        // create two new potential tiles and deploy them
-        PotentialTileFactory.createPotentialTile();
-        PotentialTileFactory.createPotentialTile();
-        PotentialTileFactory.forEachPotentialTile (function() {
-          this.setRandomColor();
-          this.deployToRandomEmptyTile();
-        });
-      }
-      removeFromArray(board[this.tile()], this);
-      board[destination].push(this);
+      this.actuallySetTile(destination);
     }
   }
 
+  this.actuallySetTile = function(destination) {
+    // if there's a potential tile in the destination…
+    if (isInTile(destination, "potentialTile")) {
+      // get its color
+      const color = isInTile(destination, "potentialTile").color;
+      // destroy all potential tiles
+      PotentialTileFactory.forEachPotentialTile (function() {
+        removeFromArray(board[this.tile()], this);
+        removeFromArray(PotentialTileFactory.allPotentialTiles, this);
+      });
+      // deploy a power tile to destination
+      board[destination].push(new PowerTile());
+      // and set its color
+      isInTile(destination, "powerTile").color = color;
+      // create two new potential tiles and deploy them
+      PotentialTileFactory.createPotentialTile();
+      PotentialTileFactory.createPotentialTile();
+      PotentialTileFactory.forEachPotentialTile (function() {
+        this.setRandomColor();
+        this.deployToRandomEmptyTile();
+      });
+    }
+    removeFromArray(board[this.tile()], this);
+    board[destination].push(this);
+  }
+
   // given a direction and the first tile in that direction, return (the tile of an enemy in line of sight) or (false)
-  // TODO: seems like I could
+  // TODO: seems like I should derive the direction from the tile and the hero's current location.
   this.canShoot = function(direction, n) {
     if (direction === "up") {
       while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
