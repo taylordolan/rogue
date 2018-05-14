@@ -50,7 +50,10 @@ function Enemy (name) {
     if (this.canMove("right", here)) {
       randomMoves.push("moveRight");
     }
-    this.moveWithOption(randomMoves);
+    if (randomMoves.length) {
+      this.moveWithOption(randomMoves);
+    }
+    return;
   }
 
   this.pathfind = function() {

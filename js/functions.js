@@ -110,12 +110,6 @@ function advanceTurn() {
   render();
 }
 
-function advanceLevel() {
-  level++;
-  generateWalls();
-  render();
-}
-
 function isInTile(tile, type) {
   for (var i = 0; i < board[tile].length; i++) {
     if (board[tile][i].type == type) {

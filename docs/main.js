@@ -141,12 +141,6 @@ function advanceTurn() {
   render();
 }
 
-function advanceLevel() {
-  level++;
-  generateWalls();
-  render();
-}
-
 function isInTile(tile, type) {
   for (var i = 0; i < board[tile].length; i++) {
     if (board[tile][i].type == type) {
@@ -170,16 +164,16 @@ let increaseDiscard = [];
 let drawRate = 4;
 
 // populate enemy deck
-for (let i = 0; i < 48; i++) {
+for (let i = 0; i < 75; i++) {
   enemyDeck.push(0);
 }
 
-for (let i = 0; i < 4; i++) {
+for (let i = 0; i < 3; i++) {
   enemyDeck.push(1);
 }
 
 // populate increase deck
-for (let i = 0; i < 16; i++) {
+for (let i = 0; i < 30; i++) {
   increaseDeck.push(0);
 }
 
@@ -374,7 +368,10 @@ function Enemy (name) {
     if (this.canMove("right", here)) {
       randomMoves.push("moveRight");
     }
-    this.moveWithOption(randomMoves);
+    if (randomMoves.length) {
+      this.moveWithOption(randomMoves);
+    }
+    return;
   }
 
   this.pathfind = function() {
@@ -485,7 +482,7 @@ function Hero() {
       PotentialTileFactory.createPotentialTile();
       PotentialTileFactory.forEachPotentialTile (function() {
         this.setRandomColor();
-        this.deployToRandomEmptyTile();
+        this.deploy();
       });
     }
     removeFromArray(board[this.tile()], this);
@@ -921,8 +918,25 @@ function PotentialTile() {
 
   this.setRandomColor = function() {
     var possibleColors = ["green", "blue", "red", "purple"];
-    var randomColor = possibleColors[Math.floor(Math.random()*possibleColors.length)];
+    var randomColor = possibleColors[Math.floor(Math.random() * possibleColors.length)];
     this.color = randomColor;
+  }
+
+  this.deploy = () => {
+    let options = [];
+    let minDistance = 3;
+    for (let i = 0; i < board.length; i++) {
+      if (
+        board[i].length === 0 &&
+        heroA.distanceFromTo(heroA.tile(), i) >= minDistance &&
+        heroA.distanceFromTo(heroB.tile(), i) >= minDistance
+      ) {
+        options.push(i);
+      }
+    }
+    console.log(options);
+    let randomOption = Math.floor(Math.random() * options.length);
+    this.deployToTile(options[randomOption]);
   }
 }
 
@@ -1139,13 +1153,14 @@ window.addEventListener("load", function() {
   health = maxHealth;
   heroA.deployToTile(heroAStart);
   heroB.deployToTile(heroBStart);
+  generateWalls();
   PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.forEachPotentialTile (function() {
     this.setRandomColor();
-    this.deployToRandomEmptyTile();
+    this.deploy();
   });
-  advanceLevel();
+  render();
 
   document.onkeyup = checkKeyUp;
   function checkKeyUp(e) {

@@ -68,7 +68,7 @@ function Hero() {
       PotentialTileFactory.createPotentialTile();
       PotentialTileFactory.forEachPotentialTile (function() {
         this.setRandomColor();
-        this.deployToRandomEmptyTile();
+        this.deploy();
       });
     }
     removeFromArray(board[this.tile()], this);

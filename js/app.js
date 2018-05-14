@@ -4,13 +4,14 @@ window.addEventListener("load", function() {
   health = maxHealth;
   heroA.deployToTile(heroAStart);
   heroB.deployToTile(heroBStart);
+  generateWalls();
   PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.forEachPotentialTile (function() {
     this.setRandomColor();
-    this.deployToRandomEmptyTile();
+    this.deploy();
   });
-  advanceLevel();
+  render();
 
   document.onkeyup = checkKeyUp;
   function checkKeyUp(e) {

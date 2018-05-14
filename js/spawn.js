@@ -6,16 +6,16 @@ let increaseDiscard = [];
 let drawRate = 4;
 
 // populate enemy deck
-for (let i = 0; i < 48; i++) {
+for (let i = 0; i < 75; i++) {
   enemyDeck.push(0);
 }
 
-for (let i = 0; i < 4; i++) {
+for (let i = 0; i < 3; i++) {
   enemyDeck.push(1);
 }
 
 // populate increase deck
-for (let i = 0; i < 16; i++) {
+for (let i = 0; i < 30; i++) {
   increaseDeck.push(0);
 }
 
