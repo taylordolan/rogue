@@ -4,14 +4,15 @@ window.addEventListener("load", function() {
   health = maxHealth;
   heroA.deployToTile(heroAStart);
   heroB.deployToTile(heroBStart);
+
+  board[powerStart1].push(new PowerTile());
+  isInTile(powerStart1, "powerTile").color = "blue";
+
+  board[powerStart2].push(new PowerTile());
+  isInTile(powerStart2, "powerTile").color = "green";
+
   generateWalls();
-  PotentialTileFactory.createPotentialTile();
-  PotentialTileFactory.createPotentialTile();
-  PotentialTileFactory.createPotentialTile();
-  PotentialTileFactory.forEachPotentialTile (function() {
-    this.setRandomColor();
-    this.deploy();
-  });
+  deployPotentialTiles();
   render();
 
   document.onkeyup = checkKeyUp;

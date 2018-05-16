@@ -1,6 +1,6 @@
 let board = [];
 let boardElement = document.getElementsByClassName("board")[0];
-let boardSize = 8;
+let boardSize = 9;
 let corners = [0, boardSize - 1, boardSize * boardSize - boardSize, boardSize * boardSize - 1];
 let healthElement;
 let heroAStart;
@@ -11,18 +11,24 @@ let score = 0;
 let tileElements = [];
 let turn = 0;
 let shiftKeyDown = false;
+let powerStart1;
+let powerStart2;
 
 // if boardSize is odd
 if (boardSize % 2) {
   let half = Math.floor(boardSize * boardSize / 2);
   heroAStart = half - boardSize + 1;
   heroBStart = half + boardSize - 1;
+  powerStart1 = heroAStart - 2;
+  powerStart2 = heroBStart + 2;
 }
 // if boardSize is even
 else {
   let half = boardSize * boardSize / 2;
   heroAStart = half - boardSize / 2;
   heroBStart = half + boardSize / 2 - 1;
+  powerStart1 = heroAStart - 1 - boardSize;
+  powerStart2 = heroBStart + 1 + boardSize;
 }
 
 for (let i = 0; i < boardSize * boardSize; i++) {
@@ -163,19 +169,19 @@ function maybeAdvance() {
         board[i].push(new PowerTile());
         // and set its color
         isInTile(i, "powerTile").color = color;
-
-        PotentialTileFactory.forEachPotentialTile (function() {
-          removeFromArray(board[this.tile()], this);
-          removeFromArray(PotentialTileFactory.allPotentialTiles, this);
-        });
-        // create two new potential tiles and deploy them
-        PotentialTileFactory.createPotentialTile();
-        PotentialTileFactory.createPotentialTile();
-        PotentialTileFactory.createPotentialTile();
-        PotentialTileFactory.forEachPotentialTile (function() {
-          this.setRandomColor();
-          this.deploy();
-        });
+        // PotentialTileFactory.forEachPotentialTile (function() {
+        //   removeFromArray(board[this.tile()], this);
+        //   removeFromArray(PotentialTileFactory.allPotentialTiles, this);
+        // });
+        // // create two new potential tiles and deploy them
+        // PotentialTileFactory.createPotentialTile();
+        // PotentialTileFactory.createPotentialTile();
+        // PotentialTileFactory.createPotentialTile();
+        // PotentialTileFactory.forEachPotentialTile (function() {
+        //   this.setRandomColor();
+        //   this.deploy();
+        // });
+        deployPotentialTiles();
         i = 10000;
       }
     }
@@ -197,6 +203,25 @@ function removeFromArray(array, value) {
   }
 }
 
+function deployPotentialTiles() {
+  let possibleColors = ["green", "blue", "red", "purple"];
+  let index = Math.floor(Math.random() * possibleColors.length);
+  possibleColors.splice(index, 1);
+
+  PotentialTileFactory.forEachPotentialTile (function() {
+    removeFromArray(board[this.tile()], this);
+    removeFromArray(PotentialTileFactory.allPotentialTiles, this);
+  });
+  // create two new potential tiles and deploy them
+  PotentialTileFactory.createPotentialTile(possibleColors[0]);
+  PotentialTileFactory.createPotentialTile(possibleColors[1]);
+  PotentialTileFactory.createPotentialTile(possibleColors[2]);
+  PotentialTileFactory.forEachPotentialTile (function() {
+    // this.setRandomColor();
+    this.deploy();
+  });
+}
+
 // set up decks and draw rate
 let enemyDeck = [];
 let enemyDiscard = [];
@@ -205,7 +230,7 @@ let increaseDiscard = [];
 let drawRate = 3;
 
 // populate enemy deck
-for (let i = 0; i < 120; i++) {
+for (let i = 0; i < 75; i++) {
   enemyDeck.push(0);
 }
 
@@ -214,7 +239,7 @@ for (let i = 0; i < 3; i++) {
 }
 
 // populate increase deck
-for (let i = 0; i < 120; i++) {
+for (let i = 0; i < 60; i++) {
   increaseDeck.push(0);
 }
 
@@ -265,7 +290,6 @@ let maybeSpawnEnemies = () => {
       enemyDiscard.length = 0;
     }
   }
-  console.log("drawRate", drawRate);
 }
 
 function setUpBoard() {
@@ -372,16 +396,22 @@ function Enemy (name) {
     if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "purple") {
       score++;
     }
+    // TODO: this part isn't quite fair
     if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "red") {
       if (this.distanceFromTo(this.tile(), heroA.tile()) < this.distanceFromTo(this.tile(), heroB.tile())) {
-        heroA.health++;
+        if (heroA.health < maxHealth) {
+          heroA.health++;
+        }
       }
       else {
-        heroB.health++;
+        if (heroB.health < maxHealth) {
+          heroB.health++;
+        }
       }
     }
     if (isInTile(n, "hero")) {
       isInTile(n, "hero").health--;
+      this.die();
     }
     else {
       removeFromArray(board[this.tile()], this);
@@ -937,15 +967,9 @@ function PotentialTile() {
   this.type = "potentialTile";
   this.color = "";
 
-  this.setRandomColor = function() {
-    var possibleColors = ["green", "blue", "red", "purple"];
-    var randomColor = possibleColors[Math.floor(Math.random() * possibleColors.length)];
-    this.color = randomColor;
-  }
-
   this.deploy = () => {
     let options = [];
-    let minDistance = 2;
+    let minDistance = 1;
     for (let i = 0; i < board.length; i++) {
       if (
         board[i].length === 0 &&
@@ -962,10 +986,11 @@ function PotentialTile() {
 
 PotentialTileFactory = {
 
-  createPotentialTile: function() {
+  createPotentialTile: function(c) {
     var newPotentialTile = {};
     PotentialTile.apply(newPotentialTile, arguments);
     this.allPotentialTiles.push(newPotentialTile);
+    newPotentialTile.color = c;
     return newPotentialTile;
   },
 
@@ -1173,14 +1198,15 @@ window.addEventListener("load", function() {
   health = maxHealth;
   heroA.deployToTile(heroAStart);
   heroB.deployToTile(heroBStart);
+
+  board[powerStart1].push(new PowerTile());
+  isInTile(powerStart1, "powerTile").color = "blue";
+
+  board[powerStart2].push(new PowerTile());
+  isInTile(powerStart2, "powerTile").color = "green";
+
   generateWalls();
-  PotentialTileFactory.createPotentialTile();
-  PotentialTileFactory.createPotentialTile();
-  PotentialTileFactory.createPotentialTile();
-  PotentialTileFactory.forEachPotentialTile (function() {
-    this.setRandomColor();
-    this.deploy();
-  });
+  deployPotentialTiles();
   render();
 
   document.onkeyup = checkKeyUp;

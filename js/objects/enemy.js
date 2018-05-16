@@ -12,16 +12,22 @@ function Enemy (name) {
     if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "purple") {
       score++;
     }
+    // TODO: this part isn't quite fair
     if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "red") {
       if (this.distanceFromTo(this.tile(), heroA.tile()) < this.distanceFromTo(this.tile(), heroB.tile())) {
-        heroA.health++;
+        if (heroA.health < maxHealth) {
+          heroA.health++;
+        }
       }
       else {
-        heroB.health++;
+        if (heroB.health < maxHealth) {
+          heroB.health++;
+        }
       }
     }
     if (isInTile(n, "hero")) {
       isInTile(n, "hero").health--;
+      this.die();
     }
     else {
       removeFromArray(board[this.tile()], this);

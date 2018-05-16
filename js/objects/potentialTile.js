@@ -5,15 +5,9 @@ function PotentialTile() {
   this.type = "potentialTile";
   this.color = "";
 
-  this.setRandomColor = function() {
-    var possibleColors = ["green", "blue", "red", "purple"];
-    var randomColor = possibleColors[Math.floor(Math.random() * possibleColors.length)];
-    this.color = randomColor;
-  }
-
   this.deploy = () => {
     let options = [];
-    let minDistance = 2;
+    let minDistance = 1;
     for (let i = 0; i < board.length; i++) {
       if (
         board[i].length === 0 &&
@@ -30,10 +24,11 @@ function PotentialTile() {
 
 PotentialTileFactory = {
 
-  createPotentialTile: function() {
+  createPotentialTile: function(c) {
     var newPotentialTile = {};
     PotentialTile.apply(newPotentialTile, arguments);
     this.allPotentialTiles.push(newPotentialTile);
+    newPotentialTile.color = c;
     return newPotentialTile;
   },
 

@@ -132,19 +132,19 @@ function maybeAdvance() {
         board[i].push(new PowerTile());
         // and set its color
         isInTile(i, "powerTile").color = color;
-
-        PotentialTileFactory.forEachPotentialTile (function() {
-          removeFromArray(board[this.tile()], this);
-          removeFromArray(PotentialTileFactory.allPotentialTiles, this);
-        });
-        // create two new potential tiles and deploy them
-        PotentialTileFactory.createPotentialTile();
-        PotentialTileFactory.createPotentialTile();
-        PotentialTileFactory.createPotentialTile();
-        PotentialTileFactory.forEachPotentialTile (function() {
-          this.setRandomColor();
-          this.deploy();
-        });
+        // PotentialTileFactory.forEachPotentialTile (function() {
+        //   removeFromArray(board[this.tile()], this);
+        //   removeFromArray(PotentialTileFactory.allPotentialTiles, this);
+        // });
+        // // create two new potential tiles and deploy them
+        // PotentialTileFactory.createPotentialTile();
+        // PotentialTileFactory.createPotentialTile();
+        // PotentialTileFactory.createPotentialTile();
+        // PotentialTileFactory.forEachPotentialTile (function() {
+        //   this.setRandomColor();
+        //   this.deploy();
+        // });
+        deployPotentialTiles();
         i = 10000;
       }
     }
@@ -164,4 +164,23 @@ function removeFromArray(array, value) {
   if (array.indexOf(value) !== -1) {
     array.splice(array.indexOf(value), 1);
   }
+}
+
+function deployPotentialTiles() {
+  let possibleColors = ["green", "blue", "red", "purple"];
+  let index = Math.floor(Math.random() * possibleColors.length);
+  possibleColors.splice(index, 1);
+
+  PotentialTileFactory.forEachPotentialTile (function() {
+    removeFromArray(board[this.tile()], this);
+    removeFromArray(PotentialTileFactory.allPotentialTiles, this);
+  });
+  // create two new potential tiles and deploy them
+  PotentialTileFactory.createPotentialTile(possibleColors[0]);
+  PotentialTileFactory.createPotentialTile(possibleColors[1]);
+  PotentialTileFactory.createPotentialTile(possibleColors[2]);
+  PotentialTileFactory.forEachPotentialTile (function() {
+    // this.setRandomColor();
+    this.deploy();
+  });
 }
