@@ -3,10 +3,10 @@ let enemyDeck = [];
 let enemyDiscard = [];
 let increaseDeck = [];
 let increaseDiscard = [];
-let drawRate = 4;
+let drawRate = 3;
 
 // populate enemy deck
-for (let i = 0; i < 75; i++) {
+for (let i = 0; i < 120; i++) {
   enemyDeck.push(0);
 }
 
@@ -15,7 +15,7 @@ for (let i = 0; i < 3; i++) {
 }
 
 // populate increase deck
-for (let i = 0; i < 30; i++) {
+for (let i = 0; i < 120; i++) {
   increaseDeck.push(0);
 }
 
@@ -66,4 +66,5 @@ let maybeSpawnEnemies = () => {
       enemyDiscard.length = 0;
     }
   }
+  console.log("drawRate", drawRate);
 }

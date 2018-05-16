@@ -50,27 +50,6 @@ function Hero() {
   }
 
   this.actuallySetTile = function(destination) {
-    // if there's a potential tile in the destination…
-    if (isInTile(destination, "potentialTile")) {
-      // get its color
-      const color = isInTile(destination, "potentialTile").color;
-      // destroy all potential tiles
-      PotentialTileFactory.forEachPotentialTile (function() {
-        removeFromArray(board[this.tile()], this);
-        removeFromArray(PotentialTileFactory.allPotentialTiles, this);
-      });
-      // deploy a power tile to destination
-      board[destination].push(new PowerTile());
-      // and set its color
-      isInTile(destination, "powerTile").color = color;
-      // create two new potential tiles and deploy them
-      PotentialTileFactory.createPotentialTile();
-      PotentialTileFactory.createPotentialTile();
-      PotentialTileFactory.forEachPotentialTile (function() {
-        this.setRandomColor();
-        this.deploy();
-      });
-    }
     removeFromArray(board[this.tile()], this);
     board[destination].push(this);
   }

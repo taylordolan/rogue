@@ -106,8 +106,49 @@ function advanceTurn() {
   HunterFactory.forEachHunter (function () {
     this.pathfind();
   });
+  maybeAdvance();
   maybeSpawnEnemies();
   render();
+}
+
+function maybeAdvance() {
+
+  let aTile = heroA.tile();
+  let bTile = heroB.tile();
+  let didIt = false;
+
+  if (
+    isInTile(aTile, "potentialTile") &&
+    isInTile(bTile, "potentialTile")
+  ) {
+    for (let i = 0; i < board.length; i++) {
+      if (
+        i !== aTile &&
+        i !== bTile &&
+        isInTile(i, "potentialTile")
+      ) {
+        let color = isInTile(i, "potentialTile").color;
+        // deploy a power tile to destination
+        board[i].push(new PowerTile());
+        // and set its color
+        isInTile(i, "powerTile").color = color;
+
+        PotentialTileFactory.forEachPotentialTile (function() {
+          removeFromArray(board[this.tile()], this);
+          removeFromArray(PotentialTileFactory.allPotentialTiles, this);
+        });
+        // create two new potential tiles and deploy them
+        PotentialTileFactory.createPotentialTile();
+        PotentialTileFactory.createPotentialTile();
+        PotentialTileFactory.createPotentialTile();
+        PotentialTileFactory.forEachPotentialTile (function() {
+          this.setRandomColor();
+          this.deploy();
+        });
+        i = 10000;
+      }
+    }
+  }
 }
 
 function isInTile(tile, type) {

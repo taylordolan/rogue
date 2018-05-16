@@ -137,8 +137,49 @@ function advanceTurn() {
   HunterFactory.forEachHunter (function () {
     this.pathfind();
   });
+  maybeAdvance();
   maybeSpawnEnemies();
   render();
+}
+
+function maybeAdvance() {
+
+  let aTile = heroA.tile();
+  let bTile = heroB.tile();
+  let didIt = false;
+
+  if (
+    isInTile(aTile, "potentialTile") &&
+    isInTile(bTile, "potentialTile")
+  ) {
+    for (let i = 0; i < board.length; i++) {
+      if (
+        i !== aTile &&
+        i !== bTile &&
+        isInTile(i, "potentialTile")
+      ) {
+        let color = isInTile(i, "potentialTile").color;
+        // deploy a power tile to destination
+        board[i].push(new PowerTile());
+        // and set its color
+        isInTile(i, "powerTile").color = color;
+
+        PotentialTileFactory.forEachPotentialTile (function() {
+          removeFromArray(board[this.tile()], this);
+          removeFromArray(PotentialTileFactory.allPotentialTiles, this);
+        });
+        // create two new potential tiles and deploy them
+        PotentialTileFactory.createPotentialTile();
+        PotentialTileFactory.createPotentialTile();
+        PotentialTileFactory.createPotentialTile();
+        PotentialTileFactory.forEachPotentialTile (function() {
+          this.setRandomColor();
+          this.deploy();
+        });
+        i = 10000;
+      }
+    }
+  }
 }
 
 function isInTile(tile, type) {
@@ -161,10 +202,10 @@ let enemyDeck = [];
 let enemyDiscard = [];
 let increaseDeck = [];
 let increaseDiscard = [];
-let drawRate = 4;
+let drawRate = 3;
 
 // populate enemy deck
-for (let i = 0; i < 75; i++) {
+for (let i = 0; i < 120; i++) {
   enemyDeck.push(0);
 }
 
@@ -173,7 +214,7 @@ for (let i = 0; i < 3; i++) {
 }
 
 // populate increase deck
-for (let i = 0; i < 30; i++) {
+for (let i = 0; i < 120; i++) {
   increaseDeck.push(0);
 }
 
@@ -224,6 +265,7 @@ let maybeSpawnEnemies = () => {
       enemyDiscard.length = 0;
     }
   }
+  console.log("drawRate", drawRate);
 }
 
 function setUpBoard() {
@@ -464,27 +506,6 @@ function Hero() {
   }
 
   this.actuallySetTile = function(destination) {
-    // if there's a potential tile in the destination…
-    if (isInTile(destination, "potentialTile")) {
-      // get its color
-      const color = isInTile(destination, "potentialTile").color;
-      // destroy all potential tiles
-      PotentialTileFactory.forEachPotentialTile (function() {
-        removeFromArray(board[this.tile()], this);
-        removeFromArray(PotentialTileFactory.allPotentialTiles, this);
-      });
-      // deploy a power tile to destination
-      board[destination].push(new PowerTile());
-      // and set its color
-      isInTile(destination, "powerTile").color = color;
-      // create two new potential tiles and deploy them
-      PotentialTileFactory.createPotentialTile();
-      PotentialTileFactory.createPotentialTile();
-      PotentialTileFactory.forEachPotentialTile (function() {
-        this.setRandomColor();
-        this.deploy();
-      });
-    }
     removeFromArray(board[this.tile()], this);
     board[destination].push(this);
   }
@@ -924,7 +945,7 @@ function PotentialTile() {
 
   this.deploy = () => {
     let options = [];
-    let minDistance = 3;
+    let minDistance = 2;
     for (let i = 0; i < board.length; i++) {
       if (
         board[i].length === 0 &&
@@ -934,7 +955,6 @@ function PotentialTile() {
         options.push(i);
       }
     }
-    console.log(options);
     let randomOption = Math.floor(Math.random() * options.length);
     this.deployToTile(options[randomOption]);
   }
@@ -1154,6 +1174,7 @@ window.addEventListener("load", function() {
   heroA.deployToTile(heroAStart);
   heroB.deployToTile(heroBStart);
   generateWalls();
+  PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.forEachPotentialTile (function() {

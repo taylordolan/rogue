@@ -13,7 +13,7 @@ function PotentialTile() {
 
   this.deploy = () => {
     let options = [];
-    let minDistance = 3;
+    let minDistance = 2;
     for (let i = 0; i < board.length; i++) {
       if (
         board[i].length === 0 &&
@@ -23,7 +23,6 @@ function PotentialTile() {
         options.push(i);
       }
     }
-    console.log(options);
     let randomOption = Math.floor(Math.random() * options.length);
     this.deployToTile(options[randomOption]);
   }

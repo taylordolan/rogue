@@ -7,6 +7,7 @@ window.addEventListener("load", function() {
   generateWalls();
   PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.createPotentialTile();
+  PotentialTileFactory.createPotentialTile();
   PotentialTileFactory.forEachPotentialTile (function() {
     this.setRandomColor();
     this.deploy();
