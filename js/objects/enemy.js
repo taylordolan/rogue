@@ -9,26 +9,65 @@ function Enemy (name) {
   }
 
   this.setTile = function(n) {
+
+    // increase score if destination is a score tile
     if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "purple") {
       score++;
     }
-    // TODO: this part isn't quite fair
+
+    // give health if destination is a health tile
+    // TODO: maybe this should be part of a series of checks after enemies move
     if (isInTile(n, "powerTile") && isInTile(n, "powerTile").color === "red") {
-      if (this.distanceFromTo(this.tile(), heroA.tile()) < this.distanceFromTo(this.tile(), heroB.tile())) {
-        if (heroA.health < maxHealth) {
-          heroA.health++;
+
+      let heroAMaxed = heroA.health === maxHealth;
+      let heroBMaxed = heroB.health === maxHealth;
+
+      // if at least one hero needs health
+      if (!(heroAMaxed && heroBMaxed)) {
+
+        let here = this.tile();
+        let heroADist = distanceFromTo(here, heroA.tile());
+        let heroBDist = distanceFromTo(here, heroB.tile());
+
+        // if both heroes are an equal distance away…
+        if (heroADist === heroDDist) {
+          // if exactly one hero has max health, increase health of the other one
+          if (heroAMaxed && !heroBMaxed) {
+            heroB.health++;
+          }
+          else if (heroBMaxed && !heroAMaxed) {
+            heroB.health++;
+          }
+          // if both heroes need health, increase health of a random one
+          else if (Math.floor(Math.random() * 2)) {
+            if (heroA.health < maxHealth) {
+              heroA.health++;
+            }
+          }
+          else {
+            if (heroB.health < maxHealth) {
+              heroB.health++;
+            }
+          }
         }
-      }
-      else {
-        if (heroB.health < maxHealth) {
-          heroB.health++;
+        // if one hero is closer, attempt to give health to the closer one
+        else {
+          if (heroA.health < maxHealth) {
+            heroA.health++;
+          }
+          else if (heroB.health < maxHealth) {
+            heroB.health++;
+          }
         }
       }
     }
+
+    // if there's a hero in the destination, hit it and die
     if (isInTile(n, "hero")) {
       isInTile(n, "hero").health--;
       this.die();
     }
+    // otherwise, move to the destination
     else {
       removeFromArray(board[this.tile()], this);
       board[n].push(this);

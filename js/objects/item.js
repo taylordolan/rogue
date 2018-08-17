@@ -90,29 +90,26 @@ function Item() {
   }
 
   this.moveRight = function() {
-    // if (this.col() < boardSize - 1) {
-    //   this.setTile(this.tile() + 1);
-    // }
     if (this.canMove("right", this.tile())) {
       this.setTile(rightFrom(this.tile()));
     }
   }
 
   this.moveLeft = function() {
-    if (this.col() > 0) {
-      this.setTile(this.tile() - 1);
+    if (this.canMove("left", this.tile())) {
+      this.setTile(leftFrom(this.tile()));
     }
   }
 
   this.moveUp = function() {
-    if (this.row() > 0) {
-      this.setTile(this.tile() - boardSize);
+    if (this.canMove("up", this.tile())) {
+      this.setTile(upFrom(this.tile()));
     }
   }
 
   this.moveDown = function() {
-    if (this.row() < boardSize - 1) {
-      this.setTile(this.tile() + boardSize);
+    if (this.canMove("down", this.tile())) {
+      this.setTile(downFrom(this.tile()));
     }
   }
 

@@ -5,62 +5,87 @@ function Hero() {
   this.type = "hero";
   this.health = maxHealth;
 
-  this.setTile = function(destination) {
+  this.moveRight = function() {
+    if (this.canMove("right", this.tile())) {
+      this.meelee();
+      if (this.canShoot("right")) {
+        this.shoot("right");
+      }
+      else {
+        this.setTile(rightFrom(this.tile()));
+      }
+    }
+  }
 
-    let here = this.tile();
-    let direction = "";
+  this.moveLeft = function() {
+    if (this.canMove("left", this.tile())) {
+      this.meelee();
+      if (this.canShoot("left")) {
+        this.shoot("left");
+      }
+      else {
+        this.setTile(leftFrom(this.tile()));
+      }
+    }
+  }
 
-    // find out which direction the hero is moving
-    if (destination === leftFrom(here)) {
-      direction = "left";
+  this.moveUp = function() {
+    if (this.canMove("up", this.tile())) {
+      this.meelee();
+      if (this.canShoot("up")) {
+        this.shoot("up");
+      }
+      else {
+        this.setTile(upFrom(this.tile()));
+      }
     }
-    else if (destination === rightFrom(here)) {
-      direction = "right";
-    }
-    else if (destination === upFrom(here)) {
-      direction = "up";
-    }
-    else if (destination === downFrom(here)) {
-      direction = "down";
-    }
+  }
 
-    // if meelee is enabled, hit surrounding enemies
+  this.moveDown = function() {
+    if (this.canMove("down", this.tile())) {
+      this.meelee();
+      if (this.canShoot("down")) {
+        this.shoot("down");
+      }
+      else {
+        this.setTile(downFrom(this.tile()));
+      }
+    }
+  }
+
+  // if meelee is enabled, hit surrounding enemies
+  this.meelee = function() {
     if (
       isInTile(this.getFriendTile(), "powerTile") &&
       isInTile(this.getFriendTile(), "powerTile").color === "blue"
     ) {
-      this.actuallySetTile(destination);
+      this.setTile(destination);
       this.hitSurroundingEnemies();
     }
+  }
 
-    // if shooting is enabled and there's an enemy in line of sight, hit it
-    if (
+  this.shoot = function(direction) {
+    this.setTile(this.canShoot(direction));
+    this.hitEnemyIn(this.tile());
+  }
+
+  this.canShoot = function(direction) {
+
+    if (!(
       isInTile(this.getFriendTile(), "powerTile") &&
-      isInTile(this.getFriendTile(), "powerTile").color === "green" &&
-      this.canShoot(direction, destination)
-    ) {
-      this.actuallySetTile(this.canShoot(direction, destination));
-      this.hitEnemyIn(this.tile());
+      isInTile(this.getFriendTile(), "powerTile").color === "green"
+    )) {
+      return false;
     }
 
-    // otherwise, move to destination
-    else if (!this.shouldAvoid(destination)) {
-      this.actuallySetTile(destination);
-    }
-  }
+    let here = this.tile();
+    let target;
 
-  this.actuallySetTile = function(destination) {
-    removeFromArray(board[this.tile()], this);
-    board[destination].push(this);
-  }
-
-  // given a direction and the first tile in that direction, return (the tile of an enemy in line of sight) or (false)
-  // TODO: seems like I should derive the direction from the tile and the hero's current location.
-  this.canShoot = function(direction, n) {
     if (direction === "up") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
-        if (isAdjacent(n, upFrom(n))) {
-          n = upFrom(n);
+      target = upFrom(here);
+      while (!isInTile(target, "wall") && !isInTile(target, "enemy") && !isInTile(target, "hero")) {
+        if (isAdjacent(target, upFrom(target))) {
+          target = upFrom(target);
         }
         else {
           break;
@@ -69,9 +94,10 @@ function Hero() {
     }
 
     else if (direction === "down") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
-        if (isAdjacent(n, downFrom(n))) {
-          n = downFrom(n);
+      target = downFrom(here);
+      while (!isInTile(target, "wall") && !isInTile(target, "enemy") && !isInTile(target, "hero")) {
+        if (isAdjacent(target, downFrom(target))) {
+          target = downFrom(target);
         }
         else {
           break;
@@ -80,9 +106,10 @@ function Hero() {
     }
 
     else if (direction === "left") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
-        if (isAdjacent(n, leftFrom(n))) {
-          n = leftFrom(n);
+      target = leftFrom(here);
+      while (!isInTile(target, "wall") && !isInTile(target, "enemy") && !isInTile(target, "hero")) {
+        if (isAdjacent(target, leftFrom(target))) {
+          target = leftFrom(target);
         }
         else {
           break;
@@ -91,9 +118,10 @@ function Hero() {
     }
 
     else if (direction === "right") {
-      while (!isInTile(n, "wall") && !isInTile(n, "enemy") && !isInTile(n, "hero")) {
-        if (isAdjacent(n, rightFrom(n))) {
-          n = rightFrom(n);
+      target = rightFrom(here);
+      while (!isInTile(target, "wall") && !isInTile(target, "enemy") && !isInTile(target, "hero")) {
+        if (isAdjacent(target, rightFrom(target))) {
+          target = rightFrom(target);
         }
         else {
           break;
@@ -101,8 +129,8 @@ function Hero() {
       }
     }
 
-    if (isInTile(n, "enemy")) {
-      return n;
+    if (isInTile(target, "enemy")) {
+      return target;
     }
     return false;
   }

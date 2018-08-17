@@ -132,18 +132,6 @@ function maybeAdvance() {
         board[i].push(new PowerTile());
         // and set its color
         isInTile(i, "powerTile").color = color;
-        // PotentialTileFactory.forEachPotentialTile (function() {
-        //   removeFromArray(board[this.tile()], this);
-        //   removeFromArray(PotentialTileFactory.allPotentialTiles, this);
-        // });
-        // // create two new potential tiles and deploy them
-        // PotentialTileFactory.createPotentialTile();
-        // PotentialTileFactory.createPotentialTile();
-        // PotentialTileFactory.createPotentialTile();
-        // PotentialTileFactory.forEachPotentialTile (function() {
-        //   this.setRandomColor();
-        //   this.deploy();
-        // });
         deployPotentialTiles();
         i = 10000;
       }
